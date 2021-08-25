@@ -1,0 +1,71 @@
+:root{
+  --theme-color:#467fcf!important;
+  --font-color:white !important
+}
+
+.header-bg{
+  background-color: var(--theme-color);
+  color:var(--font-color);
+  margin-bottom: 0px !important;
+}
+
+.header-bg a{
+  color:var(--font-color);
+}
+.header-bg li a:hover
+{
+  background-color: var(--theme-color);
+}
+.view-container
+{
+    margin-left: 236px;
+    height: calc(100% - 56px);
+    display: block;
+    position: absolute;
+    width: calc(100% - 236px);
+    overflow-y: auto;
+}
+
+.breadcrumb li a{
+  text-decoration: none;
+}
+
+.breadcrumb
+{
+  font-size: 12px;
+}
+label{
+  font-size: 13px !important;
+}
+
+.img-icon
+{
+  width: 30px;
+}
+.form-text
+{
+  font-size: 10px;
+}
+.copy-key
+{
+  font-size: 10px;
+    color: gray;
+}
+.table th,td{
+  font-size: 13px;
+    font-weight: 500;
+}
+.table th{
+  color:#467fcf;
+}
+
+.id-copy
+{
+  margin-left: 10px;
+  cursor:pointer;
+
+}
+.id-copy:hover
+{
+  color: #467fcf;
+}

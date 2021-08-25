@@ -1,0 +1,14 @@
+{
+    "name": "iot-web",
+    "version": "1.0.0",
+    "description": "IoT - Web",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Satish Kumar Sonkar",
+    "license": "ISC",
+    "dependencies": {
+        "react-toastify": "^7.0.4"
+    }
+}

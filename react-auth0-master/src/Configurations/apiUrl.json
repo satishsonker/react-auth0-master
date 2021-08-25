@@ -1,0 +1,25 @@
+{
+    "userController": {
+        "addUser": "/user/addUser",
+        "getApiKey": "/user/GetAPIKey",
+        "resetApiKey": "/user/ResetAPIKey"
+    },
+    "roomController": {
+        "addRoom": "/room/addRoom",
+        "getAllRoom": "/room/getAllRoom",
+        "searchRoom": "/room/searchRoom",
+        "deleteRoom": "/room/deleteRoom",
+        "getRoomDropdown":"/room/getRoomDropdown"
+    },
+    "deviceController": {
+        "addDevice": "/device/addDevice",
+        "getAllDevice": "/device/getAllDevice",
+        "searchDevice": "/device/searchDevice",
+        "deleteDevice": "/device/deleteDevice",
+        "getDeviceDropdown":"/device/getDeviceDropdown",
+        "getDeviceTypeDropdown":"/device/getDeviceTypeDropdown"
+    },
+"Dashboard":{
+    "getDashboardData":"/dashboard/getDashboardData"
+}
+}
