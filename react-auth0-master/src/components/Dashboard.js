@@ -5,23 +5,35 @@ import '../css/dashboard.css';
 import { Link, Redirect } from "react-router-dom";
 import { Api } from "../Configurations/Api";
 import { useAuth0 } from "@auth0/auth0-react";
-import * as mqtt from 'react-paho-mqtt';
 
 export default function Dashboard() {
+    const mqttStorageKey=process.env.REACT_APP_MQTT_LOCAL_STORAGE_KEY;
     const { user, isAuthenticated } = useAuth0();
     const apiUrlData = require('../Configurations/apiUrl.json');
-    const [client, setClient] = useState(null);
-    const _topic = ["Hello"];
-    const _options = {};
+    
     const [dashboardData, setDashboardData] = useState({
         "onDevices": 0,
         "totalDevices": 0,
         "offDevices": 0,
         "rooms": []
     });
-    const [loadingData, setLoadingData] = useState(true);
+    const [deviceMqttData, setDeviceMqttDataData] = useState([{
+        "wifi": 'Not Connected',
+        "ip": '0.0.0.0',
+        "state": 'Not Connected',
+        "deviceId":''
+    }]);
+    setInterval(() => {
+        let data=JSON.parse(localStorage.getItem(mqttStorageKey));
+        debugger;
+        let filterData=data.filter((ele,ind)=>{
+           if(new Date()- new Date(ele.timeStamp)<120000)
+           return ele;
+        });
+       setDeviceMqttDataData(filterData);
+    }, 30000);
+    const [loadingData, setLoadingData] = useState(true);  
     useEffect(() => {
-      
         Api.Post(apiUrlData.userController.addUser, {
             "Firstname": user.given_name,
             "Lastname": user.family_name,
@@ -30,64 +42,9 @@ export default function Dashboard() {
             "AuthProvidor": user.sub.split("|")[0],
             "Language": user.locale
         });
-    });
-    const _init = () => {
-        const c = mqtt.connect("iot.eclipse.org", Number(8000), "/ws", _onConnectionLost, _onMessageArrived); // mqtt.connect(host, port, clientId, _onConnectionLost, _onMessageArrived)
-        setClient(c);
-        if(client!==null){
-        client.connect({
-            onSuccess: () => {
-                for (var i = 0; i < _topic.length; i++) {
-                    client.subscribe(_topic[i], _options);
-                    console(_topic[i]);
-                }
-            }
-        });}
-    }
-    const _sendPayload = () => {
-        const payload = mqtt.parsePayload("Hello", "World"); // topic, payload
-        client.send(payload);
-    }
-
-    // called when client lost connection
-    const _onConnectionLost = responseObject => {
-        if (responseObject.errorCode !== 0) {
-            console.log(responseObject);
-        }
-    }
-
-    // called when messages arrived
-    const _onMessageArrived = message => {
-        console.log("onMessageArrived: " + message.payloadString);
-    }
-
-
-    // called when subscribing topic(s)
-    const _onSubscribe = () => {
-        client.connect({
-            onSuccess: () => {
-                for (var i = 0; i < _topic.length; i++) {
-                    client.subscribe(_topic[i], _options);
-                    console(_topic[i]);
-                }
-            }
-        }); // called when the client connects
-    }
-
-    // called when subscribing topic(s)
-    const _onUnsubscribe = () => {
-        for (var i = 0; i < _topic.length; i++) {
-            client.unsubscribe(_topic[i], _options);
-        }
-    }
-
-    // called when disconnecting the client
-    const _onDisconnect = () => {
-        client.disconnect();
-    }
-    useEffect(() => {
-        
-    _init();
+    },[loadingData, apiUrlData.Dashboard.getDashboardData]);
+  
+    useEffect(() => { 
         let _data = {};
         async function getDashboardData() {
             await Api.Get(apiUrlData.Dashboard.getDashboardData).then(res => {
@@ -103,13 +60,14 @@ export default function Dashboard() {
                     }));
                 });
                 setDashboardData(_data);
-                setLoadingData(false);
+                setLoadingData(false)
+                console.table(_data);
             })
         }
         if (loadingData) {
             getDashboardData();
         }
-    }, [loadingData, apiUrlData.Dashboard.getDashboardData,_init]);
+    }, [loadingData, apiUrlData.Dashboard.getDashboardData]);
     return (
         <div className="page-container">
             {!isAuthenticated && (<Redirect to="/"></Redirect>)}
@@ -163,9 +121,9 @@ export default function Dashboard() {
                                                             <div className="card-body">
                                                                 <ol className="device-desc">
                                                                     <li key={ind + "1"} title="Device ID"><i className="fas fa-server"></i><span>{device.deviceKey}</span></li>
-                                                                    <li key={ind + "2"} title="SSID"><i className="fas fa-wifi"></i><span>17066 2.4G</span></li>
-                                                                    <li key={ind + "3"} title="IP Address"><i className="fas fa-network-wired"></i><span>172.168.2.43</span></li>
-                                                                    <li key={ind + "4"} title="Power" ><i className="fas fa-power-off"></i><span>OFF</span></li>
+                                                                    <li key={ind + "2"} title="SSID"><i className="fas fa-wifi"></i><span>{device.deviceKey===deviceMqttData?.deviceId?deviceMqttData.wifi:"Not Connected"}</span></li>
+                                                                    <li key={ind + "3"} title="IP Address"><i className="fas fa-network-wired"></i><span>{device.deviceKey===deviceMqttData.deviceId?deviceMqttData?.ip:"0.0.0.0"}</span></li>
+                                                                    <li key={ind + "4"} title="Power" ><i className="fas fa-power-off"></i><span>{device.deviceKey===deviceMqttData.deviceId?deviceMqttData?.state:"Not Connected"}</span></li>
                                                                 </ol>
                                                             </div>
                                                             <div className="card-footer">

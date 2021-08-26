@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState,useEffect} from 'react';
 import './App.css';
 import { useAuth0 } from '@auth0/auth0-react';
 import LandingPage from './components/LandingPage'
@@ -20,11 +20,13 @@ import DeviceCreate from './components/DeviceCreate';
 import Developers from './components/Developers';
 toast.configure();
 function App() {
+ 
   const { isLoading, isAuthenticated, user } = useAuth0();
   if (isAuthenticated && user) {
     window.iotGlobal = {};
     window.iotGlobal["userKey"] = user.sub.split("|")[1];
   }
+ 
 
   if (!isAuthenticated) {
     return <LandingPage></LandingPage>
