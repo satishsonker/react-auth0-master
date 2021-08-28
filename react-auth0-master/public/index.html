@@ -23,8 +23,7 @@
   <div id="root"></div>
   <script>
     var checkUserId = setInterval(function () {
-      if (window.iotGlobal !== undefined && window.iotGlobal.userKey && window.iotGlobal.userKey!=='') {
-        debugger;
+      if (window.iotGlobal !== undefined && window.iotGlobal.userKey && window.iotGlobal.userKey !== '') {
         clearInterval(checkUserId);
         runMqtt();
       }
@@ -32,77 +31,101 @@
     function runMqtt() {
       const xhttp = new XMLHttpRequest();
       xhttp.onload = function () {
-        connectMqtt(JSON.parse(this.responseText).apiKey);
+        let apiKey = JSON.parse(this.responseText).apiKey;
+        connectMqtt(apiKey);
+        window.iotGlobal['apiKey'] = apiKey;
       }
-      xhttp.open("GET", "https://localhost:44342/api/v1/user/getApiKey", true);      
+      xhttp.open("GET", "https://localhost:44342/api/v1/user/getApiKey", true);
       xhttp.setRequestHeader('userkey', window.iotGlobal.userKey);
       xhttp.send();
     }
     function connectMqtt(topic) {
       var _topic = [topic]
-    client = new Paho.MQTT.Client('broker.hivemq.com', Number(8000), "web" + new Date().getTime());
+      client = new Paho.MQTT.Client('broker.hivemq.com', Number(8000), "web" + new Date().getTime());
 
-    // set callback handlers
-    client.onConnectionLost = onConnectionLost;
-    client.onMessageArrived = onMessageArrived;
+      // set callback handlers
+      client.onConnectionLost = onConnectionLost;
+      client.onMessageArrived = onMessageArrived;
 
-    // connect the client
-    client.connect({ onSuccess: onConnect, keepAliveInterval: 60 });
+      // connect the client
+      client.connect({ onSuccess: onConnect, keepAliveInterval: 60 });
 
 
-    // called when the client connects
-    function onConnect() {
-      // Once a connection has been made, make a subscription and send a message.
-      console.log("onConnect");
-      console.log(window.iotGlobal);
-      client.subscribe(_topic[0]);
-      var message = new Paho.MQTT.Message("Hello");
-      message.destinationName = _topic[0];
-      //for (var i = 0; i <= 30; i++) {
-
-      //setTimeout(function () { c
-      client.send(_topic[0], "test:" + Math.random() * 50);
-      //}, 4000 * i);
-
-      //}
-    }
-
-    // called when the client loses its connection
-    function onConnectionLost(responseObject) {
-      if (responseObject.errorCode !== 0) {
-        console.log("onConnectionLost:" + responseObject.errorMessage);
-      }
-    }
-
-    // called when a message arrives
-    function onMessageArrived(message) {
-      console.log("onMessageArrived:" + message.payloadString);
-      var data;
-      console.log("Message Arrived: " + message.payloadString);
-      console.log("Topic: " + message.destinationName);
-      console.log("QoS: " + message.qos);
-      console.log("Retained:  " + message.retained);
-      // Read Only, set if message might be a duplicate sent from broker
-      console.log("Duplicate: " + message.duplicate);
-      try {
-        data = JSON.parse(message.payloadString.replace(/'/g, '"'));
-        data['timeStamp'] = new Date();
-        var oldData = localStorage.getItem('mqttdevicedata');
-        oldData = oldData === undefined ? [] : oldData;
-        oldData.push(data)
-        localStorage.setItem('mqttdevicedata', JSON.stringify(data));
-
-      } catch (error) {
-        /*   data = {
-            "wifi": 'Not Connected',
-            "ip": '0.0.0.0',
-            "state": 'Not Connected',
-            "deviceId": ''
+      // called when the client connects
+      function onConnect() {
+        // Once a connection has been made, make a subscription and send a message.
+        console.log("onConnect");
+        console.log(window.iotGlobal);
+        client.subscribe(_topic[0]);
+        setInterval(function () {
+          //debugger;
+          let localData = JSON.parse(localStorage.getItem('mqttdevicedataPub'));
+          localData = localData === undefined || localData === null ? [] : localData;
+          while (localData.length > 0) {
+            let pubData = localData.pop();
+            pubData['timeStamp'] = new Date();
+            client.send(pubData.topic, JSON.stringify(pubData));
           }
-          localStorage.setItem('mqttdevicedata', JSON.stringify(data)); */
+          localStorage.setItem('mqttdevicedataPub',JSON.stringify([]));
+        }, 10000);
+        //var message = new Paho.MQTT.Message("Hello");
+        //message.destinationName = _topic[0];
+        //for (var i = 0; i <= 30; i++) {
+
+        //setTimeout(function () { c
+        //client.send(_topic[0], "test:" + Math.random() * 50);
+        //}, 4000 * i);
+
+        //}
       }
 
-    }
+      // called when the client loses its connection
+      function onConnectionLost(responseObject) {
+        if (responseObject.errorCode !== 0) {
+          console.log("onConnectionLost:" + responseObject.errorMessage);
+        }
+      }
+
+      // called when a message arrives
+      function onMessageArrived(message) {
+        //console.log("onMessageArrived:" + message.payloadString);
+        var data;
+        //console.log("Message Arrived: " + message.payloadString);
+        // console.log("Topic: " + message.destinationName);
+        //console.log("QoS: " + message.qos);
+        //console.log("Retained:  " + message.retained);
+        // Read Only, set if message might be a duplicate sent from broker
+        //console.log("Duplicate: " + message.duplicate);
+        try {
+          data = JSON.parse(message.payloadString.replace(/'/g, '"'));
+          let existedDevices = [];
+          data['timeStamp'] = new Date();
+          var oldData = JSON.parse(localStorage.getItem('mqttdevicedataSub'));
+          oldData = data === undefined || data === null ? [] : oldData;
+          oldData = oldData.filter((ele, ind) => {
+            if (existedDevices.indexOf(ele.deviceId) === -1) {
+              existedDevices.push(ele.deviceId);
+              if (ele.deviceId === data.deviceId) {
+                return data
+              }
+              return ele;
+            }
+          });
+          oldData.push(data)
+          localStorage.setItem('mqttdevicedataSub', JSON.stringify(oldData));
+
+        } catch (error) {
+          //localStorage.setItem('mqttdevicedata', JSON.stringify([]));
+          /*   data = {
+              "wifi": 'Not Connected',
+              "ip": '0.0.0.0',
+              "state": 'Not Connected',
+              "deviceId": ''
+            }
+            localStorage.setItem('mqttdevicedata', JSON.stringify(data)); */
+        }
+
+      }
 
 
 

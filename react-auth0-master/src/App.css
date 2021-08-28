@@ -1,6 +1,17 @@
 :root{
   --theme-color:#467fcf!important;
-  --font-color:white !important
+  --font-color:white !important;
+  --left-menu-lg-margin:236px;
+  --left-menu-sm-margin:54px;
+}
+.header-color
+{
+  background-color: var(--theme-color) !important;
+  color: var(--font-color) !important;
+}
+.breadcrumb
+{
+  padding: 10px 10px 0px 16px;
 }
 
 .header-bg{
@@ -16,14 +27,21 @@
 {
   background-color: var(--theme-color);
 }
+.view-container-small
+{
+  margin-left: var(--left-menu-sm-margin) !important;
+  width: calc(100% - var(--left-menu-sm-margin)) !important;
+  transition: width .7s,margin-left .7s;
+}
 .view-container
 {
-    margin-left: 236px;
-    height: calc(100% - 56px);
+    margin-left: var(--left-menu-lg-margin);
+    height: calc(100% - 58px);
     display: block;
     position: absolute;
-    width: calc(100% - 236px);
+    width: calc(100% - var(--left-menu-lg-margin));
     overflow-y: auto;
+    transition: width .7s,margin-left .7s;
 }
 
 .breadcrumb li a{
@@ -68,4 +86,29 @@ label{
 .id-copy:hover
 {
   color: #467fcf;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+.badge-small
+{
+  font-size: 10px !important;
+}
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey; 
+  border-radius: 0;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background-color: rgba(var(--bs-primary-rgb),1)!important;
+  border-radius: 0;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #b30000; 
 }

@@ -18,9 +18,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import "../src/css/loader.css";
 import DeviceCreate from './components/DeviceCreate';
 import Developers from './components/Developers';
+import Account from './components/Account';
 toast.configure();
 function App() {
- 
+ const [isMenuCollapsed,setIsMenuCollapsed]=useState(false);
   const { isLoading, isAuthenticated, user } = useAuth0();
   if (isAuthenticated && user) {
     window.iotGlobal = {};
@@ -38,8 +39,8 @@ function App() {
         <div>
           <Router>
             <Header />
-            <LeftMenu />
-            <div className="view-container">
+            <LeftMenu setIsMenuCollapsed={setIsMenuCollapsed} />
+            <div className={!isMenuCollapsed?'view-container':'view-container view-container-small'}>
               <Switch>
                 <Route exact path="/Dashboard" render={() => {
                   return (
@@ -74,6 +75,11 @@ function App() {
                 <Route exact path="/Developers" render={() => {
                   return (
                     <div><Developers></Developers></div>
+                  );
+                }}></Route>
+                  <Route exact path="/Account" render={() => {
+                  return (
+                    <div><Account></Account></div>
                   );
                 }}></Route>
               </Switch>

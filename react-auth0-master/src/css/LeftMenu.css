@@ -9,17 +9,29 @@
     margin-left: -235px;
     margin-bottom: 48px;
     border: none;
-    overflow-y: auto;
+    overflow-y: hidden;
     background-color: #fff;
     bottom: 0;
     overflow-x: hidden;
     padding-bottom: 40px;
     white-space: nowrap;
-    transition: all .2s ease-in-out;
-    padding-left:0;
+    transition: all .2s ease-in-out;  
+    padding-left:0;    
+    transition: overflow-y .7s,width .7s;  
+}
+.left-menu:hover{   
+    overflow-y: auto;
 }
 .left-menu a{
     text-decoration:none;
+}
+.left-menu span{
+    display:inline;
+    transition: display .7s;
+}
+.left-menu-small span{
+    display:none;
+    transition: display .7s;
 }
 .left-menu .item{
     background: #fff;
@@ -30,11 +42,26 @@
     text-decoration: none;
     position: relative;
     display: block;
-    padding: 1.5rem 1.25rem;
+    padding: 1rem 1.25rem;
     margin-bottom: -1px;
-    background-color: #fff;
+    transition: background-color .7s;
+    background-color: #fff;    
+    transition: width .7s, background .7s;
 }
-.toggle-button {
+.left-menu-small
+{
+    width: 54px !important;
+    transition: width .7s;
+}
+.left-menu .item:hover{
+    background: rgb(57, 108, 247);
+}
+.toggle-button-small{
+    width: 54px !important;      
+    transition: width .7s;
+}
+.toggle-button {      
+    transition: width .7s;
     position: fixed;
     width: 236px;
     cursor: pointer;

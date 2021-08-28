@@ -2,7 +2,9 @@
     "userController": {
         "addUser": "/user/addUser",
         "getApiKey": "/user/GetAPIKey",
-        "resetApiKey": "/user/ResetAPIKey"
+        "resetApiKey": "/user/ResetAPIKey",
+        "getUser": "/user/GetUser",
+        "updateUser": "/user/UpdateUser"
     },
     "roomController": {
         "addRoom": "/room/addRoom",

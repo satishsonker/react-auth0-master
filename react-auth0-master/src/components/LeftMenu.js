@@ -1,33 +1,38 @@
-import React from 'react'
+import React, { useState } from 'react'
 import '../css/LeftMenu.css';
 import { Link } from "react-router-dom";
 import { useAuth0 } from '@auth0/auth0-react';
-export default function LeftMenu() {   
-    const {logout}=useAuth0();
+export default function LeftMenu({setIsMenuCollapsed}) {
+    const [isCollapsed, setIsCollapsed] = useState(false);
+    const { logout } = useAuth0();
+    const handleCollapsed=()=>{
+        setIsCollapsed(!isCollapsed);
+        setIsMenuCollapsed(!isCollapsed);
+    }
     return (
         <div>
-           <ul className="left-menu">
-              <Link to="/Dashboard"><li className="item"><i className="fas fa-tachometer-alt"></i> Dashboard</li></Link> 
-              <Link to="/Device"><li className="item"><i className="fa fa-microchip"></i> Device</li></Link> 
-              <Link to="/"><li className="item"><i className="fa fa-cubes"></i> Device Template</li></Link> 
-              <Link to="/Credentials"><li className="item"><i className="fa fa-unlock-alt"></i> Credentials</li></Link> 
-              <Link to="/Rooms"><li className="item"><i className="fa fa-clone"></i> Rooms</li></Link> 
-              <Link to="/"><li className="item"><i className="fas fa-play-circle-o"></i> Scenes</li></Link> 
-              <Link to="/"><li className="item"><i className="fa fa-calendar"></i> Schedules</li></Link> 
-              <Link to="/"><li className="item"><i className="fa fa-history"></i> Activity Log</li></Link> 
-              <Link to="/"><li className="item"><i className="fa fa-flash"></i> Energy Estimates</li></Link> 
-              <Link to="/"><li className="item"><i className="fa fa-clone"></i> Rooms</li></Link> 
-              <Link to="/"><li className="item"><i className="fa fa-user-circle-o"></i> Account</li></Link> 
-              <Link to="/"><li className="item"><i className="fa fa-usd"></i> Subscription</li></Link> 
-              <Link to="/"><li className="item"><i className="fa fa-bell-o"></i> What's New</li></Link> 
-              <Link to="/"><li className="item"><i className="fa fa-expand"></i> API Integration</li></Link> 
-              <Link to="/developers"><li className="item"><i className="fa fa-expand"></i> Developers</li></Link> 
-              <li className="item"  onClick={()=> logout()}><i className="fa fa-sign-out"></i> Sign out</li>
-           </ul>
-           <div className="toggle-button">
-               <i className="fa fa-fw fa-angle-double-left"></i>&nbsp; 
-               <span>Collapse Sidebar</span>
-               </div>
+            <ul className={!isCollapsed?"left-menu":" left-menu left-menu-small"}>
+                <Link to="/Dashboard"><li className="item"><i className="fas fa-tachometer-alt"></i>    <span>Dashboard</span> </li></Link>
+                <Link to="/Device"><li className="item"><i className="fa fa-microchip"></i> {!isCollapsed && ('Device')} </li></Link>
+                <Link to="/"><li className="item"><i className="fa fa-cubes"></i> {!isCollapsed && ('Device Template')} </li></Link>
+                <Link to="/Credentials"><li className="item"><i className="fa fa-unlock-alt"></i> {!isCollapsed && ('Credentials')} </li></Link>
+                <Link to="/Rooms"><li className="item"><i className="fa fa-clone"></i> {!isCollapsed && ('Rooms')} </li></Link>
+                <Link to="/"><li className="item"><i className="fas fa-play-circle-o"></i> {!isCollapsed && ('Scenes')} </li></Link>
+                <Link to="/"><li className="item"><i className="fa fa-calendar"></i> {!isCollapsed && ('Schedules')} </li></Link>
+                <Link to="/"><li className="item"><i className="fa fa-history"></i> {!isCollapsed && ('Activity Log')} </li></Link>
+                <Link to="/"><li className="item"><i className="fa fa-flash"></i> {!isCollapsed && ('Energy Estimates')} </li></Link>
+                <Link to="/"><li className="item"><i className="fa fa-clone"></i> {!isCollapsed && ('Rooms')} </li></Link>
+                <Link to="/Account"><li className="item"><i className="fa fa-user-circle-o"></i> {!isCollapsed && ('Account')} </li></Link>
+                <Link to="/"><li className="item"><i className="fa fa-usd"></i> {!isCollapsed && ('Subscription')} </li></Link>
+                <Link to="/"><li className="item"><i className="fa fa-bell-o"></i> {!isCollapsed && ("What's New")} </li></Link>
+                <Link to="/"><li className="item"><i className="fa fa-expand"></i> {!isCollapsed && ('API Integration')} </li></Link>
+                <Link to="/developers"><li className="item"><i className="fa fa-expand"></i> {!isCollapsed && ('Developers')} </li></Link>
+                <li className="item" onClick={() => logout()}><i className="fa fa-sign-out"></i> {!isCollapsed && ('Sign out')} </li>
+            </ul>
+            <div className={!isCollapsed?'toggle-button':'toggle-button toggle-button-small'} onClick={e=>{handleCollapsed()}}>
+                <i className={isCollapsed===false?'fa fa-fw fa-angle-double-left':'fa fa-fw fa-angle-double-right'}></i>&nbsp;
+                <span>{!isCollapsed &&('Collapse')}</span>
+            </div>
         </div>
     )
 }

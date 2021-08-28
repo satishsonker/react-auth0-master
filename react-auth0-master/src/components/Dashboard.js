@@ -7,10 +7,17 @@ import { Api } from "../Configurations/Api";
 import { useAuth0 } from "@auth0/auth0-react";
 
 export default function Dashboard() {
-    const mqttStorageKey=process.env.REACT_APP_MQTT_LOCAL_STORAGE_KEY;
+    const mqttSubscribeStorageKey = process.env.REACT_APP_MQTT_SUBSCRIBE_LOCAL_STORAGE_KEY;
+    const mqttPublishStorageKey = process.env.REACT_APP_MQTT_PUBLISH_LOCAL_STORAGE_KEY;
+    const mqttPubTemplate = {
+        'deviceId': '',
+        'power': '',
+        'brightness': 100,
+        "topic": ''
+    }
     const { user, isAuthenticated } = useAuth0();
     const apiUrlData = require('../Configurations/apiUrl.json');
-    
+
     const [dashboardData, setDashboardData] = useState({
         "onDevices": 0,
         "totalDevices": 0,
@@ -21,18 +28,36 @@ export default function Dashboard() {
         "wifi": 'Not Connected',
         "ip": '0.0.0.0',
         "state": 'Not Connected',
-        "deviceId":''
+        "deviceId": ''
     }]);
     setInterval(() => {
-        let data=JSON.parse(localStorage.getItem(mqttStorageKey));
-        debugger;
-        let filterData=data.filter((ele,ind)=>{
-           if(new Date()- new Date(ele.timeStamp)<120000)
-           return ele;
+        let data = JSON.parse(localStorage.getItem(mqttSubscribeStorageKey));
+        data = data === undefined || data === null ? [] : data;
+        dashboardData.onDevices = 0;
+        data.forEach((ele, ind) => {
+            if (new Date() - new Date(ele.timeStamp) < 120000) {
+                dashboardData.rooms.forEach((roomCol, roomColInd) => {
+                    if (roomCol.length > 0) {
+                        roomCol.forEach((roomEle, roomInd) => {
+                            if (roomEle.deviceKey === ele.deviceId) {
+                                roomEle["wifi"] = ele.wifi;
+                                roomEle["ip"] = ele.ip;
+                                roomEle["status"] = ele.status;
+                                if (ele.status.toLowerCase() === 'on') {
+                                    dashboardData.onDevices = dashboardData.onDevices + 1;
+                                    dashboardData.offDevices = dashboardData.totalDevices - dashboardData.onDevices;
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+            // return ele;
         });
-       setDeviceMqttDataData(filterData);
+        dashboardData.offDevices = dashboardData.onDevices === 0 ? dashboardData.totalDevices : dashboardData.offDevices;
+        setDashboardData(dashboardData);
     }, 30000);
-    const [loadingData, setLoadingData] = useState(true);  
+    const [loadingData, setLoadingData] = useState(true);
     useEffect(() => {
         Api.Post(apiUrlData.userController.addUser, {
             "Firstname": user.given_name,
@@ -42,14 +67,15 @@ export default function Dashboard() {
             "AuthProvidor": user.sub.split("|")[0],
             "Language": user.locale
         });
-    },[loadingData, apiUrlData.Dashboard.getDashboardData]);
-  
-    useEffect(() => { 
+    }, [loadingData, apiUrlData.Dashboard.getDashboardData]);
+
+    useEffect(() => {
         let _data = {};
         async function getDashboardData() {
             await Api.Get(apiUrlData.Dashboard.getDashboardData).then(res => {
                 let resData = res.data;
-                _data["onDevices"] = resData.devices.length;
+                _data["onDevices"] = 0;
+                _data['devices'] = resData.devices;
                 _data["totalDevices"] = resData.devices.length;
                 _data["offDevices"] = resData.devices.length;
                 _data["rooms"] = [];
@@ -68,6 +94,22 @@ export default function Dashboard() {
             getDashboardData();
         }
     }, [loadingData, apiUrlData.Dashboard.getDashboardData]);
+
+    const handleTurnOnAllDevice = () => {
+        let localData = JSON.parse(localStorage.getItem(mqttPublishStorageKey));
+        localData = localData === undefined || localData === null ? [] : localData;
+        dashboardData.devices.forEach((ele, ind) => {
+            localData.push({
+                deviceId: ele.deviceKey,
+                power: "On",
+                topic: window.iotGlobal.apiKey
+            });
+        });
+        localStorage.setItem(mqttPublishStorageKey, JSON.stringify(localData));
+        dashboardData.offDevices=0;
+        dashboardData.onDevices=dashboardData.totalDevices;
+        setDashboardData(dashboardData);
+    };
     return (
         <div className="page-container">
             {!isAuthenticated && (<Redirect to="/"></Redirect>)}
@@ -86,7 +128,7 @@ export default function Dashboard() {
                             <p className="card-text text-center">  <span className="device-count">{dashboardData.onDevices}</span> Out of <span className="device-count">{dashboardData.totalDevices}</span></p>
                         </div>
                         <div className="card-footer">
-                            <button className="btn btn-success btn-sm">Turn On All</button>
+                            <button className="btn btn-success btn-sm" onClick={e => { handleTurnOnAllDevice() }}>Turn On All</button>
                             <button className="btn btn-danger  btn-sm" style={{ marginLeft: 10 + 'px' }}>Turn Off All</button>
                         </div>
                     </div>
@@ -121,9 +163,9 @@ export default function Dashboard() {
                                                             <div className="card-body">
                                                                 <ol className="device-desc">
                                                                     <li key={ind + "1"} title="Device ID"><i className="fas fa-server"></i><span>{device.deviceKey}</span></li>
-                                                                    <li key={ind + "2"} title="SSID"><i className="fas fa-wifi"></i><span>{device.deviceKey===deviceMqttData?.deviceId?deviceMqttData.wifi:"Not Connected"}</span></li>
-                                                                    <li key={ind + "3"} title="IP Address"><i className="fas fa-network-wired"></i><span>{device.deviceKey===deviceMqttData.deviceId?deviceMqttData?.ip:"0.0.0.0"}</span></li>
-                                                                    <li key={ind + "4"} title="Power" ><i className="fas fa-power-off"></i><span>{device.deviceKey===deviceMqttData.deviceId?deviceMqttData?.state:"Not Connected"}</span></li>
+                                                                    <li key={ind + "2"} title="SSID"><i className="fas fa-wifi"></i><span>{device?.wifi}</span></li>
+                                                                    <li key={ind + "3"} title="IP Address"><i className="fas fa-network-wired"></i><span>{device?.ip}</span></li>
+                                                                    <li key={ind + "4"} title="Power" ><i className="fas fa-power-off"></i><span>{device?.status}</span></li>
                                                                 </ol>
                                                             </div>
                                                             <div className="card-footer">

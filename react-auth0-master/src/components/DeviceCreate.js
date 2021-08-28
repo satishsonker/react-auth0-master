@@ -3,6 +3,7 @@ import { Link, Redirect} from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Api } from "../Configurations/Api";
 import { toast } from 'react-toastify';
+import Loader from "../components/Loader";
 export default function DeviceCreate() {
     toast.configure();
     const { user } = useAuth0();
@@ -65,6 +66,7 @@ export default function DeviceCreate() {
     }
     return (
         <div className="page-container">
+            {loadingData && (<Loader></Loader>)}
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb">
                     <li className="breadcrumb-item"><Link to="/Dashboard">Home</Link></li>
