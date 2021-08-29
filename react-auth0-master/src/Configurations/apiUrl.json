@@ -15,6 +15,7 @@
     },
     "deviceController": {
         "addDevice": "/device/addDevice",
+        "updateDevice": "/device/updateDevice",
         "getAllDevice": "/device/getAllDevice",
         "searchDevice": "/device/searchDevice",
         "deleteDevice": "/device/deleteDevice",

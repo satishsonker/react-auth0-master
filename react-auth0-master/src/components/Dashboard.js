@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { toast } from 'react-toastify';
 import Loader from './Loader';
 import '../css/dashboard.css';
 import { Link, Redirect } from "react-router-dom";
@@ -9,12 +8,6 @@ import { useAuth0 } from "@auth0/auth0-react";
 export default function Dashboard() {
     const mqttSubscribeStorageKey = process.env.REACT_APP_MQTT_SUBSCRIBE_LOCAL_STORAGE_KEY;
     const mqttPublishStorageKey = process.env.REACT_APP_MQTT_PUBLISH_LOCAL_STORAGE_KEY;
-    const mqttPubTemplate = {
-        'deviceId': '',
-        'power': '',
-        'brightness': 100,
-        "topic": ''
-    }
     const { user, isAuthenticated } = useAuth0();
     const apiUrlData = require('../Configurations/apiUrl.json');
 
@@ -24,12 +17,6 @@ export default function Dashboard() {
         "offDevices": 0,
         "rooms": []
     });
-    const [deviceMqttData, setDeviceMqttDataData] = useState([{
-        "wifi": 'Not Connected',
-        "ip": '0.0.0.0',
-        "state": 'Not Connected',
-        "deviceId": ''
-    }]);
     setInterval(() => {
         let data = JSON.parse(localStorage.getItem(mqttSubscribeStorageKey));
         data = data === undefined || data === null ? [] : data;

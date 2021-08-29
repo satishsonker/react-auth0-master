@@ -66,7 +66,7 @@ export default function Device() {
             <div className="d-flex justify-content-between bd-highlight mb-3">
                 <div className="p-2 bd-highlight">
                     <div className="btn-group" role="group" aria-label="Basic example">
-                        <Link to="/devicecreate/" > <button type="button" className="btn btn-sm btn-outline-primary"><i className="fa fa-plus"></i> Add</button></Link>
+                        <Link to="/devicecreate" > <button type="button" className="btn btn-sm btn-outline-primary"><i className="fa fa-plus"></i> Add</button></Link>
                         <button type="button" className="btn btn-sm btn-outline-primary"><i className="fa fa-sync-alt"></i></button>
                     </div>
                 </div>
@@ -118,7 +118,7 @@ export default function Device() {
                                         <td className="text-center">{ele.ConnectionCount}</td>
                                         <td className="text-center">
                                             <div className="btn-group" role="group" aria-label="Basic example">
-                                                <Link to="/DeviceCreate?id=1"><div className="btn btn-sm btn-outline-success"><i className="fas fa-pencil-alt" aria-hidden="true"></i></div></Link>
+                                                <Link to={"/DeviceCreate?id="+ele.deviceKey}><div className="btn btn-sm btn-outline-success"><i className="fas fa-pencil-alt" aria-hidden="true"></i></div></Link>
                                                 <button type="button" value={ele.deviceKey} onClick={e => handleDelete(e)} className="btn btn-sm btn-outline-danger"><i data-devicekey={ele.deviceKey} className="fa fa-trash"></i></button>
                                             </div>
                                         </td>

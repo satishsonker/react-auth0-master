@@ -7,7 +7,7 @@ export default function Header() {
           <span className="navbar-toggler-icon"></span>
         </button>
         <div className="collapse navbar-collapse" id="navbarTogglerDemo01">
-          <a className="navbar-brand" href="#">
+          <a className="navbar-brand" href="/">
             <img src="/assets/images/logo64.png" alt="" width="30" height="30" className="d-inline-block align-text-top" />
             Areana IoT <span className="badge-small badge bg-success">v1.0.0</span>
           </a>
