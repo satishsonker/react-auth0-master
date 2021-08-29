@@ -9,8 +9,10 @@
     "roomController": {
         "addRoom": "/room/addRoom",
         "getAllRoom": "/room/getAllRoom",
+        "getRoom": "/room/getRoom",
         "searchRoom": "/room/searchRoom",
         "deleteRoom": "/room/deleteRoom",
+        "updateRoom": "/room/updateRoom",
         "getRoomDropdown":"/room/getRoomDropdown"
     },
     "deviceController": {

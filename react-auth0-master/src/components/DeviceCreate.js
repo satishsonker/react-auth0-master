@@ -83,7 +83,7 @@ export default function DeviceCreate() {
             return;
         }
         Api.Post(isDeviceUpdate?apiUrlData.deviceController.updateDevice: apiUrlData.deviceController.addDevice, device).then(res => {
-            toast.success("Device is " +!isDeviceUpdate?"created":"updated");
+            toast.success(!isDeviceUpdate?"Device is created":" Device is updated");
             setIsDeviceCreated(true);
         }).catch(ee => {
             toast.error("Something went wrong !");

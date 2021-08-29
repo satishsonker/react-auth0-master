@@ -101,7 +101,7 @@ export default function Rooms() {
                                         <td>{ele.roomDesc}</td>
                                         <td>
                                             <div className="btn-group" role="group" aria-label="Basic example">
-                                                <Link to="/CreateRoom"><div className="btn btn-sm btn-outline-success"><i className="fas fa-pencil-alt" aria-hidden="true"></i></div></Link>
+                                                <Link to={"/RoomCreate?roomkey="+ele.roomKey}><div className="btn btn-sm btn-outline-success"><i className="fas fa-pencil-alt" aria-hidden="true"></i></div></Link>
                                                 <button type="button" value={ele.roomKey} onClick={e=>handleDelete(e)} className="btn btn-sm btn-outline-danger"><i data-roomkey={ele.roomKey} className="fa fa-trash"></i></button>
                                             </div>
                                         </td>
@@ -109,7 +109,6 @@ export default function Rooms() {
                                 )
                             }))
                         }
-
                     </tbody>
                 </table>
             </div>
