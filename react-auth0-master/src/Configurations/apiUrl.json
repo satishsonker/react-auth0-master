@@ -24,6 +24,14 @@
         "getDeviceDropdown":"/device/getDeviceDropdown",
         "getDeviceTypeDropdown":"/device/getDeviceTypeDropdown"
     },
+    "sceneController": {
+        "addScene": "/scene/addScene",
+        "getScene": "/scene/getScene",
+        "updateScene": "/scene/updateScene",
+        "getAllScene": "/scene/getAllScene",
+        "searchScene": "/scene/searchScene",
+        "deleteScene": "/scene/deleteScene"
+    },
 "Dashboard":{
     "getDashboardData":"/dashboard/getDashboardData"
 }

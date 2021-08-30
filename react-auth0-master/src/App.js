@@ -19,6 +19,8 @@ import "../src/css/loader.css";
 import DeviceCreate from './components/DeviceCreate';
 import Developers from './components/Developers';
 import Account from './components/Account';
+import Scenes from './components/Scenes';
+import SceneCreate from './components/SceneCreate';
 toast.configure();
 function App() {
  const [isMenuCollapsed,setIsMenuCollapsed]=useState(false);
@@ -80,6 +82,16 @@ function App() {
                   <Route exact path="/Account" render={() => {
                   return (
                     <div><Account></Account></div>
+                  );
+                }}></Route>
+                 <Route exact path="/Scenes" render={() => {
+                  return (
+                    <div><Scenes></Scenes></div>
+                  );
+                }}></Route>
+                 <Route exact path="/SceneCreate" render={() => {
+                  return (
+                    <div><SceneCreate></SceneCreate></div>
                   );
                 }}></Route>
               </Switch>

@@ -36,9 +36,9 @@ export default function LandingPage() {
             <div className="card bg-dark text-white">
                 <img src="/assets/images/iot-main.jpg" className="card-img" alt="..." />
                 <div className="card-img-overlay">
-                    <h1 className="card-text text-center">Home automation for everyone</h1>
-                    <p className="card-text text-center ">Simple way to control your IOT development boards like RaspberryPi, ESP8226, ESP32 or Arduino with Amazon Alexa, Google Home or SmartThings</p>
-                    <p className="card-text text-center">
+                    <h1 className="card-text text-center card-text1">Home automation for everyone</h1>
+                    <p className="card-text text-center card-text1">Simple way to control your IOT development boards like RaspberryPi, ESP8226, ESP32 or Arduino with Amazon Alexa, Google Home or SmartThings</p>
+                    <p className="card-text text-center card-text1">
                         <button className="btn btn-primary">Sign Up</button>
                     </p>
                 </div>

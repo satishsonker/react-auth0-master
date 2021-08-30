@@ -40,7 +40,7 @@
       xhttp.send();
     }
     function connectMqtt(topic) {
-      var _topic = [topic]
+      var _topic = [topic,topic+'/server']
       client = new Paho.MQTT.Client('broker.hivemq.com', Number(8000), "web" + new Date().getTime());
 
       // set callback handlers
@@ -57,17 +57,20 @@
         console.log("onConnect");
         console.log(window.iotGlobal);
         client.subscribe(_topic[0]);
+        client.subscribe(_topic[1]);
         setInterval(function () {
-          //debugger;
+          // /debugger;
+
           let localData = JSON.parse(localStorage.getItem('mqttdevicedataPub'));
           localData = localData === undefined || localData === null ? [] : localData;
           while (localData.length > 0) {
             let pubData = localData.pop();
-            pubData['timeStamp'] = new Date();
-            client.send(pubData.topic, JSON.stringify(pubData));
+            let topic=pubData.topic;
+            pubData.topic='';
+            client.send(topic, JSON.stringify(pubData));
           }
           localStorage.setItem('mqttdevicedataPub',JSON.stringify([]));
-        }, 10000);
+        }, 5000);
         //var message = new Paho.MQTT.Message("Hello");
         //message.destinationName = _topic[0];
         //for (var i = 0; i <= 30; i++) {
@@ -88,7 +91,7 @@
 
       // called when a message arrives
       function onMessageArrived(message) {
-        //console.log("onMessageArrived:" + message.payloadString);
+        console.log("onMessageArrived:" + message.payloadString);
         var data;
         //console.log("Message Arrived: " + message.payloadString);
         // console.log("Topic: " + message.destinationName);

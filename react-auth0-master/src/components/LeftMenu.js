@@ -17,7 +17,7 @@ export default function LeftMenu({setIsMenuCollapsed}) {
                 {/* <Link to="/"><li className="item"><i className="fa fa-cubes"></i> {!isCollapsed && ('Device Template')} </li></Link> */}
                 <Link title="Credential" to="/Credentials"><li className="item"><i className="fa fa-unlock-alt"></i> {!isCollapsed && ('Credentials')} </li></Link>
                 <Link title="Room" to="/Rooms"><li className="item"><i className="fa fa-clone"></i> {!isCollapsed && ('Rooms')} </li></Link>
-                <Link  title="Scenes"to="/"><li className="item"><i className="far fa-play-circle"></i> {!isCollapsed && ('Scenes')} </li></Link>
+                <Link  title="Scenes"to="/Scenes"><li className="item"><i className="far fa-play-circle"></i> {!isCollapsed && ('Scenes')} </li></Link>
                 <Link title="Schedule" to="/"><li className="item"><i className="fa fa-calendar"></i> {!isCollapsed && ('Schedules')} </li></Link>
                 <Link  title="Activity Log"to="/"><li className="item"><i className="fa fa-history"></i> {!isCollapsed && ('Activity Log')} </li></Link>
                 {/* <Link to="/"><li className="item"><i className="fa fa-flash"></i> {!isCollapsed && ('Energy Estimates')} </li></Link> */}

@@ -12,38 +12,39 @@ export default function Dashboard() {
     const apiUrlData = require('../Configurations/apiUrl.json');
 
     const [dashboardData, setDashboardData] = useState({
-        "onDevices": 0,
-        "totalDevices": 0,
-        "offDevices": 0,
-        "rooms": []
+        onDevices: 0,
+        totalDevices: 0,
+        offDevices: 0,
+        rooms: [],
+        devices:[]
     });
-    setInterval(() => {
-        let data = JSON.parse(localStorage.getItem(mqttSubscribeStorageKey));
-        data = data === undefined || data === null ? [] : data;
-        dashboardData.onDevices = 0;
-        data.forEach((ele, ind) => {
-            if (new Date() - new Date(ele.timeStamp) < 120000) {
-                dashboardData.rooms.forEach((roomCol, roomColInd) => {
-                    if (roomCol.length > 0) {
-                        roomCol.forEach((roomEle, roomInd) => {
-                            if (roomEle.deviceKey === ele.deviceId) {
-                                roomEle["wifi"] = ele.wifi;
-                                roomEle["ip"] = ele.ip;
-                                roomEle["status"] = ele.status;
-                                if (ele.status.toLowerCase() === 'on') {
-                                    dashboardData.onDevices = dashboardData.onDevices + 1;
-                                    dashboardData.offDevices = dashboardData.totalDevices - dashboardData.onDevices;
-                                }
-                            }
-                        });
-                    }
-                });
-            }
-            // return ele;
-        });
-        dashboardData.offDevices = dashboardData.onDevices === 0 ? dashboardData.totalDevices : dashboardData.offDevices;
-        setDashboardData(dashboardData);
-    }, 30000);
+    // setInterval(() => {
+    //     let data = JSON.parse(localStorage.getItem(mqttSubscribeStorageKey));
+    //     data = data === undefined || data === null ? [] : data;
+    //     dashboardData.onDevices = 0;
+    //     data.forEach((ele, ind) => {
+    //         if (new Date() - new Date(ele.timeStamp) < 120000) {
+    //             dashboardData.rooms.forEach((roomCol, roomColInd) => {
+    //                 if (roomCol.length > 0) {
+    //                     roomCol.forEach((roomEle, roomInd) => {
+    //                         if (roomEle.deviceKey === ele.deviceId) {
+    //                             roomEle["wifi"] = ele.wifi;
+    //                             roomEle["ip"] = ele.ip;
+    //                             roomEle["status"] = ele.status;
+    //                             if (ele.status.toLowerCase() === 'on') {
+    //                                 dashboardData.onDevices = dashboardData.onDevices + 1;
+    //                                 dashboardData.offDevices = dashboardData.totalDevices - dashboardData.onDevices;
+    //                             }
+    //                         }
+    //                     });
+    //                 }
+    //             });
+    //         }
+    //         // return ele;
+    //     });
+    //     dashboardData.offDevices = dashboardData.onDevices === 0 ? dashboardData.totalDevices : dashboardData.offDevices;
+    //     setDashboardData(dashboardData);
+    // }, 30000);
     const [loadingData, setLoadingData] = useState(true);
     useEffect(() => {
         Api.Post(apiUrlData.userController.addUser, {
@@ -54,7 +55,7 @@ export default function Dashboard() {
             "AuthProvidor": user.sub.split("|")[0],
             "Language": user.locale
         });
-    }, [loadingData, apiUrlData.Dashboard.getDashboardData]);
+    }, [loadingData, apiUrlData.userController.addUser]);
 
     useEffect(() => {
         let _data = {};
@@ -82,21 +83,37 @@ export default function Dashboard() {
         }
     }, [loadingData, apiUrlData.Dashboard.getDashboardData]);
 
-    const handleTurnOnAllDevice = () => {
+    const handleTurnOnOffDevice = (value, deviceKey) => {
         let localData = JSON.parse(localStorage.getItem(mqttPublishStorageKey));
         localData = localData === undefined || localData === null ? [] : localData;
-        dashboardData.devices.forEach((ele, ind) => {
-            localData.push({
-                deviceId: ele.deviceKey,
-                power: "On",
-                topic: window.iotGlobal.apiKey
+        if (deviceKey === undefined || deviceKey === null) {
+            dashboardData.devices.forEach((ele, ind) => {
+                localData.push({
+                    deviceId: ele.deviceKey,
+                    action: "setPowerState",
+                    topic: window.iotGlobal.apiKey,
+                    value: value
+
+                });
             });
-        });
+        }
+        else
+        {
+            localData.push({
+                deviceId: deviceKey,
+                action: "setPowerState",
+                topic: window.iotGlobal.apiKey,
+                value: value
+
+            });
+        }
         localStorage.setItem(mqttPublishStorageKey, JSON.stringify(localData));
-        dashboardData.offDevices=0;
-        dashboardData.onDevices=dashboardData.totalDevices;
-        setDashboardData(dashboardData);
+        dashboardData.offDevices = 0;
+        dashboardData.onDevices = dashboardData.totalDevices;
+        //setDashboardData(dashboardData);
     };
+
+
     return (
         <div className="page-container">
             {!isAuthenticated && (<Redirect to="/"></Redirect>)}
@@ -115,8 +132,8 @@ export default function Dashboard() {
                             <p className="card-text text-center">  <span className="device-count">{dashboardData.onDevices}</span> Out of <span className="device-count">{dashboardData.totalDevices}</span></p>
                         </div>
                         <div className="card-footer">
-                            <button className="btn btn-success btn-sm" onClick={e => { handleTurnOnAllDevice() }}>Turn On All</button>
-                            <button className="btn btn-danger  btn-sm" style={{ marginLeft: 10 + 'px' }}>Turn Off All</button>
+                            <button className="btn btn-success btn-sm" onClick={e => { handleTurnOnOffDevice("ON") }}>Turn On All</button>
+                            <button className="btn btn-danger  btn-sm" onClick={e => { handleTurnOnOffDevice("OFF") }} style={{ marginLeft: 10 + 'px' }}>Turn Off All</button>
                         </div>
                     </div>
                 </div>
@@ -156,9 +173,8 @@ export default function Dashboard() {
                                                                 </ol>
                                                             </div>
                                                             <div className="card-footer">
-                                                                <button className="btn btn-primary btn-sm">Turn On</button>
-                                                                <button className="btn btn-default  btn-sm" style={{ marginLeft: 10 + 'px' }}>Turn Off</button>
-                                                                <button className="btn btn-default  btn-sm" style={{ marginLeft: 10 + 'px' }}>Trigger</button>
+                                                                <button className="btn btn-primary btn-sm" onClick={e=>handleTurnOnOffDevice("ON",device.deviceKey)}>Turn On</button>
+                                                                <button className="btn btn-default  btn-sm" onClick={e=>handleTurnOnOffDevice("OFF",device.deviceKey)} style={{ marginLeft: 10 + 'px' }}>Turn Off</button>
                                                             </div>
                                                         </div>
                                                     </div>
