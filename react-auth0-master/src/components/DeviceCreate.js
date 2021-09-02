@@ -4,6 +4,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Api } from "../Configurations/Api";
 import { toast } from 'react-toastify';
 import Loader from "../components/Loader";
+import {common  } from "../Configurations/common";
 export default function DeviceCreate() {
     toast.configure();
     const { user } = useAuth0();
@@ -13,34 +14,14 @@ export default function DeviceCreate() {
     const [deviceTypeData, setDeviceTypeData] = useState([]);
     const [roomData, setRoomData] = useState([]);
     const [isDeviceCreated, setIsDeviceCreated] = useState(false);
-    function queryParam(params) {
-        debugger;
-        console.log(params);
-        if (params === undefined || params==="" || params===null) {
-            return {};
-        }
-        params = "{\"" +
-            params
-                .replace(/\?/gi, "")
-                .replace(/&/gi, "\",\"")
-                .replace(/=/gi, "\":\"") +
-            "\"}";
-
-        params = JSON.parse(params);
-        return params
-    }
+    
     const [device, setDevice] = useState({
-        "UserKey": user.sub.split("|")[1],
-        "DeviceName": '',
-        "DeviceDesc": '',
-        "DeviceTypeId": '',
-        "RoomId": 0
+        "UserKey": user.sub.split("|")[1]
     });
     useEffect(() => {
-        let deviceKey = queryParam(window.location.search)?.id;
+        let deviceKey = common.queryParam(window.location.search)?.id;
         deviceKey = deviceKey === undefined || deviceKey === null ? '' : deviceKey;
         async function getRoomData() {
-            debugger;
             setLoadingData(true);
             let [deviceTypeResponse, roomResponse] = await Promise.all([
                 Api.Get(apiUrlData.deviceController.getDeviceTypeDropdown),

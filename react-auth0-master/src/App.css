@@ -27,6 +27,12 @@
 {
   background-color: var(--theme-color);
 }
+.form-control
+{
+  padding: 5px 9px;
+    font-size: 13px;
+    font-weight: lighter;
+}
 .view-container-small
 {
   margin-left: var(--left-menu-sm-margin) !important;

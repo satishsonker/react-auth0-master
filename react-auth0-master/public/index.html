@@ -54,32 +54,22 @@
       // called when the client connects
       function onConnect() {
         // Once a connection has been made, make a subscription and send a message.
-        console.log("onConnect");
-        console.log(window.iotGlobal);
+        console.log('Connected From MQTT')
         client.subscribe(_topic[0]);
         client.subscribe(_topic[1]);
         setInterval(function () {
-          // /debugger;
-
           let localData = JSON.parse(localStorage.getItem('mqttdevicedataPub'));
           localData = localData === undefined || localData === null ? [] : localData;
-          while (localData.length > 0) {
+          while (localData.length > 0) {            
+          debugger;
             let pubData = localData.pop();
             let topic=pubData.topic;
             pubData.topic='';
+            if(topic!==undefined && topic!==null && topic!=="")
             client.send(topic, JSON.stringify(pubData));
           }
           localStorage.setItem('mqttdevicedataPub',JSON.stringify([]));
         }, 5000);
-        //var message = new Paho.MQTT.Message("Hello");
-        //message.destinationName = _topic[0];
-        //for (var i = 0; i <= 30; i++) {
-
-        //setTimeout(function () { c
-        //client.send(_topic[0], "test:" + Math.random() * 50);
-        //}, 4000 * i);
-
-        //}
       }
 
       // called when the client loses its connection
@@ -93,29 +83,30 @@
       function onMessageArrived(message) {
         console.log("onMessageArrived:" + message.payloadString);
         var data;
-        //console.log("Message Arrived: " + message.payloadString);
-        // console.log("Topic: " + message.destinationName);
-        //console.log("QoS: " + message.qos);
-        //console.log("Retained:  " + message.retained);
-        // Read Only, set if message might be a duplicate sent from broker
-        //console.log("Duplicate: " + message.duplicate);
         try {
-          data = JSON.parse(message.payloadString.replace(/'/g, '"'));
+          data = JSON.parse(message.payloadString.replace(/'/g, '"').replace(',]',']'));
           let existedDevices = [];
           data['timeStamp'] = new Date();
-          var oldData = JSON.parse(localStorage.getItem('mqttdevicedataSub'));
-          oldData = data === undefined || data === null ? [] : oldData;
-          oldData = oldData.filter((ele, ind) => {
-            if (existedDevices.indexOf(ele.deviceId) === -1) {
-              existedDevices.push(ele.deviceId);
-              if (ele.deviceId === data.deviceId) {
-                return data
-              }
-              return ele;
-            }
-          });
+          var oldData =message.destinationName.indexOf('server')===-1? JSON.parse(localStorage.getItem('mqttdevicedataSub')):JSON.parse(localStorage.getItem('mqttdevicedataSubServer'));
+          oldData = oldData === undefined || oldData === null ? [] : oldData;
+          // oldData = oldData.filter((ele, ind) => {
+          //   if (existedDevices.indexOf(ele.deviceId) === -1) {
+          //     existedDevices.push(ele.deviceId);
+          //     if (ele.deviceId === data.deviceId) {
+          //       return data
+          //     }
+          //     return ele;
+          //   }
+          // });
+          if(data !== undefined || data !== null )
+          {
+            data["timeStamp"]=new Date();
           oldData.push(data)
+          if(message.destinationName.indexOf('server')===-1)
           localStorage.setItem('mqttdevicedataSub', JSON.stringify(oldData));
+          else
+          localStorage.setItem('mqttdevicedataSubServer', JSON.stringify(oldData));
+          }
 
         } catch (error) {
           //localStorage.setItem('mqttdevicedata', JSON.stringify([]));

@@ -3,48 +3,54 @@ import Loader from './Loader';
 import '../css/dashboard.css';
 import { Link, Redirect } from "react-router-dom";
 import { Api } from "../Configurations/Api";
+import { common } from "../Configurations/common";
 import { useAuth0 } from "@auth0/auth0-react";
 
 export default function Dashboard() {
-    const mqttSubscribeStorageKey = process.env.REACT_APP_MQTT_SUBSCRIBE_LOCAL_STORAGE_KEY;
-    const mqttPublishStorageKey = process.env.REACT_APP_MQTT_PUBLISH_LOCAL_STORAGE_KEY;
+    //const mqttSubscribeStorageKey = process.env.REACT_APP_MQTT_SUBSCRIBE_LOCAL_STORAGE_KEY;
     const { user, isAuthenticated } = useAuth0();
     const apiUrlData = require('../Configurations/apiUrl.json');
 
-    const [dashboardData, setDashboardData] = useState({
-        onDevices: 0,
-        totalDevices: 0,
-        offDevices: 0,
-        rooms: [],
-        devices:[]
-    });
-    // setInterval(() => {
-    //     let data = JSON.parse(localStorage.getItem(mqttSubscribeStorageKey));
-    //     data = data === undefined || data === null ? [] : data;
-    //     dashboardData.onDevices = 0;
-    //     data.forEach((ele, ind) => {
-    //         if (new Date() - new Date(ele.timeStamp) < 120000) {
-    //             dashboardData.rooms.forEach((roomCol, roomColInd) => {
-    //                 if (roomCol.length > 0) {
-    //                     roomCol.forEach((roomEle, roomInd) => {
-    //                         if (roomEle.deviceKey === ele.deviceId) {
-    //                             roomEle["wifi"] = ele.wifi;
-    //                             roomEle["ip"] = ele.ip;
-    //                             roomEle["status"] = ele.status;
-    //                             if (ele.status.toLowerCase() === 'on') {
-    //                                 dashboardData.onDevices = dashboardData.onDevices + 1;
-    //                                 dashboardData.offDevices = dashboardData.totalDevices - dashboardData.onDevices;
-    //                             }
-    //                         }
-    //                     });
-    //                 }
-    //             });
-    //         }
-    //         // return ele;
-    //     });
-    //     dashboardData.offDevices = dashboardData.onDevices === 0 ? dashboardData.totalDevices : dashboardData.offDevices;
-    //     setDashboardData(dashboardData);
-    // }, 30000);
+    const [dashboardData, setDashboardData] = useState();
+    setInterval(() => {
+        let data =common.getStoreSubServerData();
+        data = data === undefined || data === null ? [] : data;
+        if (data.length > 0 && dashboardData?.rooms.length > 0) {
+            dashboardData.onDevices = 0;
+            dashboardData.offDevices = dashboardData.totalDevices;
+            data.forEach((ele, ind) => {
+                if (new Date() - new Date(ele.timeStamp) < 120000) {
+                    dashboardData.rooms.forEach((roomCol, roomColInd) => {
+                        if (roomCol.length > 0) {
+                            roomCol.forEach((roomEle, roomInd) => {
+
+                                if (ele.devices?.indexOf(roomEle.deviceKey) > -1) {
+                                    debugger;
+                                    dashboardData.onDevices += 1;
+                                    dashboardData.offDevices = dashboardData.totalDevices - dashboardData.onDevices;
+                                    roomEle["wifi"] = ele.wifi;
+                                    roomEle["ip"] = ele.ip;
+                                    roomEle["lastConnected"] = common.getDateTime(ele.timeStamp);
+                                    if (ele.status !== "" || !common.hasValue(roomEle["status"]))
+                                        roomEle["status"] = ele.status;
+                                    if (ele.status.toLowerCase() === 'on') {
+                                        dashboardData.onDevices = dashboardData.onDevices + 1;
+                                        dashboardData.offDevices = dashboardData.totalDevices - dashboardData.onDevices;
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+                // return ele;
+            });
+            // dashboardData.offDevices = dashboardData.onDevices === 0 ? dashboardData.totalDevices : dashboardData.offDevices;
+            if (dashboardData.rooms.length > 0) {
+                setDashboardData({ ...dashboardData });
+                common.setStoreSubServerData([]);
+            }
+        }
+    }, 5000);
     const [loadingData, setLoadingData] = useState(true);
     useEffect(() => {
         Api.Post(apiUrlData.userController.addUser, {
@@ -55,7 +61,7 @@ export default function Dashboard() {
             "AuthProvidor": user.sub.split("|")[0],
             "Language": user.locale
         });
-    }, [loadingData, apiUrlData.userController.addUser]);
+    }, [loadingData, apiUrlData.userController.addUser, user.given_name, user.locale, user.family_name, user.email]);
 
     useEffect(() => {
         let _data = {};
@@ -74,8 +80,7 @@ export default function Dashboard() {
                     }));
                 });
                 setDashboardData(_data);
-                setLoadingData(false)
-                console.table(_data);
+                setLoadingData(false);
             })
         }
         if (loadingData) {
@@ -84,7 +89,7 @@ export default function Dashboard() {
     }, [loadingData, apiUrlData.Dashboard.getDashboardData]);
 
     const handleTurnOnOffDevice = (value, deviceKey) => {
-        let localData = JSON.parse(localStorage.getItem(mqttPublishStorageKey));
+        let localData =common.getStorePubData();
         localData = localData === undefined || localData === null ? [] : localData;
         if (deviceKey === undefined || deviceKey === null) {
             dashboardData.devices.forEach((ele, ind) => {
@@ -97,21 +102,23 @@ export default function Dashboard() {
                 });
             });
         }
-        else
-        {
+        else {
             localData.push({
                 deviceId: deviceKey,
                 action: "setPowerState",
                 topic: window.iotGlobal.apiKey,
                 value: value
-
             });
         }
-        localStorage.setItem(mqttPublishStorageKey, JSON.stringify(localData));
+        common.setStorePubData(localData);
         dashboardData.offDevices = 0;
         dashboardData.onDevices = dashboardData.totalDevices;
         //setDashboardData(dashboardData);
     };
+
+    //MqTT Start
+
+    //Mqtt End
 
 
     return (
@@ -129,25 +136,27 @@ export default function Dashboard() {
                     <div className="card text-black mb-3 h-100" >
                         <div className="card-header bg-success bg-gradient ">Online Device(s)</div>
                         <div className="card-body">
-                            <p className="card-text text-center">  <span className="device-count">{dashboardData.onDevices}</span> Out of <span className="device-count">{dashboardData.totalDevices}</span></p>
+                            <p className="card-text text-center">  <span className="device-count">{dashboardData?.onDevices}</span> Out of <span className="device-count">{dashboardData?.totalDevices}</span></p>
                         </div>
-                        <div className="card-footer">
-                            <button className="btn btn-success btn-sm" onClick={e => { handleTurnOnOffDevice("ON") }}>Turn On All</button>
-                            <button className="btn btn-danger  btn-sm" onClick={e => { handleTurnOnOffDevice("OFF") }} style={{ marginLeft: 10 + 'px' }}>Turn Off All</button>
-                        </div>
+                        {
+                            dashboardData?.onDevices === 0 ? '' : <div className="card-footer">
+                                <button className="btn btn-success btn-sm" onClick={e => { handleTurnOnOffDevice("ON") }}>Turn On All</button>
+                                <button className="btn btn-danger  btn-sm" onClick={e => { handleTurnOnOffDevice("OFF") }} style={{ marginLeft: 10 + 'px' }}>Turn Off All</button>
+                            </div>
+                        }
                     </div>
                 </div>
                 <div className="col mb-3">
                     <div className="card text-black mb-3 h-100" >
                         <div className="card-header bg-danger bg-gradient">Offline Device(s)</div>
                         <div className="card-body">
-                            <p className="card-text text-center">  <span className="device-count">{dashboardData.offDevices}</span> Out of <span className="device-count">{dashboardData.totalDevices}</span></p>
+                            <p className="card-text text-center">  <span className="device-count">{dashboardData?.offDevices}</span> Out of <span className="device-count">{dashboardData?.totalDevices}</span></p>
                         </div>
                     </div>
                 </div>
             </div>
             {
-                dashboardData.rooms.map((ele, ind) => {
+                dashboardData?.rooms.map((ele, ind) => {
                     if (ele.length === 0)
                         return <div key={ind + "2"}></div>
                     else
@@ -155,7 +164,7 @@ export default function Dashboard() {
                             <div className="col mb-3">
                                 <div className="card text-black">
                                     <div className="card-header bg-primary bg-gradient">
-                                        <h5 className="card-title">{ele[0].roomName}</h5>
+                                        <h5 className="card-title">{ele[0].roomName + " - " + ele.length + " Device(s)"}</h5>
                                     </div>
                                     <div className="card-body">
                                         <div className="row">
@@ -163,19 +172,23 @@ export default function Dashboard() {
                                                 ele.map((device, index) => {
                                                     return <div key={index} className="col-4">
                                                         <div className="card text-black mb-3 h-100" >
-                                                            <div className="card-header bg-danger">{device.deviceName}</div>
+                                                            <div className={device?.status?.toLowerCase() === 'on' ? 'card-header bg-success' : 'card-header bg-danger'}>{device.deviceName + ' - ' + device?.deviceTypeName}</div>
                                                             <div className="card-body">
                                                                 <ol className="device-desc">
-                                                                    <li key={ind + "1"} title="Device ID"><i className="fas fa-server"></i><span>{device.deviceKey}</span></li>
-                                                                    <li key={ind + "2"} title="SSID"><i className="fas fa-wifi"></i><span>{device?.wifi}</span></li>
-                                                                    <li key={ind + "3"} title="IP Address"><i className="fas fa-network-wired"></i><span>{device?.ip}</span></li>
-                                                                    <li key={ind + "4"} title="Power" ><i className="fas fa-power-off"></i><span>{device?.status}</span></li>
+                                                                    <li key={ind + "1"} title="Device ID"><i className="fas fa-server"></i><span>{device?.deviceKey}</span> <i onClick={e => common.copyToClipboard(device?.deviceKey)} title="Copy device Id" className="fas fa-copy id-copy"></i></li>
+                                                                    <li key={ind + "2"} title="SSID"><i className="fas fa-wifi"></i><span>{!common.hasValue(device?.wifi) ? 'No Connected' : device.wifi}</span></li>
+                                                                    <li key={ind + "3"} title="IP Address"><i className="fas fa-network-wired"></i><span>{!common.hasValue(device?.ip) ? 'No Connected' : device.ip}</span></li>
+                                                                    <li key={ind + "4"} title="Power" className={device?.status?.toLowerCase() === 'on' ? 'text-success' : 'text-danger'}><i className={device?.status?.toLowerCase() === 'on' ? 'text-success fas fa-power-off' : 'text-danger fas fa-power-off'}></i><span>{!common.hasValue(device?.status) ? 'No Connected' : device.status}</span></li>
+                                                                    <li key={ind + "6"} title="Device Type"><i className="fas fa-history"></i><span>{!common.hasValue(device?.lastConnected) ? 'No Connected' : device.lastConnected}</span></li>
                                                                 </ol>
                                                             </div>
-                                                            <div className="card-footer">
-                                                                <button className="btn btn-primary btn-sm" onClick={e=>handleTurnOnOffDevice("ON",device.deviceKey)}>Turn On</button>
-                                                                <button className="btn btn-default  btn-sm" onClick={e=>handleTurnOnOffDevice("OFF",device.deviceKey)} style={{ marginLeft: 10 + 'px' }}>Turn Off</button>
-                                                            </div>
+
+                                                            {
+                                                                !common.hasValue(device?.status) ? '' : <div className="card-footer"> {device?.status?.toLowerCase() === 'off' ?
+                                                                    <button className="btn btn-primary btn-sm" onClick={e => handleTurnOnOffDevice("ON", device.deviceKey)}>Turn On</button> :
+                                                                    <button className="btn btn-default  btn-sm" onClick={e => handleTurnOnOffDevice("OFF", device.deviceKey)} style={{ marginLeft: 10 + 'px' }}>Turn Off</button>
+                                                                }</div>}
+
                                                         </div>
                                                     </div>
                                                 })}

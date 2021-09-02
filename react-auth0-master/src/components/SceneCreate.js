@@ -1,50 +1,38 @@
 import React, { useState, useEffect } from 'react'
 import { Link, Redirect } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
 import { Api } from "../Configurations/Api";
 import { toast } from 'react-toastify';
 import Loader from "./Loader";
 import SceneCreateAction from './SceneCreateAction';
+import { common } from "../Configurations/common";
 
 export default function SceneCreate() {
-    debugger;
     toast.configure();
-    const { user } = useAuth0();
-    const sceneTemplate={
+    const sceneTemplate = {
         sceneName: '',
         sceneDesc: '',
-        sceneAction: [{}]
+        sceneActions: [{
+            deviceId:0,
+            action:'',
+            value:''
+        }]
     };
     const apiUrlData = require('../Configurations/apiUrl.json');
     const [isSceneUpdating, setIsSceneUpdating] = useState(false);
     const [isSceneCreated, setIsSceneCreated] = useState(false);
     const [loadingData, setLoadingData] = useState(false);
-    const [deviceData,setDeviceData]=useState([{
-        deviceName:'Test',
-        deviceKey:'AAKDADGJ7648998DKDAK76334',
-        deviceId:0
+    const [deviceData, setDeviceData] = useState([{
+        deviceName: 'Test',
+        deviceKey: 'AAKDADGJ7648998DKDAK76334',
+        deviceId: 0
     }])
     const [scene, setScene] = useState(sceneTemplate);
-    function queryParam(params) {
-        console.log(params);
-        if (params === undefined || params === "" || params === null) {
-            return {};
-        }
-        params = "{\"" +
-            params
-                .replace(/\?/gi, "")
-                .replace(/&/gi, "\",\"")
-                .replace(/=/gi, "\":\"") +
-            "\"}";
-
-        params = JSON.parse(params);
-        return params
-    }
+    
     useEffect(() => {
-        let sceneKey = queryParam(window.location.search)?.scenekey;
-        sceneKey = sceneKey === undefined || sceneKey === null ? '' : sceneKey;
+        let sceneKey = common.queryParam(window.location.search)?.scenekey;
+        sceneKey =!common.hasValue(sceneKey) ? '' : sceneKey;
         async function getDeviceDropdown() {
-            await Api.Get(apiUrlData.deviceController.getDeviceDropdown ).then(res => {
+            await Api.Get(apiUrlData.deviceController.getDeviceDropdown).then(res => {
                 setDeviceData(res.data);
                 setLoadingData(false)
             }).catch(xx => {
@@ -54,7 +42,7 @@ export default function SceneCreate() {
         async function getData() {
             await Api.Get(apiUrlData.sceneController.getScene + '?scenekey=' + sceneKey).then(res => {
                 setScene(res.data);
-                setLoadingData(false)
+                setLoadingData(false);
             }).catch(xx => {
                 toast.error('Something went wrong');
             });
@@ -72,6 +60,7 @@ export default function SceneCreate() {
         setScene({ ...scene, [e.target.name]: e.target.value });
     };
     const handleSubmit = () => {
+        debugger;
         if (scene.sceneName.length < 1) {
             toast.warn("Please enter scene name.");
             return;
@@ -86,6 +75,15 @@ export default function SceneCreate() {
         }).catch(ee => {
             toast.error("Something went wrong !");
         });
+    }
+
+    const handleAdd = (e) => {       
+            scene.sceneActions.push({
+                deviceId: '',
+                action: '',
+                value: ''
+            });
+            setScene({ ...scene });
     }
     return (
         <div className="page-container">
@@ -123,13 +121,12 @@ export default function SceneCreate() {
                                                 <th scope="col">Device</th>
                                                 <th scope="col">Action</th>
                                                 <th scope="col">Value</th>
-                                                <th scope="col">Add/Remove</th>
+                                                <th scope="col"> <i className="fas fa-plus" onClick={e => handleAdd(e)}></i></th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {
-                                                
-                                                scene?.sceneAction.map((ele,ind)=>{                                                    
+                                                scene?.sceneActions?.map((ele, ind) => {
                                                     return <SceneCreateAction key={ind} deviceData={deviceData} rowIndex={ind} setScene={setScene} sceneData={scene}></SceneCreateAction>
                                                 })
                                             }

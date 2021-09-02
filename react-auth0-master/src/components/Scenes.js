@@ -3,18 +3,56 @@ import { Link } from "react-router-dom";
 import { Api } from "../Configurations/Api";
 import { toast } from 'react-toastify';
 import Loader from './Loader';
+import { common } from '../Configurations/common';
 
 export default function Scenes() {
     const [sceneData, setSceneData] = useState([]);
     const [loadingData, setLoadingData] = useState(true);
     const [searchTerm, setsearchTerm] = useState("All");
     const apiUrlData = require('../Configurations/apiUrl.json');
-        
-    const handleDelete=(e)=>
-    {
-        var val=e.target.value?e.target.value:e.target.dataset.scenekey;
+    const handleTestScene = (sceneKey) => {
+        Api.Get(apiUrlData.sceneController.getScene + "?scenekey=" + sceneKey).then(res => {
+            debugger;
+            let data = res.data;
+            if (data) {
+                let pubData = common.getStorePubData();
+                pubData = !common.hasValue(pubData) ? [] : pubData;
+               
+                data.sceneActions.forEach(element => {
+                    var newObj={
+                        deviceId: '',
+                        action: '',
+                        topic: window.iotGlobal.apiKey,
+                        value: ''
+                    };
+                    newObj.deviceId=element.device.deviceKey;
+                    switch (element.action.toLowerCase()) {
+                        case 'turnon':
+                           newObj.value = 'ON';
+                           newObj.action = 'setPowerState';
+                            break;
+                        case 'turnon':
+                            newObj.value = 'OFF';
+                            newObj.action = 'setPowerState';
+                            break;
+                        case 'brigthness':
+                            newObj.action = 'setBrightness';
+                        case 'color':
+                            newObj.action = 'setColor';
+                            break;
+                        default:
+                            break;
+                    }
+                    pubData.push({...newObj});                    
+                });
+                common.setStorePubData(pubData);
+            }
+        });
+    }
+    const handleDelete = (e) => {
+        var val = e.target.value ? e.target.value : e.target.dataset.scenekey;
         setLoadingData(true);
-        Api.Delete(apiUrlData.sceneController.deleteScene+'?scenekey='+val).then(res => {          
+        Api.Delete(apiUrlData.sceneController.deleteScene + '?scenekey=' + val).then(res => {
             setLoadingData(false);
             setsearchTerm("All");
             handleSerach();
@@ -23,7 +61,7 @@ export default function Scenes() {
     }
     const handleSerach = (e) => {
         debugger;
-        if (searchTerm !=="All" && (searchTerm === "" || searchTerm.length<3)) {
+        if (searchTerm !== "All" && (searchTerm === "" || searchTerm.length < 3)) {
             toast.warn("Please enter 3 char to search.");
             return;
         }
@@ -37,83 +75,83 @@ export default function Scenes() {
         async function getData() {
             await Api.Get(apiUrlData.sceneController.getAllScene).then(res => {
                 setSceneData(res.data);
-                setLoadingData(false)
-            }).catch(xx=>{
+                setLoadingData(false);
+            }).catch(xx => {
                 toast.error('Something went wrong');
             })
         }
         if (loadingData) {
             getData();
         }
-    }, [loadingData,apiUrlData.sceneController.getAllScene]);
+    }, [loadingData, apiUrlData.sceneController.getAllScene]);
 
     return (
         <div className="page-container">
-        {
-            loadingData && <Loader></Loader>
-        }
-        <nav aria-label="breadcrumb">
-            <ol className="breadcrumb">
-                <li className="breadcrumb-item"><Link to="/Dashboard">Home</Link></li>
-                <li className="breadcrumb-item active" aria-current="page">Scenes</li>
-            </ol>
-        </nav>
+            {
+                loadingData && <Loader></Loader>
+            }
+            <nav aria-label="breadcrumb">
+                <ol className="breadcrumb">
+                    <li className="breadcrumb-item"><Link to="/Dashboard">Home</Link></li>
+                    <li className="breadcrumb-item active" aria-current="page">Scenes</li>
+                </ol>
+            </nav>
 
-        <div className="d-flex justify-content-between bd-highlight mb-3">
-            <div className="p-2 bd-highlight">
-                <div className="btn-group" role="group" aria-label="Basic example">
-                    <Link to="/SceneCreate"><div className="btn btn-sm btn-outline-primary"><i className="fa fa-plus"></i> Add</div></Link>
-                    <button type="button" className="btn btn-sm btn-outline-primary"><i className="fa fa-sync-alt"></i></button>
+            <div className="d-flex justify-content-between bd-highlight mb-3">
+                <div className="p-2 bd-highlight">
+                    <div className="btn-group" role="group" aria-label="Basic example">
+                        <Link to="/SceneCreate"><div className="btn btn-sm btn-outline-primary"><i className="fa fa-plus"></i> Add</div></Link>
+                        <button type="button" className="btn btn-sm btn-outline-primary"><i className="fa fa-sync-alt"></i></button>
+                    </div>
+                </div>
+                <div className="p-2 "><p className="h5">Scenes</p></div>
+                <div className="p-2 bd-highlight">
+                    <div className="input-group mb-3">
+                        <input type="text" value={searchTerm} onChange={e => setsearchTerm(e.target.value)} className="form-control form-control-sm" placeholder="Search Room" aria-label="Search Devices" aria-describedby="button-addon2" />
+                        <button className="btn btn-outline-secondary" type="button" id="button-addon2" onClick={handleSerach}><i className="fa fa-search"></i></button>
+                    </div>
                 </div>
             </div>
-            <div className="p-2 "><p className="h5">Scenes</p></div>
-            <div className="p-2 bd-highlight">
-                <div className="input-group mb-3">
-                    <input type="text" value={searchTerm} onChange={e => setsearchTerm(e.target.value)} className="form-control form-control-sm" placeholder="Search Room" aria-label="Search Devices" aria-describedby="button-addon2" />
-                    <button className="btn btn-outline-secondary" type="button" id="button-addon2" onClick={handleSerach}><i className="fa fa-search"></i></button>
-                </div>
-            </div>
-        </div>
-        <div className="table-responsive">
-            <table className="table">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Scene</th>
-                        <th scope="col">Description</th>
-                        <th scope="col">Test Scene</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {sceneData && sceneData.length===0 && (
+            <div className="table-responsive">
+                <table className="table">
+                    <thead>
                         <tr>
-                        <td  className="text-center" colSpan="5">No Data Found</td>
+                            <th scope="col">#</th>
+                            <th scope="col">Scene</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Test Scene</th>
+                            <th scope="col">Action</th>
                         </tr>
-                    )
-                    }
-                    {
-                        sceneData && (sceneData.map((ele, ind) => {
-                            return (
-                                <tr key={ele.roomId}>
-                                    <td >{ind + 1}</td>
-                                    <td>{ele.sceneName}</td>
-                                    <td>{ele.sceneDesc}</td>
-                                    <td> <button type="button" value={ele.sceneKey}  className="btn btn-sm btn-outline-primary"><i data-scenekey={ele.sceneKey} className="fa fa-trash"></i>Test Scene</button></td>
-                                    <td>
-                                        <div className="btn-group" role="group" aria-label="Basic example">
-                                            <Link to={"/SceneCreate?scenekey="+ele.sceneKey}><div className="btn btn-sm btn-outline-success"><i className="fas fa-pencil-alt" aria-hidden="true"></i></div></Link>
-                                            <button type="button" value={ele.sceneKey} onClick={e=>handleDelete(e)} className="btn btn-sm btn-outline-danger"><i data-scenekey={ele.sceneKey} className="fa fa-trash"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            )
-                        }))
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {sceneData && sceneData.length === 0 && (
+                            <tr>
+                                <td className="text-center" colSpan="5">No Data Found</td>
+                            </tr>
+                        )
+                        }
+                        {
+                            sceneData && (sceneData.map((ele, ind) => {
+                                return (
+                                    <tr key={ele.sceneId}>
+                                        <td >{ind + 1}</td>
+                                        <td>{ele.sceneName}</td>
+                                        <td>{ele.sceneDesc}</td>
+                                        <td> <button type="button" onClick={e => handleTestScene(ele.sceneKey)} className="btn btn-sm btn-outline-primary"><i data-scenekey={ele.sceneKey} className="fa fa-check"></i> Test Scene</button></td>
+                                        <td>
+                                            <div className="btn-group" role="group" aria-label="Basic example">
+                                                <Link to={"/SceneCreate?scenekey=" + ele.sceneKey}><div className="btn btn-sm btn-outline-success"><i className="fas fa-pencil-alt" aria-hidden="true"></i></div></Link>
+                                                <button type="button" value={ele.sceneKey} onClick={e => handleDelete(e)} className="btn btn-sm btn-outline-danger"><i data-scenekey={ele.sceneKey} className="fa fa-trash"></i></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                )
+                            }))
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
 
     )
 }
