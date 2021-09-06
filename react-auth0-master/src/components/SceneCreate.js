@@ -12,32 +12,55 @@ export default function SceneCreate() {
         sceneName: '',
         sceneDesc: '',
         sceneActions: [{
-            deviceId:0,
-            action:'',
-            value:''
+            deviceId: 0,
+            action: '',
+            value: ''
         }]
     };
     const apiUrlData = require('../Configurations/apiUrl.json');
     const [isSceneUpdating, setIsSceneUpdating] = useState(false);
     const [isSceneCreated, setIsSceneCreated] = useState(false);
     const [loadingData, setLoadingData] = useState(false);
+    const [deviceTypeActionData, setDeviceTypeActionData] = useState([]);
     const [deviceData, setDeviceData] = useState([{
         deviceName: 'Test',
         deviceKey: 'AAKDADGJ7648998DKDAK76334',
         deviceId: 0
     }])
     const [scene, setScene] = useState(sceneTemplate);
-    
+
     useEffect(() => {
         let sceneKey = common.queryParam(window.location.search)?.scenekey;
-        sceneKey =!common.hasValue(sceneKey) ? '' : sceneKey;
+        sceneKey = !common.hasValue(sceneKey) ? '' : sceneKey;
         async function getDeviceDropdown() {
-            await Api.Get(apiUrlData.deviceController.getDeviceDropdown).then(res => {
-                setDeviceData(res.data);
+            debugger
+            let promises = [];
+            promises.push(Api.Get(apiUrlData.deviceController.getDeviceDropdown));
+            promises.push(Api.Get(apiUrlData.deviceController.getDeviceTypeAction));
+            Api.MultiCall(promises).then(res => {
+               if(res.length>0)
+               {
+                setDeviceData(res[0].data);
+                let filteredDeviceData={};
+                res[1].data.filter((ele)=>{
+                    filteredDeviceData[ele.deviceTypeName]=[];
+                        ele.deviceActions.filter((eleInner)=>{
+                            filteredDeviceData[ele.deviceTypeName].push({
+                                deviceActionName:  eleInner.deviceActionName,
+                                deviceActionNameBackEnd:eleInner.deviceActionNameBackEnd,
+                                deviceActionValue:eleInner.deviceActionValue
+                            });
+                        });
+                })
+                setDeviceTypeActionData(filteredDeviceData);
                 setLoadingData(false)
-            }).catch(xx => {
-                toast.error('Something went wrong');
-            })
+               }
+            });
+            //     await Api.Get(apiUrlData.deviceController.getDeviceDropdown).then(res => {
+            //       
+            //     }).catch(xx => {
+            //         toast.error('Something went wrong');
+            //     })
         }
         async function getData() {
             await Api.Get(apiUrlData.sceneController.getScene + '?scenekey=' + sceneKey).then(res => {
@@ -69,6 +92,22 @@ export default function SceneCreate() {
             toast.warn("Scene name should be min 3 char.");
             return;
         }
+        if (scene.sceneActions) {
+            let isValid = true;
+            debugger;
+            scene.sceneActions.forEach((element, ind) => {
+                if (isNaN(element.deviceId)) {
+                    toast.warn("Please select the device in row number " + (ind + 1));
+                    isValid = false;
+                }
+                if (element.action === "") {
+                    toast.warn("Please select the action in row number " + (ind + 1));
+                    isValid = false;
+                }
+            });
+            if (!isValid)
+                return;
+        }
         Api.Post(!isSceneUpdating ? apiUrlData.sceneController.addScene : apiUrlData.sceneController.updateScene, scene).then(res => {
             toast.success(!isSceneUpdating ? "Scene is created" : "Scene is updated");
             setIsSceneCreated(true);
@@ -77,13 +116,13 @@ export default function SceneCreate() {
         });
     }
 
-    const handleAdd = (e) => {       
-            scene.sceneActions.push({
-                deviceId: '',
-                action: '',
-                value: ''
-            });
-            setScene({ ...scene });
+    const handleAdd = (e) => {
+        scene.sceneActions.push({
+            deviceId: '',
+            action: '',
+            value: ''
+        });
+        setScene({ ...scene });
     }
     return (
         <div className="page-container">
@@ -127,7 +166,7 @@ export default function SceneCreate() {
                                         <tbody>
                                             {
                                                 scene?.sceneActions?.map((ele, ind) => {
-                                                    return <SceneCreateAction key={ind} deviceData={deviceData} rowIndex={ind} setScene={setScene} sceneData={scene}></SceneCreateAction>
+                                                    return <SceneCreateAction key={ind} deviceData={deviceData} rowIndex={ind} setScene={setScene} sceneData={scene} deviceActionData={deviceTypeActionData}></SceneCreateAction>
                                                 })
                                             }
                                         </tbody>

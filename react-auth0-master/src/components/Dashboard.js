@@ -52,21 +52,11 @@ export default function Dashboard() {
         }
     }, 5000);
     const [loadingData, setLoadingData] = useState(true);
-    useEffect(() => {
-        Api.Post(apiUrlData.userController.addUser, {
-            "Firstname": user.given_name,
-            "Lastname": user.family_name,
-            "Email": user.email,
-            "UserKey": user.sub.split("|")[1],
-            "AuthProvidor": user.sub.split("|")[0],
-            "Language": user.locale
-        });
-    }, [loadingData, apiUrlData.userController.addUser, user.given_name, user.locale, user.family_name, user.email]);
-
+    
     useEffect(() => {
         let _data = {};
         async function getDashboardData() {
-            await Api.Get(apiUrlData.Dashboard.getDashboardData).then(res => {
+            await Api.Get(apiUrlData.dashboardController.getDashboardData).then(res => {
                 let resData = res.data;
                 _data["onDevices"] = 0;
                 _data['devices'] = resData.devices;
@@ -86,7 +76,7 @@ export default function Dashboard() {
         if (loadingData) {
             getDashboardData();
         }
-    }, [loadingData, apiUrlData.Dashboard.getDashboardData]);
+    }, [loadingData, apiUrlData.dashboardController.getDashboardData]);
 
     const handleTurnOnOffDevice = (value, deviceKey) => {
         let localData =common.getStorePubData();

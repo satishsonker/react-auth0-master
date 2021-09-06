@@ -1,4 +1,5 @@
 {
+    "userLocation":"https://geoip-db.com/json/",
     "userController": {
         "addUser": "/user/addUser",
         "getApiKey": "/user/GetAPIKey",
@@ -13,7 +14,7 @@
         "searchRoom": "/room/searchRoom",
         "deleteRoom": "/room/deleteRoom",
         "updateRoom": "/room/updateRoom",
-        "getRoomDropdown":"/room/getRoomDropdown"
+        "getRoomDropdown": "/room/getRoomDropdown"
     },
     "deviceController": {
         "addDevice": "/device/addDevice",
@@ -21,8 +22,9 @@
         "getAllDevice": "/device/getAllDevice",
         "searchDevice": "/device/searchDevice",
         "deleteDevice": "/device/deleteDevice",
-        "getDeviceDropdown":"/device/getDeviceDropdown",
-        "getDeviceTypeDropdown":"/device/getDeviceTypeDropdown"
+        "getDeviceDropdown": "/device/getDeviceDropdown",
+        "getDeviceTypeDropdown": "/device/GetDeviceTypeDropdown",
+        "getDeviceTypeAction": "/device/GetDeviceTypeAction"
     },
     "sceneController": {
         "addScene": "/scene/addScene",
@@ -32,7 +34,11 @@
         "searchScene": "/scene/searchScene",
         "deleteScene": "/scene/deleteScene"
     },
-"Dashboard":{
-    "getDashboardData":"/dashboard/getDashboardData"
-}
+    "dashboardController": {
+        "getDashboardData": "/dashboard/getDashboardData"
+    },
+    "activityLogController": {
+        "add": "/activityLog/add",
+        "getAll": "/activityLog/getAll"
+    }
 }

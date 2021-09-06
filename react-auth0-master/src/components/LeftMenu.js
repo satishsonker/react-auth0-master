@@ -19,7 +19,7 @@ export default function LeftMenu({setIsMenuCollapsed}) {
                 <Link title="Room" to="/Rooms"><li className="item"><i className="fa fa-clone"></i> {!isCollapsed && ('Rooms')} </li></Link>
                 <Link  title="Scenes"to="/Scenes"><li className="item"><i className="far fa-play-circle"></i> {!isCollapsed && ('Scenes')} </li></Link>
                 <Link title="Schedule" to="/"><li className="item"><i className="fa fa-calendar"></i> {!isCollapsed && ('Schedules')} </li></Link>
-                <Link  title="Activity Log"to="/"><li className="item"><i className="fa fa-history"></i> {!isCollapsed && ('Activity Log')} </li></Link>
+                <Link  title="Activity Log"to="/activitylog"><li className="item"><i className="fa fa-history"></i> {!isCollapsed && ('Activity Log')} </li></Link>
                 {/* <Link to="/"><li className="item"><i className="fa fa-flash"></i> {!isCollapsed && ('Energy Estimates')} </li></Link> */}
                 <Link title="Account" to="/Account"><li className="item"><i className="fas fa-user-circle"></i> {!isCollapsed && ('Account')} </li></Link>
                 {/* <Link to="/"><li className="item"><i className="fa fa-usd"></i> {!isCollapsed && ('Subscription')} </li></Link> */}

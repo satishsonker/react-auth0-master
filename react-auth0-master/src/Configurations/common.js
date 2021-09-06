@@ -51,6 +51,10 @@ export const common = {
     },
     setStoreSubServerData: (data) => {
         localStorage.setItem(mqttSubscribeServerStorageKey, JSON.stringify(data));
+    },
+    getAppName:()=>
+    {
+        return process.env.REACT_APP_APP_NAME
     }
 }
 
