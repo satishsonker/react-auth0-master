@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import { useAuth0 } from '@auth0/auth0-react';
 import LandingPage from './components/LandingPage'
@@ -24,10 +24,14 @@ import SceneCreate from './components/SceneCreate';
 import ActivityLog from './components/ActivityLog';
 import { Api } from "../src/Configurations/Api";
 import { common } from "../src/Configurations/common";
+import DeviceType from './components/Admin/DeviceType';
+import DeviceTypeCreate from './components/Admin/DeviceTypeCreate';
+import DeviceAction from './components/Admin/DeviceAction';
+import DeviceActionCreate from './components/Admin/DeviceActionCreate';
 toast.configure();
-function App() {  
+function App() {
   const apiUrlData = require('../src/Configurations/apiUrl.json');
- const [isMenuCollapsed,setIsMenuCollapsed]=useState(false);
+  const [isMenuCollapsed, setIsMenuCollapsed] = useState(false);
   const { isLoading, isAuthenticated, user } = useAuth0();
   if (isAuthenticated && user) {
     window.iotGlobal = {};
@@ -35,28 +39,27 @@ function App() {
   }
   useEffect(() => {
     if (isAuthenticated && user) {
-    Api.Post(apiUrlData.userController.addUser, {
+      Api.Post(apiUrlData.userController.addUser, {
         "Firstname": user?.given_name,
         "Lastname": user?.family_name,
         "Email": user?.email,
         "UserKey": user?.sub.split("|")[1],
         "AuthProvidor": user?.sub.split("|")[0],
         "Language": user?.locale
-    });
-    Api.Get(apiUrlData.userLocation,false).then(res=>{
-      var locData=res.data;
-      debugger;
-      if(window?.iotGlobal?.userKey!==undefined)
-      Api.Post(apiUrlData.activityLogController.add,{
-        ipAddress:locData.IPv4,
-        location:locData?.city+'-'+locData.country_name+"("+ locData.country_code+")",
-        appName:common.getAppName(),
-        activity:'Login'
       })
-    });
-  }
-    
-}, [apiUrlData.userController.addUser, user?.given_name, user?.locale, user?.family_name, user?.email]);
+      Api.Get(apiUrlData.userLocation, false).then(res => {
+        var locData = res.data;
+        if (window?.iotGlobal?.userKey !== undefined)
+          Api.Post(apiUrlData.activityLogController.add, {
+            ipAddress: locData.IPv4,
+            location: locData?.city + '-' + locData.country_name + "(" + locData.country_code + ")",
+            appName: common.getAppName(),
+            activity: 'Login'
+          })
+      });
+    }
+
+  });
 
 
   if (!isAuthenticated) {
@@ -70,7 +73,7 @@ function App() {
           <Router>
             <Header />
             <LeftMenu setIsMenuCollapsed={setIsMenuCollapsed} />
-            <div className={!isMenuCollapsed?'view-container':'view-container view-container-small'}>
+            <div className={!isMenuCollapsed ? 'view-container' : 'view-container view-container-small'}>
               <Switch>
                 <Route exact path="/Dashboard" render={() => {
                   return (
@@ -107,17 +110,17 @@ function App() {
                     <div><Developers></Developers></div>
                   );
                 }}></Route>
-                  <Route exact path="/Account" render={() => {
+                <Route exact path="/Account" render={() => {
                   return (
                     <div><Account></Account></div>
                   );
                 }}></Route>
-                 <Route exact path="/Scenes" render={() => {
+                <Route exact path="/Scenes" render={() => {
                   return (
                     <div><Scenes></Scenes></div>
                   );
                 }}></Route>
-                 <Route exact path="/SceneCreate" render={() => {
+                <Route exact path="/SceneCreate" render={() => {
                   return (
                     <div><SceneCreate></SceneCreate></div>
                   );
@@ -127,10 +130,29 @@ function App() {
                     <div><ActivityLog></ActivityLog></div>
                   );
                 }}></Route>
+                 <Route exact path="/admin/deviceType" render={() => {
+                  return (
+                    <div><DeviceType></DeviceType></div>
+                  );
+                }}></Route>
+                  <Route exact path="/admin/deviceTypeCreate" render={() => {
+                  return (
+                    <div><DeviceTypeCreate></DeviceTypeCreate></div>
+                  );
+                }}></Route>
+                  <Route exact path="/admin/deviceAction" render={() => {
+                  return (
+                    <div><DeviceAction></DeviceAction></div>
+                  );
+                }}></Route>
+                  <Route exact path="/admin/deviceActionCreate" render={() => {
+                  return (
+                    <div><DeviceActionCreate></DeviceActionCreate></div>
+                  );
+                }}></Route>
               </Switch>
             </div>
           </Router>
-
         </div>
       </>
     );

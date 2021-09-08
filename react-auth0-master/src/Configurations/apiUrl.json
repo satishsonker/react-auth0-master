@@ -5,7 +5,8 @@
         "getApiKey": "/user/GetAPIKey",
         "resetApiKey": "/user/ResetAPIKey",
         "getUser": "/user/GetUser",
-        "updateUser": "/user/UpdateUser"
+        "updateUser": "/user/UpdateUser",
+        "getUserPermission": "/user/GetUserPermission"
     },
     "roomController": {
         "addRoom": "/room/addRoom",
@@ -40,5 +41,15 @@
     "activityLogController": {
         "add": "/activityLog/add",
         "getAll": "/activityLog/getAll"
+    },
+    "adminController":{
+        "addDeviceType":"/admin/addDeviceType",
+        "updateDeviceType":"/admin/updateDeviceType",
+        "deleteDeviceType":"/admin/deleteDeviceType",
+        "getDeviceType":"/admin/GetDeviceType",
+        "searchDeviceType":"/admin/SearchDeviceType",
+        "getAllDeviceAction":"/admin/GetAllDeviceAction",
+        "deleteDeviceAction":"/admin/DeleteDeviceAction",
+        "searchDeviceAction":"/admin/SearchDeviceAction"
     }
 }

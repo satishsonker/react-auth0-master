@@ -1,5 +1,8 @@
+import { Api } from "./Api";
+
 const mqttSubscribeServerStorageKey = process.env.REACT_APP_MQTT_SUBSCRIBE_SERVER_LOCAL_STORAGE_KEY;
 const mqttPublishStorageKey = process.env.REACT_APP_MQTT_PUBLISH_LOCAL_STORAGE_KEY;
+const apiUrlData = require('../Configurations/apiUrl.json');
 export const common = {
     getDateTime: (date) => {
         let dateObj;
@@ -55,6 +58,9 @@ export const common = {
     getAppName:()=>
     {
         return process.env.REACT_APP_APP_NAME
+    },
+    getUserRoles:()=>{
+        return Api.Get(apiUrlData.userController.getUserPermission);
     }
 }
 

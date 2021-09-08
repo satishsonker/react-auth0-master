@@ -5,7 +5,6 @@ import { Api } from "../Configurations/Api";
 import { toast } from 'react-toastify';
 import Loader from "./Loader";
 export default function RoomCreate() {
-    toast.configure();
     const { user } = useAuth0();
     const apiUrlData = require('../Configurations/apiUrl.json');
     const [isRoomUpdating, setIsRoomUpdating] = useState(false);

@@ -26,6 +26,8 @@ export default function LeftMenu({setIsMenuCollapsed}) {
                 <Link  title="What's New" to="/"><li className="item"><i className="fas fa-bell"></i> {!isCollapsed && ("What's New")} </li></Link>
                 {/* <Link to="/"><li className="item"><i className="fa fa-expand"></i> {!isCollapsed && ('API Integration')} </li></Link> */}
                 <Link title="Developers" to="/developers"><li className="item"><i className="fas fa-chalkboard-teacher"></i> {!isCollapsed && ('Developers')} </li></Link>
+                <Link title="Device Type" to="/admin/devicetype"><li className="item"><i className="fas fa-chalkboard-teacher"></i> {!isCollapsed && ('Device Type')} </li></Link>
+                <Link title="Device Action" to="/admin/deviceaction"><li className="item"><i className="fas fa-chalkboard-teacher"></i> {!isCollapsed && ('Device Action')} </li></Link>
                 <li  title="Sign out" className="item" onClick={() => logout()}><i className="fas fa-sign-out-alt"></i> {!isCollapsed && ('Sign out')} </li>
             </ul>
             <div className={!isCollapsed?'toggle-button':'toggle-button toggle-button-small'} onClick={e=>{handleCollapsed()}}>

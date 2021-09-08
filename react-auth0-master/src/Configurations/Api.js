@@ -4,7 +4,6 @@ const headers = {
     userkey: window.iotGlobal?.userKey,
     'Access-Control-Allow-Origin': "*"
 }
-
 const apiUrlData = require('./apiUrl.json');
 export const Api = {
     "Post": (url, data) => {
