@@ -46,10 +46,13 @@
         "addDeviceType":"/admin/addDeviceType",
         "updateDeviceType":"/admin/updateDeviceType",
         "deleteDeviceType":"/admin/deleteDeviceType",
-        "getDeviceType":"/admin/GetDeviceType",
+        "getDeviceType":"/admin/GetDeviceType", 
+        "getDeviceAction":"/admin/GetDeviceAction",
         "searchDeviceType":"/admin/SearchDeviceType",
         "getAllDeviceAction":"/admin/GetAllDeviceAction",
         "deleteDeviceAction":"/admin/DeleteDeviceAction",
-        "searchDeviceAction":"/admin/SearchDeviceAction"
+        "searchDeviceAction":"/admin/SearchDeviceAction",
+        "addDeviceAction":"/admin/addDeviceAction",        
+        "updateDeviceAction":"/admin/updateDeviceAction"
     }
 }

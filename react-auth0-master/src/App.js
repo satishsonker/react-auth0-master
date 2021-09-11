@@ -8,7 +8,7 @@ import {
   BrowserRouter as Router,
   Switch, Route
 } from "react-router-dom";
-import Dashboard from './components/Dashboard';
+import Dashboard from './components/Dashboard/Dashboard';
 import Device from './components/Device';
 import Credentials from './components/Credentials';
 import Rooms from './components/Rooms';

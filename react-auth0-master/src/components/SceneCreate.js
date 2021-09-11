@@ -33,7 +33,6 @@ export default function SceneCreate() {
         let sceneKey = common.queryParam(window.location.search)?.scenekey;
         sceneKey = !common.hasValue(sceneKey) ? '' : sceneKey;
         async function getDeviceDropdown() {
-            debugger
             let promises = [];
             promises.push(Api.Get(apiUrlData.deviceController.getDeviceDropdown));
             promises.push(Api.Get(apiUrlData.deviceController.getDeviceTypeAction));

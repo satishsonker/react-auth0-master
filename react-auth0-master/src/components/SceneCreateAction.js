@@ -5,6 +5,10 @@ export default function SceneCreateAction({ deviceData, sceneData, rowIndex, set
     const [filterActionData, setFilterActionData] = useState([]);
     useEffect(() => {
         let disableArray = isDisable;
+        if(sceneData.sceneActions[rowIndex].device && sceneData.sceneActions.length>0)
+        {
+            setFilterActionData(deviceActionData[sceneData.sceneActions[rowIndex].device.deviceType.deviceTypeName]);
+        }
         let d = sceneData?.sceneActions?.forEach((element, ind) => {
             if (disableArray.length - (ind + 1) >= 0) {
                 disableArray.push(true);
@@ -30,11 +34,11 @@ export default function SceneCreateAction({ deviceData, sceneData, rowIndex, set
     const handleChange = (e, type) => {
         debugger;
         if (e.target.name === "deviceId") {
-            setFilterActionData(deviceActionData[e.target.value.split("||")[1]]);
+            var selectedDeviceType = e.target.childNodes[e.target.selectedIndex].getAttribute('data-deviceTypeName');
+            setFilterActionData(deviceActionData[selectedDeviceType]);
         }
-        if(e.target.name==="action")
-        {
-            sceneData.sceneActions[rowIndex].value=e.target.value.split("||")[1];
+        if (e.target.name === "action") { 
+            sceneData.sceneActions[rowIndex].value = e.target.childNodes[e.target.selectedIndex].getAttribute('data-deviceactionvalue');
             setIsDisable(true);
         }
         sceneData.sceneActions[rowIndex][e.target.name] = type === 'int' ? parseInt(e.target.value.split("||")[0]) : e.target.value.split("||")[0];
@@ -48,7 +52,7 @@ export default function SceneCreateAction({ deviceData, sceneData, rowIndex, set
                     <option value="">Select Device</option>
                     {
                         deviceData.map((ele) => {
-                            return <option key={ele.deviceId} value={ele.deviceId + "||" + ele.deviceTypeName}>{ele.deviceName}</option>
+                            return <option key={ele.deviceId} data-devicetypename={ele.deviceTypeName} value={ele.deviceId}>{ele.deviceName}</option>
                         })
                     }
                 </select>
@@ -58,7 +62,7 @@ export default function SceneCreateAction({ deviceData, sceneData, rowIndex, set
                     <option value="">Select Action</option>
                     {
                         filterActionData.map((ele) => {
-                            return <option key={ele.deviceActionValue} value={ele.deviceActionNameBackEnd + '||' + ele.deviceActionValue}>{ele.deviceActionName}</option>
+                            return <option key={ele.deviceActionValue} data-deviceactionvalue={ele.deviceActionValue} value={ele.deviceActionName}>{ele.deviceActionName}</option>
                         })
                     }
                 </select>

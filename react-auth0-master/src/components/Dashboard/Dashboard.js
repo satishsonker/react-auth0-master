@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react'
-import Loader from './Loader';
-import '../css/dashboard.css';
+import Loader from '../Loader';
+import '../../css/dashboard.css';
 import { Link, Redirect } from "react-router-dom";
-import { Api } from "../Configurations/Api";
-import { common } from "../Configurations/common";
+import { Api } from "../../Configurations/Api";
+import { common } from "../../Configurations/common";
 import { useAuth0 } from "@auth0/auth0-react";
+import DeviceCard from './DeviceCard';
 
 export default function Dashboard() {
     //const mqttSubscribeStorageKey = process.env.REACT_APP_MQTT_SUBSCRIBE_LOCAL_STORAGE_KEY;
     const { user, isAuthenticated } = useAuth0();
-    const apiUrlData = require('../Configurations/apiUrl.json');
+    const apiUrlData = require('../../Configurations/apiUrl.json');
 
     const [dashboardData, setDashboardData] = useState();
     setInterval(() => {
-        let data =common.getStoreSubServerData();
+        let data = common.getStoreSubServerData();
         data = data === undefined || data === null ? [] : data;
         if (data.length > 0 && dashboardData?.rooms.length > 0) {
             dashboardData.onDevices = 0;
@@ -25,7 +26,6 @@ export default function Dashboard() {
                             roomCol.forEach((roomEle, roomInd) => {
 
                                 if (ele.devices?.indexOf(roomEle.deviceKey) > -1) {
-                                    debugger;
                                     dashboardData.onDevices += 1;
                                     dashboardData.offDevices = dashboardData.totalDevices - dashboardData.onDevices;
                                     roomEle["wifi"] = ele.wifi;
@@ -52,7 +52,7 @@ export default function Dashboard() {
         }
     }, 5000);
     const [loadingData, setLoadingData] = useState(true);
-    
+
     useEffect(() => {
         let _data = {};
         async function getDashboardData() {
@@ -79,23 +79,27 @@ export default function Dashboard() {
     }, [loadingData, apiUrlData.dashboardController.getDashboardData]);
 
     const handleTurnOnOffDevice = (value, deviceKey) => {
-        let localData =common.getStorePubData();
+        let actionName='';
+        if(value==='ON' || value==='OFF')
+        actionName='setPowerState';
+        else if(value==='PRESS')
+        actionName='setBellState'
+        let localData = common.getStorePubData();
         localData = localData === undefined || localData === null ? [] : localData;
         if (deviceKey === undefined || deviceKey === null) {
             dashboardData.devices.forEach((ele, ind) => {
                 localData.push({
                     deviceId: ele.deviceKey,
-                    action: "setPowerState",
+                    action: actionName,
                     topic: window.iotGlobal.apiKey,
                     value: value
-
                 });
             });
         }
         else {
             localData.push({
                 deviceId: deviceKey,
-                action: "setPowerState",
+                action: actionName,
                 topic: window.iotGlobal.apiKey,
                 value: value
             });
@@ -145,52 +149,41 @@ export default function Dashboard() {
                     </div>
                 </div>
             </div>
-            {
-                dashboardData?.rooms.map((ele, ind) => {
-                    if (ele.length === 0)
-                        return <div key={ind + "2"}></div>
-                    else
-                        return <div key={ind + "1"} className="row">
-                            <div className="col mb-3">
-                                <div className="card text-black">
-                                    <div className="card-header bg-primary bg-gradient">
-                                        <h5 className="card-title">{ele[0].roomName + " - " + ele.length + " Device(s)"}</h5>
-                                    </div>
-                                    <div className="card-body">
-                                        <div className="row">
-                                            {
-                                                ele.map((device, index) => {
-                                                    return <div key={index} className="col-4">
-                                                        <div className="card text-black mb-3 h-100" >
-                                                            <div className={device?.status?.toLowerCase() === 'on' ? 'card-header bg-success' : 'card-header bg-danger'}>{device.deviceName + ' - ' + device?.deviceTypeName}</div>
-                                                            <div className="card-body">
-                                                                <ol className="device-desc">
-                                                                    <li key={ind + "1"} title="Device ID"><i className="fas fa-server"></i><span>{device?.deviceKey}</span> <i onClick={e => common.copyToClipboard(device?.deviceKey)} title="Copy device Id" className="fas fa-copy id-copy"></i></li>
-                                                                    <li key={ind + "2"} title="SSID"><i className="fas fa-wifi"></i><span>{!common.hasValue(device?.wifi) ? 'No Connected' : device.wifi}</span></li>
-                                                                    <li key={ind + "3"} title="IP Address"><i className="fas fa-network-wired"></i><span>{!common.hasValue(device?.ip) ? 'No Connected' : device.ip}</span></li>
-                                                                    <li key={ind + "4"} title="Power" className={device?.status?.toLowerCase() === 'on' ? 'text-success' : 'text-danger'}><i className={device?.status?.toLowerCase() === 'on' ? 'text-success fas fa-power-off' : 'text-danger fas fa-power-off'}></i><span>{!common.hasValue(device?.status) ? 'No Connected' : device.status}</span></li>
-                                                                    <li key={ind + "6"} title="Device Type"><i className="fas fa-history"></i><span>{!common.hasValue(device?.lastConnected) ? 'No Connected' : device.lastConnected}</span></li>
-                                                                </ol>
-                                                            </div>
+            <div className="row">
 
-                                                            {
-                                                                !common.hasValue(device?.status) ? '' : <div className="card-footer"> {device?.status?.toLowerCase() === 'off' ?
-                                                                    <button className="btn btn-primary btn-sm" onClick={e => handleTurnOnOffDevice("ON", device.deviceKey)}>Turn On</button> :
-                                                                    <button className="btn btn-default  btn-sm" onClick={e => handleTurnOnOffDevice("OFF", device.deviceKey)} style={{ marginLeft: 10 + 'px' }}>Turn Off</button>
-                                                                }</div>}
-
-                                                        </div>
-                                                    </div>
-                                                })}
+                <div className="accordion" id="accordionExample">
+                    {
+                        dashboardData?.rooms.map((ele, ind) => {
+                            if (ele.length === 0)
+                                return <div key={ind + "2"}></div>
+                            else {
+                                return <>
+                                    <div className="accordion-item">
+                                        <h2 className="accordion-header" id={"heading" + ind}>
+                                            <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target={"#collapse" + ind} aria-expanded="true" aria-controls={"collapse" + ind}>
+                                                {
+                                                    ele[0].roomName + " - " + ele.length + " Device(s)"
+                                                }
+                                            </button>
+                                        </h2>
+                                        <div id={"collapse" + ind} className={"accordion-collapse collapse" + (ind === 0 ? 'show' : '')} aria-labelledby={"heading" + ind} data-bs-parent="#accordionExample">
+                                            <div className="accordion-body">
+                                                <div className="row">
+                                                    {
+                                                        ele.map((device, index) => {
+                                                            return <DeviceCard deviceData={device} index={index} devicePowerHandler={handleTurnOnOffDevice}></DeviceCard>
+                                                        })
+                                                    }
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                })
-            }
-
-
+                                </>
+                            }
+                        })
+                    }
+                </div>
+            </div>
         </div>
     )
 }

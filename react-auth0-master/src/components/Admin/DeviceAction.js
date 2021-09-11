@@ -19,6 +19,7 @@ export default function DeviceAction() {
         Api.MultiCall(ApiCalls).then(res => {
             debugger;
             setUserRole(res[0].data);
+            window.iotGlobal['userRole']=res[0].data;
             setDeviceActionData(res[1].data);
             setLoadingData(false)
         });
@@ -46,7 +47,7 @@ export default function DeviceAction() {
             setLoadingData(false)
         })
     }
-    if (!userRole?.isAdmin) {
+    if (!userRole?.isAdmin && !loadingData) {
         return (<Unauthorized></Unauthorized>)
     }
     return (
@@ -102,7 +103,7 @@ export default function DeviceAction() {
                                             <td>{ele.deviceType.deviceTypeName}</td>
                                             <td>{ele.deviceActionName}</td>
                                             <td>{ele.deviceActionValue}</td>
-                                            <td><UpdateDeleteButton userRole={userRole} deleteHandler={handleDelete} dataKey={ele.deciveActionId} editUrl="/admin/DeviceActionCreate?deciveActionId="></UpdateDeleteButton>
+                                            <td><UpdateDeleteButton userRole={userRole} deleteHandler={handleDelete} dataKey={ele.deciveActionId} editUrl="/admin/DeviceActionCreate?deviceActionId="></UpdateDeleteButton>
                                             </td>
                                         </tr>
                                     )

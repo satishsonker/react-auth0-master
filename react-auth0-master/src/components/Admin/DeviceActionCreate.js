@@ -4,24 +4,32 @@ import { common } from "../../Configurations/common";
 import { Api } from "../../Configurations/Api";
 import { toast } from 'react-toastify';
 import Loader from "../Loader";
+import Unauthorized from "../CustomView/Unauthorized";
 export default function DeviceActionCreate() {
     const apiUrlData = require('../../Configurations/apiUrl.json');
     const [isDeviceTypeUpdating, setIsDeviceTypeUpdating] = useState(false);
     const [isDeviceTypeCreated, setIsDeviceTypeCreated] = useState(false);
+    const [userRole, setUserRole] = useState({});
     const [deviceTypeData, setDeviceTypeData] = useState([{
         deviceTypeId:0,
         devicTypeName:''
     }]);
-    const [deviceActionData, setDeviceActionData] = useState({});
+    const [deviceActionData, setDeviceActionData] = useState({
+        deviceTypeId:'',
+        deviceActionName:'',
+        deviceActionNameBackEnd:'',
+        deviceActionValue:''
+});
     const [loadingData, setLoadingData] = useState(false);
     useEffect(() => {
+        setUserRole(window.iotGlobal['userRole']);
         Api.Get(apiUrlData.deviceController.getDeviceTypeDropdown).then(res=>{
             setDeviceTypeData(res.data);
         });
-        let devicetypeid = common.queryParam(window.location.search)?.devicetypeid;
+        let devicetypeid = common.queryParam(window.location.search)?.deviceActionId;
         devicetypeid = !common.hasValue(devicetypeid) ? 0 :parseInt(devicetypeid);
         async function getData() {
-            await Api.Get(apiUrlData.adminController.getDeviceType + '?devicetypeId=' + devicetypeid).then(res => {
+            await Api.Get(apiUrlData.adminController.getDeviceAction + '?deviceActionId=' + devicetypeid).then(res => {
                 setDeviceActionData(res.data);
                 setLoadingData(false)
             }).catch(xx => {
@@ -29,32 +37,46 @@ export default function DeviceActionCreate() {
             })
         }
         if (!loadingData) {
-            debugger;
             if (devicetypeid !== 0) {
                 setIsDeviceTypeUpdating(true);
                 getData();
             }
         }
-    }, [loadingData, apiUrlData.roomController.getRoom]);
+    },[]);
 
     const inputHandler = (e) => {
-        setDeviceActionData({ ...deviceActionData, [e.target.name]: e.target.value });
+        debugger;
+        var val=e.target.name==='deviceTypeId'?parseInt(e.target.value):e.target.value;
+        setDeviceActionData({ ...deviceActionData, [e.target.name]: val});
     };
     const handleSubmit = () => {
-        if (deviceActionData.deviceTypeName.length < 1) {
-            toast.warn("Please enter deviceType name.");
+        if (deviceActionData.deviceTypeId==="") {
+            toast.warn("Please select the device type");
             return;
         }
-        else if (deviceActionData.deviceTypeName.length < 3) {
-            toast.warn("deviceType name should be min 3 char.");
+        else if (deviceActionData.deviceActionName.length < 1) {
+            toast.warn("Please enter device action name.");
             return;
         }
-        Api.Post(!isDeviceTypeUpdating ? apiUrlData.adminController.addDeviceType : apiUrlData.adminController.updateDeviceType, deviceActionData).then(res => {
-            toast.success(!isDeviceTypeUpdating ? "Device type is created" : "Device type is updated");
+        else if (deviceActionData.deviceActionName.length < 3) {
+            toast.warn("Device action name should be min 3 char.");
+            return;
+        }
+        else if (deviceActionData.deviceActionNameBackEnd.length < 1) {
+            toast.warn("Please enter device action backend name.");
+            return;
+        }
+        
+        Api.Post(!isDeviceTypeUpdating ? apiUrlData.adminController.addDeviceAction : apiUrlData.adminController.updateDeviceAction, deviceActionData).then(res => {
+            toast.success(!isDeviceTypeUpdating ? "Device action is created" : "Device action is updated");
             setIsDeviceTypeCreated(true);
         }).catch(ee => {
             toast.error("Something went wrong !");
         });
+    }
+    if(!userRole?.isAdmin)
+    {
+        return <Unauthorized></Unauthorized>
     }
     return (
         <div className="page-container">
@@ -62,21 +84,21 @@ export default function DeviceActionCreate() {
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb">
                     <li className="breadcrumb-item"><Link to="/Dashboard">Home</Link></li>
-                    <li className="breadcrumb-item"><Link to="/admin/devicetype">Device Type</Link></li>
-                    <li className="breadcrumb-item active" aria-current="page">{!isDeviceTypeUpdating ? 'Add ' : 'Update '} deviceType</li>
+                    <li className="breadcrumb-item"><Link to="/admin/deviceAction">Device Action</Link></li>
+                    <li className="breadcrumb-item active" aria-current="page">{!isDeviceTypeUpdating ? 'Add ' : 'Update '} Device Action</li>
                 </ol>
             </nav>
             <div className="row">
                 <div className="col mb-3">
                     <div className="card text-black">
                         <div className="card-header bg-primary bg-gradient">
-                            <h6 className="card-title">{!isDeviceTypeUpdating ? 'Add ' : 'Update '}  Device Type</h6>
+                            <h6 className="card-title">{!isDeviceTypeUpdating ? 'Add ' : 'Update '}  Device Action</h6>
                         </div>
                         <div className="card-body">
                             <form>
                             <div className="mb-3">
                                     <label htmlFor="txtDeviceTypeId" className="form-label">Device Type<strong className="text-danger">*</strong></label>
-                                    <select name="deviceTypeId" value={deviceActionData?.deviceId} onChange={e => inputHandler(e)} className="form-control" id="txtDeviceTypeId" aria-describedby="txtDeviceTypeIdHelp">
+                                    <select name="deviceTypeId" value={deviceActionData?.deviceTypeId} onChange={e => inputHandler(e)} className="form-control" id="txtDeviceTypeId" aria-describedby="txtDeviceTypeIdHelp">
                                         <option value="">Select Device Type</option>
                                         {deviceTypeData?.map((ele)=>{
                                             return <option value={ele.deviceTypeId}>{ele.deviceTypeName}</option>
@@ -90,17 +112,17 @@ export default function DeviceActionCreate() {
                                     <div id="txtDeviceActionNameHelp" className="form-text">Enter the desire device action name</div>
                                 </div>
                                 <div className="mb-3">
-                                    <label htmlFor="txtDeviceActionValue" className="form-label">Device Action Value<strong className="text-danger">*</strong></label>
+                                    <label htmlFor="txtDeviceActionValue" className="form-label">Device Action Value</label>
                                     <input type="text" name="deviceActionValue" value={deviceActionData?.deviceActionValue} onChange={e => inputHandler(e)} className="form-control" id="txtDeviceActionValue" aria-describedby="txtDeviceActionValueHelp" />
                                     <div id="txtDeviceActionValueHelp" className="form-text">Enter the desire device action value</div>
                                 </div>
                                 <div className="mb-3">
                                     <label htmlFor="txtDeviceActionNameBackend" className="form-label">Device Action Name Backend<strong className="text-danger">*</strong></label>
-                                    <input type="text" name="deviceActionNameBackend" value={deviceActionData?.DeviceActionNameBackend} onChange={e => inputHandler(e)} className="form-control" id="txtDeviceActionNameBackend" aria-describedby="txtDeviceActionNameBackendHelp" />
+                                    <input type="text" name="deviceActionNameBackEnd" value={deviceActionData?.deviceActionNameBackEnd} onChange={e => inputHandler(e)} className="form-control" id="txtDeviceActionNameBackend" aria-describedby="txtDeviceActionNameBackendHelp" />
                                     <div id="txtDeviceActionNameBackendHelp" className="form-text">Enter the desire device action backend name</div>
                                 </div>
 
-                                <button type="button" onClick={e => handleSubmit(e)} className="btn btn-primary">{!isDeviceTypeUpdating ? 'Add ' : 'Update '} Device Type</button>
+                         { (userRole?.canCreate && !isDeviceTypeUpdating) || (userRole?.canUpdate && isDeviceTypeUpdating)  &&      <button type="button" onClick={e => handleSubmit(e)} className="btn btn-primary">{!isDeviceTypeUpdating ? 'Add ' : 'Update '} Device Action</button>}
                                 {isDeviceTypeCreated && (
                                     <Redirect to="/admin/DeviceAction"></Redirect>
                                 )}
