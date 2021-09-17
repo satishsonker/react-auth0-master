@@ -35,12 +35,12 @@
         connectMqtt(apiKey);
         window.iotGlobal['apiKey'] = apiKey;
       }
-      xhttp.open("GET", "https://localhost:44342/api/v1/user/getApiKey", true);
+      xhttp.open("GET", "http://www.iotHomeAutomation.somee.com/api/v1/user/getApiKey", true);
       xhttp.setRequestHeader('userkey', window.iotGlobal.userKey);
       xhttp.send();
     }
     function connectMqtt(topic) {
-      var _topic = [topic,topic+'/server']
+      var _topic = [topic, topic + '/server']
       client = new Paho.MQTT.Client('broker.hivemq.com', Number(8000), "web" + new Date().getTime());
 
       // set callback handlers
@@ -60,16 +60,21 @@
         setInterval(function () {
           let localData = JSON.parse(localStorage.getItem('mqttdevicedataPub'));
           localData = localData === undefined || localData === null ? [] : localData;
-          while (localData.length > 0) {            
-          debugger;
+          while (localData.length > 0) {
+            debugger;
             let pubData = localData.pop();
-            let topic=pubData.topic;
-            pubData.topic='';
-            if(topic!==undefined && topic!==null && topic!=="")
-            client.send(topic, JSON.stringify(pubData));
+            let topic = pubData.topic;
+            pubData.topic = '';
+            if (topic !== undefined && topic !== null && topic !== "") {
+              try {
+                client.send(topic, JSON.stringify(pubData));
+              } catch (error) {
+
+              }
+            }
           }
-          localStorage.setItem('mqttdevicedataPub',JSON.stringify([]));
-        }, 5000);
+          localStorage.setItem('mqttdevicedataPub', JSON.stringify([]));
+        }, 1000);
       }
 
       // called when the client loses its connection
@@ -84,28 +89,18 @@
         console.log("onMessageArrived:" + message.payloadString);
         var data;
         try {
-          data = JSON.parse(message.payloadString.replace(/'/g, '"').replace(',]',']'));
+          data = JSON.parse(message.payloadString.replace(/'/g, '"').replace(',]', ']'));
           let existedDevices = [];
           data['timeStamp'] = new Date();
-          var oldData =message.destinationName.indexOf('server')===-1? JSON.parse(localStorage.getItem('mqttdevicedataSub')):JSON.parse(localStorage.getItem('mqttdevicedataSubServer'));
+          var oldData = message.destinationName.indexOf('server') === -1 ? JSON.parse(localStorage.getItem('mqttdevicedataSub')) : JSON.parse(localStorage.getItem('mqttdevicedataSubServer'));
           oldData = oldData === undefined || oldData === null ? [] : oldData;
-          // oldData = oldData.filter((ele, ind) => {
-          //   if (existedDevices.indexOf(ele.deviceId) === -1) {
-          //     existedDevices.push(ele.deviceId);
-          //     if (ele.deviceId === data.deviceId) {
-          //       return data
-          //     }
-          //     return ele;
-          //   }
-          // });
-          if(data !== undefined || data !== null )
-          {
-            data["timeStamp"]=new Date();
-          oldData.push(data)
-          if(message.destinationName.indexOf('server')===-1)
-          localStorage.setItem('mqttdevicedataSub', JSON.stringify(oldData));
-          else
-          localStorage.setItem('mqttdevicedataSubServer', JSON.stringify(oldData));
+          if (data !== undefined || data !== null) {
+            data["timeStamp"] = new Date();
+            oldData.push(data)
+            if (message.destinationName.indexOf('server') === -1)
+              localStorage.setItem('mqttdevicedataSub', JSON.stringify(oldData));
+            else
+              localStorage.setItem('mqttdevicedataSubServer', JSON.stringify(oldData));
           }
 
         } catch (error) {

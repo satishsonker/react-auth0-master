@@ -78,30 +78,25 @@ export default function Dashboard() {
         }
     }, [loadingData, apiUrlData.dashboardController.getDashboardData]);
 
-    const handleTurnOnOffDevice = (value, deviceKey) => {
-        let actionName='';
-        if(value==='ON' || value==='OFF')
-        actionName='setPowerState';
-        else if(value==='PRESS')
-        actionName='setBellState'
+    const handleTurnOnOffDevice = (value, deviceKey) => {       
         let localData = common.getStorePubData();
-        localData = localData === undefined || localData === null ? [] : localData;
-        if (deviceKey === undefined || deviceKey === null) {
+        localData = !common.hasValue(localData) ? [] : localData;
+        if (!common.hasValue(deviceKey)) {
             dashboardData.devices.forEach((ele, ind) => {
                 localData.push({
                     deviceId: ele.deviceKey,
-                    action: actionName,
-                    topic: window.iotGlobal.apiKey,
-                    value: value
+                    action: common.getCommandObj(value).action,
+                    topic: common.getApiKey(),
+                    value: common.getCommandObj(value).value
                 });
             });
         }
         else {
             localData.push({
                 deviceId: deviceKey,
-                action: actionName,
-                topic: window.iotGlobal.apiKey,
-                value: value
+                action: common.getCommandObj(value).action,
+                topic: common.getApiKey(),
+                value: common.getCommandObj(value).value,
             });
         }
         common.setStorePubData(localData);

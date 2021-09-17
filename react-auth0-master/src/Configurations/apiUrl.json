@@ -20,12 +20,13 @@
     "deviceController": {
         "addDevice": "/device/addDevice",
         "updateDevice": "/device/updateDevice",
+        "updateDeviceHistory": "/device/updateDeviceHistory",
         "getAllDevice": "/device/getAllDevice",
         "searchDevice": "/device/searchDevice",
         "deleteDevice": "/device/deleteDevice",
         "getDeviceDropdown": "/device/getDeviceDropdown",
-        "getDeviceTypeDropdown": "/device/GetDeviceTypeDropdown",
-        "getDeviceTypeAction": "/device/GetDeviceTypeAction"
+        "getDeviceTypeDropdown": "/device/getDeviceTypeDropdown",
+        "getDeviceTypeAction": "/device/getDeviceTypeAction"
     },
     "sceneController": {
         "addScene": "/scene/addScene",

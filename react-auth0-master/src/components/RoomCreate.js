@@ -42,7 +42,6 @@ export default function RoomCreate() {
             })
         }
         if (!loadingData) {
-            debugger;
             if (roomKey !== "") {
                 setIsRoomUpdating(true);
                 getData();

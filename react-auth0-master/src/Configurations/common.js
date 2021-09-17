@@ -55,12 +55,58 @@ export const common = {
     setStoreSubServerData: (data) => {
         localStorage.setItem(mqttSubscribeServerStorageKey, JSON.stringify(data));
     },
-    getAppName:()=>
-    {
+    getAppName: () => {
         return process.env.REACT_APP_APP_NAME
     },
-    getUserRoles:()=>{
+    getUserRoles: () => {
         return Api.Get(apiUrlData.userController.getUserPermission);
+    },
+    getCommandObj: (cmdName, val) => {
+        cmdName = cmdName.toLowerCase();
+        let obj = {
+            action: '',
+            value: {}
+        }
+        if (cmdName === 'on' || cmdName === 'off') {
+            obj.action = 'action.devices.commands.OnOff';
+            obj.value = {
+                on: cmdName === 'on' ? "true" : "false"
+            }
+        }
+        else if (cmdName === 'press') {
+            obj.action = 'action.devices.commands.Press';
+            obj.value = "press";
+        }
+        else if (cmdName === 'brightness') {
+            obj.action = 'action.devices.commands.BrightnessAbsolute'
+            obj.value = {
+                brightness: val * 2.55
+            }
+        }
+        else if (cmdName === 'timer') {
+            obj.action = 'action.devices.commands.TimerAbsolute'
+            obj.value = {
+                timer: val
+            }
+        }
+        else if (cmdName === 'saturation') {
+            obj.action = 'action.devices.commands.SaturationAbsolute';
+            obj.value = {
+                saturation: val
+            }
+        }
+        else if (cmdName === 'color') {
+            obj.action = 'action.devices.commands.ColorAbsolute';
+            obj.value = {
+                color: {
+                    spectrumRGB: val
+                }
+            }
+        }
+        return obj;
+    },
+    getApiKey: () => {
+        return window.iotGlobal.apiKey;
     }
 }
 
