@@ -3,7 +3,7 @@ import { common } from "../../Configurations/common";
 import DeviceControl from '../Controls/DeviceControl';
 export default function DeviceCard({ deviceData, index, devicePowerHandler }) {
     return (
-        <div key={index} className="col-4" style={{ paddingTop: 10 + 'px' }}>
+        <div key={index} className="col-xs-12 col-sm-12 col-md-12 col-lg-4" style={{ paddingTop: 10 + 'px' }}>
             <div className="card text-black mb-3 h-100">
                 <div className={deviceData?.status?.toLowerCase() === 'on' ? 'card-header bg-success' : 'card-header bg-danger'}>{deviceData.deviceName + ' - ' + deviceData?.deviceTypeName}</div>
                 <div className="card-body">

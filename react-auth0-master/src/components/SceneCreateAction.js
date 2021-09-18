@@ -9,19 +9,13 @@ export default function SceneCreateAction({ deviceData, sceneData, rowIndex, set
         {
             setFilterActionData(deviceActionData[sceneData.sceneActions[rowIndex].device.deviceType.deviceTypeName]);
         }
-        let d = sceneData?.sceneActions?.forEach((element, ind) => {
+      let d=  sceneData?.sceneActions?.forEach((element, ind) => {
             if (disableArray.length - (ind + 1) >= 0) {
                 disableArray.push(true);
             }
         });
         setIsDisable(disableArray);
     }, [sceneData]);
-    const actionTypeData = {
-        Switch: ['TurnOn', 'TurnOff'],
-        Light: ['TurnOn', 'TurnOff'],
-        MotionSenser: ['TurnOn', 'TurnOff'],
-        SmartLight: ['TurnOn', 'TurnOff', "Brigthness", 'Color'],
-    }
     const handleRemove = (e) => {
         if (sceneData.sceneActions.length > 1) {
             sceneData.sceneActions.splice(rowIndex, 1);

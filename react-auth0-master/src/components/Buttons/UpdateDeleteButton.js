@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Link } from "react-router-dom";
-import { common } from '../../Configurations/common';
 export default function UpdateDeleteButton({ editUrl, deleteHandler, dataKey, userRole }) {
     return (
         <div className="btn-group" role="group" aria-label="Basic example">

@@ -9,15 +9,35 @@ import DeviceCard from './DeviceCard';
 
 export default function Dashboard() {
     //const mqttSubscribeStorageKey = process.env.REACT_APP_MQTT_SUBSCRIBE_LOCAL_STORAGE_KEY;
-    const { user, isAuthenticated } = useAuth0();
+    const { isAuthenticated } = useAuth0();
     const apiUrlData = require('../../Configurations/apiUrl.json');
-
     const [dashboardData, setDashboardData] = useState();
+    function OnDeviceCounter(params) {
+        var data = {
+            online: 0,
+            on: 0
+        }
+        if (params) {
+            params.forEach((ele, ind) => {
+                if (ele?.ip) {
+                    data.online += 1;
+                }
+                if (ele?.status) {
+                    data.on += 1;
+                }
+            });
+        }
+        return data;
+    }
+    function updateDeviceHistory(dkey) {
+        Api.Post(apiUrlData.deviceController.updateDeviceHistory + "?deviceKey=" + dkey + "&isconnected=true", {});
+    }
     setInterval(() => {
         let data = common.getStoreSubServerData();
         data = data === undefined || data === null ? [] : data;
         if (data.length > 0 && dashboardData?.rooms.length > 0) {
             dashboardData.onDevices = 0;
+            dashboardData.conntectedDevices = 0;
             dashboardData.offDevices = dashboardData.totalDevices;
             data.forEach((ele, ind) => {
                 if (new Date() - new Date(ele.timeStamp) < 120000) {
@@ -26,7 +46,9 @@ export default function Dashboard() {
                             roomCol.forEach((roomEle, roomInd) => {
 
                                 if (ele.devices?.indexOf(roomEle.deviceKey) > -1) {
-                                    dashboardData.onDevices += 1;
+                                    debugger;
+                                    updateDeviceHistory(roomEle.deviceKey);
+                                    dashboardData.conntectedDevices += 1;
                                     dashboardData.offDevices = dashboardData.totalDevices - dashboardData.onDevices;
                                     roomEle["wifi"] = ele.wifi;
                                     roomEle["ip"] = ele.ip;
@@ -59,12 +81,13 @@ export default function Dashboard() {
             await Api.Get(apiUrlData.dashboardController.getDashboardData).then(res => {
                 let resData = res.data;
                 _data["onDevices"] = 0;
+                _data["conntectedDevices"] = 0;
                 _data['devices'] = resData.devices;
                 _data["totalDevices"] = resData.devices.length;
                 _data["offDevices"] = resData.devices.length;
                 _data["rooms"] = [];
                 resData.rooms.forEach(element => {
-                    _data.rooms.push(resData.devices.filter(ele => {
+                    return _data.rooms.push(resData.devices.filter(ele => {
                         if (ele.roomKey === element.roomKey)
                             return ele;
                     }));
@@ -78,7 +101,7 @@ export default function Dashboard() {
         }
     }, [loadingData, apiUrlData.dashboardController.getDashboardData]);
 
-    const handleTurnOnOffDevice = (value, deviceKey) => {       
+    const handleTurnOnOffDevice = (value, deviceKey) => {
         let localData = common.getStorePubData();
         localData = !common.hasValue(localData) ? [] : localData;
         if (!common.hasValue(deviceKey)) {
@@ -101,7 +124,7 @@ export default function Dashboard() {
         }
         common.setStorePubData(localData);
         dashboardData.offDevices = 0;
-        dashboardData.onDevices = dashboardData.totalDevices;
+        dashboardData.onDevices = dashboardData.conntectedDevices;
         //setDashboardData(dashboardData);
     };
 
@@ -123,26 +146,35 @@ export default function Dashboard() {
             <div className="row row-cols-1 row-cols-md-3 g-4">
                 <div className="col mb-3">
                     <div className="card text-black mb-3 h-100" >
-                        <div className="card-header bg-success bg-gradient ">Online Device(s)</div>
+                        <div className="card-header bg-success bg-gradient ">Connected Device(s)</div>
                         <div className="card-body">
-                            <p className="card-text text-center">  <span className="device-count">{dashboardData?.onDevices}</span> Out of <span className="device-count">{dashboardData?.totalDevices}</span></p>
+                            <p className="card-text text-center">  <span className="device-count">{dashboardData?.conntectedDevices}</span> Out of <span className="device-count">{dashboardData?.totalDevices}</span></p>
                         </div>
-                        {
-                            dashboardData?.onDevices === 0 ? '' : <div className="card-footer">
-                                <button className="btn btn-success btn-sm" onClick={e => { handleTurnOnOffDevice("ON") }}>Turn On All</button>
-                                <button className="btn btn-danger  btn-sm" onClick={e => { handleTurnOnOffDevice("OFF") }} style={{ marginLeft: 10 + 'px' }}>Turn Off All</button>
-                            </div>
-                        }
                     </div>
                 </div>
                 <div className="col mb-3">
                     <div className="card text-black mb-3 h-100" >
                         <div className="card-header bg-danger bg-gradient">Offline Device(s)</div>
                         <div className="card-body">
-                            <p className="card-text text-center">  <span className="device-count">{dashboardData?.offDevices}</span> Out of <span className="device-count">{dashboardData?.totalDevices}</span></p>
+                            <p className="card-text text-center">  <span className="device-count">{dashboardData?.totalDevices - dashboardData?.conntectedDevices}</span> Out of <span className="device-count">{dashboardData?.totalDevices}</span></p>
                         </div>
                     </div>
                 </div>
+                <div className="col mb-3">
+                    <div className="card text-black mb-3 h-100" >
+                        <div className="card-header bg-success bg-gradient ">ON Device(s)</div>
+                        <div className="card-body">
+                            <p className="card-text text-center">  <span className="device-count">{dashboardData?.onDevices}</span> Out of <span className="device-count">{dashboardData?.conntectedDevices}</span></p>
+                        </div>
+                        {
+                            dashboardData?.onDevices === 0 ? '' : <div className="card-footer">
+                                <button disabled={dashboardData?.conntectedDevices - dashboardData?.onDevices === 0 ? true : false} className="btn btn-success btn-sm" onClick={e => { handleTurnOnOffDevice("ON") }}>Turn On All</button>
+                                <button disabled={dashboardData?.conntectedDevices - dashboardData?.onDevices > 0 ? true : false} className="btn btn-danger  btn-sm" onClick={e => { handleTurnOnOffDevice("OFF") }} style={{ marginLeft: 10 + 'px' }}>Turn Off All</button>
+                            </div>
+                        }
+                    </div>
+                </div>
+
             </div>
             <div className="row">
 
@@ -157,7 +189,7 @@ export default function Dashboard() {
                                         <h2 className="accordion-header" id={"heading" + ind}>
                                             <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target={"#collapse" + ind} aria-expanded="true" aria-controls={"collapse" + ind}>
                                                 {
-                                                    ele[0].roomName + " - " + ele.length + " Device(s)"
+                                                    ele[0].roomName + " - " + ele.length + " Device(s) - "+OnDeviceCounter(ele).online+" Online - "+OnDeviceCounter(ele).on+" Turn On"
                                                 }
                                             </button>
                                         </h2>

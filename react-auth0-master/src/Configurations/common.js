@@ -7,7 +7,7 @@ export const common = {
     getDateTime: (date) => {
         let dateObj;
         if (date === undefined || date === null)
-            dateObj = new Date();
+           return '';
         else if (typeof (date) === "object")
             dateObj = date;
         else if (typeof (data) === "string")
@@ -107,6 +107,14 @@ export const common = {
     },
     getApiKey: () => {
         return window.iotGlobal.apiKey;
+    },
+    cloneObject:(obj)=>
+    {
+        if(typeof(obj)==='object')
+        {
+            return JSON.parse(JSON.stringify(obj));
+        }
+        throw Error('unable to clone the object')
     }
 }
 

@@ -9,7 +9,7 @@ export default function DeviceControl({ devicePowerHandler, deviceData }) {
         color: '',
         timer: 0
     });
-    const [deviceTypeName, setDeviceTypeName] = useState(deviceData?.deviceTypeName.toLowerCase());
+    const deviceTypeName = deviceData?.deviceTypeName.toLowerCase();
     function handleChange(e) {
         setPublishData({ ...publishData, [e.target.name]: e.target.value });
         let localData = common.getStorePubData();
@@ -87,7 +87,7 @@ export default function DeviceControl({ devicePowerHandler, deviceData }) {
                                             <input onChange={e => handleChange(e)} value={publishData.saturation} name="saturation" type="range" className="form-range" step="4" min="0" max="100" id="Saturation" />
                                         </div>
                                         <label htmlFor="exampleColorInput" className="form-label">Color picker</label>
-                                        <input onChange={e => handleChange(e)} value={publishData.color} name="color" type="color" className="form-control form-control-color" id="exampleColorInput" value="#563d7c" title="Choose your color" />
+                                        <input onChange={e => handleChange(e)} value={publishData.color} name="color" type="color" className="form-control form-control-color" id="exampleColorInput" title="Choose your color" />
                                         {
                                             publishData.color
                                         }

@@ -28,6 +28,7 @@ import DeviceType from './components/Admin/DeviceType';
 import DeviceTypeCreate from './components/Admin/DeviceTypeCreate';
 import DeviceAction from './components/Admin/DeviceAction';
 import DeviceActionCreate from './components/Admin/DeviceActionCreate';
+import AdminPermission from './components/Admin/AdminPermission';
 toast.configure();
 function App() {
   const apiUrlData = require('../src/Configurations/apiUrl.json');
@@ -144,12 +145,20 @@ function App() {
                   return (
                     <div><DeviceAction></DeviceAction></div>
                   );
-                }}></Route>
+                }}>
+                </Route>
                   <Route exact path="/admin/deviceActionCreate" render={() => {
                   return (
                     <div><DeviceActionCreate></DeviceActionCreate></div>
                   );
-                }}></Route>
+                }}>
+                </Route>
+                  <Route exact path="/admin/AdminPermission" render={() => {
+                  return (
+                    <div><AdminPermission></AdminPermission></div>
+                  );
+                }}>                  
+                </Route>
               </Switch>
             </div>
           </Router>

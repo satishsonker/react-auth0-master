@@ -12,7 +12,7 @@ export default function LeftMenu({setIsMenuCollapsed}) {
     return (
         <div>
             <ul className={!isCollapsed?"left-menu":" left-menu left-menu-small"}>
-                <Link title="Dashboard" to="/Dashboard"><li className="item"><i className="fas fa-tachometer-alt"></i>    <span>Dashboard</span> </li></Link>
+                <Link title="Dashboard" to="/Dashboard"><li className="item"><i className="fas fa-tachometer-alt"></i> {!isCollapsed && ('Dashboard')} </li></Link>
                 <Link title="Device" to="/Device"><li className="item"><i className="fa fa-microchip"></i> {!isCollapsed && ('Device')} </li></Link>
                 {/* <Link to="/"><li className="item"><i className="fa fa-cubes"></i> {!isCollapsed && ('Device Template')} </li></Link> */}
                 <Link title="Credential" to="/Credentials"><li className="item"><i className="fa fa-unlock-alt"></i> {!isCollapsed && ('Credentials')} </li></Link>
@@ -28,6 +28,7 @@ export default function LeftMenu({setIsMenuCollapsed}) {
                 <Link title="Developers" to="/developers"><li className="item"><i className="fas fa-chalkboard-teacher"></i> {!isCollapsed && ('Developers')} </li></Link>
                 <Link title="Device Type" to="/admin/devicetype"><li className="item"><i className="fas fa-chalkboard-teacher"></i> {!isCollapsed && ('Device Type')} </li></Link>
                 <Link title="Device Action" to="/admin/deviceaction"><li className="item"><i className="fas fa-chalkboard-teacher"></i> {!isCollapsed && ('Device Action')} </li></Link>
+                <Link title="Admin Permission" to="/admin/adminPermission"><li className="item"><i className="fas fa-chalkboard-teacher"></i> {!isCollapsed && ('Admin Permission')} </li></Link>
                 <li  title="Sign out" className="item" onClick={() => logout()}><i className="fas fa-sign-out-alt"></i> {!isCollapsed && ('Sign out')} </li>
             </ul>
             <div className={!isCollapsed?'toggle-button':'toggle-button toggle-button-small'} onClick={e=>{handleCollapsed()}}>

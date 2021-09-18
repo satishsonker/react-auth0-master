@@ -22,9 +22,14 @@ export default function DeviceActionCreate() {
 });
     const [loadingData, setLoadingData] = useState(false);
     useEffect(() => {
-        setUserRole(window.iotGlobal['userRole']);
-        Api.Get(apiUrlData.deviceController.getDeviceTypeDropdown).then(res=>{
-            setDeviceTypeData(res.data);
+        let ApiCalls = [];
+        ApiCalls.push(Api.Get(apiUrlData.userController.getUserPermission));
+        ApiCalls.push(Api.Get(apiUrlData.deviceController.getDeviceTypeDropdown));
+        Api.MultiCall(ApiCalls).then(res => {
+            debugger;
+            setUserRole(res[0].data);
+            setDeviceTypeData(res[1].data);
+            setLoadingData(false)
         });
         let devicetypeid = common.queryParam(window.location.search)?.deviceActionId;
         devicetypeid = !common.hasValue(devicetypeid) ? 0 :parseInt(devicetypeid);

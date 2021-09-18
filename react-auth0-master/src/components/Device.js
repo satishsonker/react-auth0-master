@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Api } from "../Configurations/Api";
 import { toast } from 'react-toastify';
 import Loader from './Loader';
+import { common } from '../Configurations/common';
 
 export default function Device() {
     const [deviceData, setDeviceData] = useState([]);
@@ -114,8 +115,8 @@ export default function Device() {
                                         <td className="text-center">{1===0 && (<div><i className="fas fa-bolt text-danger"></i> OFF</div>)}</td>
                                         <td className="text-center">{ele.roomName}</td>
                                         <td className="text-center">Default</td>
-                                        <td className="text-center">{ele.lastConnected}</td>
-                                        <td className="text-center">{ele.ConnectionCount}</td>
+                                        <td className="text-center">{common.getDateTime(ele.lastConnected)}</td>
+                                        <td className="text-center">{ele.connectionCount}</td>
                                         <td className="text-center">
                                             <div className="btn-group" role="group" aria-label="Basic example">
                                                 <Link to={"/DeviceCreate?id="+ele.deviceKey}><div className="btn btn-sm btn-outline-success"><i className="fas fa-pencil-alt" aria-hidden="true"></i></div></Link>
