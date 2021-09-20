@@ -61,7 +61,6 @@
           let localData = JSON.parse(localStorage.getItem('mqttdevicedataPub'));
           localData = localData === undefined || localData === null ? [] : localData;
           while (localData.length > 0) {
-            debugger;
             let pubData = localData.pop();
             let topic = pubData.topic;
             pubData.topic = '';

@@ -26,7 +26,6 @@ export default function SceneCreateAction({ deviceData, sceneData, rowIndex, set
         }
     }
     const handleChange = (e, type) => {
-        debugger;
         if (e.target.name === "deviceId") {
             var selectedDeviceType = e.target.childNodes[e.target.selectedIndex].getAttribute('data-deviceTypeName');
             setFilterActionData(deviceActionData[selectedDeviceType]);

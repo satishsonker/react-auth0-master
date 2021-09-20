@@ -17,7 +17,6 @@ export default function DeviceAction() {
         ApiCalls.push(Api.Get(apiUrlData.userController.getUserPermission));
         ApiCalls.push(Api.Get(apiUrlData.adminController.getAllDeviceAction));
         Api.MultiCall(ApiCalls).then(res => {
-            debugger;
             setUserRole(res[0].data);
             window.iotGlobal['userRole']=res[0].data;
             setDeviceActionData(res[1].data);
@@ -25,7 +24,6 @@ export default function DeviceAction() {
         });
     }, []);
     const handleDelete = (e) => {
-        debugger;
         var val = e.target.value ? e.target.value : e.target.dataset.deletekey;
         setLoadingData(true);
         Api.Delete(apiUrlData.adminController.deleteDeviceAction + '?deviceactionid=' + val).then(res => {

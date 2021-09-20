@@ -55,6 +55,7 @@
         "deleteDeviceAction":"/admin/DeleteDeviceAction",
         "searchDeviceAction":"/admin/SearchDeviceAction",
         "addDeviceAction":"/admin/addDeviceAction",        
-        "updateDeviceAction":"/admin/updateDeviceAction"
+        "updateDeviceAction":"/admin/updateDeviceAction",
+        "updateAdminPermission":"/admin/updateAdminPermission"
     }
 }

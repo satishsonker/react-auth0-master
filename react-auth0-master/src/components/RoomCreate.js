@@ -4,7 +4,8 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Api } from "../Configurations/Api";
 import { toast } from 'react-toastify';
 import Loader from "./Loader";
-export default function RoomCreate() {
+import { common } from '../Configurations/common';
+export default function RoomCreate({userRole}) {
     const { user } = useAuth0();
     const apiUrlData = require('../Configurations/apiUrl.json');
     const [isRoomUpdating, setIsRoomUpdating] = useState(false);
@@ -15,38 +16,21 @@ export default function RoomCreate() {
         "roomName": '',
         "roomDesc": ''
     });
-    function queryParam(params) {
-        console.log(params);
-        if (params === undefined || params==="" || params===null) {
-            return {};
-        }
-        params = "{\"" +
-            params
-                .replace(/\?/gi, "")
-                .replace(/&/gi, "\",\"")
-                .replace(/=/gi, "\":\"") +
-            "\"}";
-
-        params = JSON.parse(params);
-        return params
-    }
     useEffect(() => {
-        let roomKey = queryParam(window.location.search)?.roomkey;
-        roomKey = roomKey === undefined || roomKey === null ? '' : roomKey;
+        let roomKey =common.queryParam(window.location.search)?.roomkey;
+        roomKey =!common.hasValue(roomKey) ? '' : roomKey;
         async function getData() {
             await Api.Get(apiUrlData.roomController.getRoom+'?roomkey='+roomKey).then(res => {
                 setRoom(res.data);
-                setLoadingData(false)
+                setLoadingData(false);
             }).catch(xx => {
                 toast.error('Something went wrong');
             })
         }
-        if (!loadingData) {
-            if (roomKey !== "") {
-                setIsRoomUpdating(true);
+         if (roomKey !== "") {
+             setLoadingData(true);
                 getData();
             }
-        }
     }, [loadingData, apiUrlData.roomController.getRoom]);
     
     const inputHandler = (e) => {
@@ -68,9 +52,12 @@ export default function RoomCreate() {
             toast.error("Something went wrong !");
         });
     }
+    if(loadingData)
+    return <Loader></Loader>
+    if(!userRole?.canView)
+    return <Loader></Loader>
     return (
         <div className="page-container">
-            {loadingData && (<Loader></Loader>)}
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb">
                     <li className="breadcrumb-item"><Link to="/Dashboard">Home</Link></li>
@@ -97,7 +84,7 @@ export default function RoomCreate() {
                                     <div id="txtRoomDescHelp" className="form-text">Enter the desire room description</div>
                                 </div>
 
-                                <button type="button" onClick={e => handleSubmit(e)} className="btn btn-primary">{!isRoomUpdating ? 'Add ' : 'Update '} Room</button>
+                             {userRole?.canCreate &&  <button type="button" onClick={e => handleSubmit(e)} className="btn btn-primary">{!isRoomUpdating ? 'Add ' : 'Update '} Room</button>}
                                 {isRoomCreated && (
                                     <Redirect to="/rooms"></Redirect>
                                 )}

@@ -5,9 +5,9 @@ import { toast } from 'react-toastify';
 import Loader from "./Loader";
 import SceneCreateAction from './SceneCreateAction';
 import { common } from "../Configurations/common";
+import Unauthorized from './CustomView/Unauthorized';
 
-export default function SceneCreate() {
-    toast.configure();
+export default function SceneCreate({ userRole }) {
     const sceneTemplate = {
         sceneName: '',
         sceneDesc: '',
@@ -18,9 +18,9 @@ export default function SceneCreate() {
         }]
     };
     const apiUrlData = require('../Configurations/apiUrl.json');
-    const [isSceneUpdating, setIsSceneUpdating] = useState(false);
-    const [isSceneCreated, setIsSceneCreated] = useState(false);
-    const [loadingData, setLoadingData] = useState(false);
+    const [isSceneUpdating, setIsSceneUpdating] = useState(common.getDefault(common.dataType.bool));
+    const [isSceneCreated, setIsSceneCreated] = useState(common.getDefault(common.dataType.bool));
+    const [loadingData, setLoadingData] = useState(true);
     const [deviceTypeActionData, setDeviceTypeActionData] = useState([]);
     const [deviceData, setDeviceData] = useState([{
         deviceName: 'Test',
@@ -37,52 +37,41 @@ export default function SceneCreate() {
             promises.push(Api.Get(apiUrlData.deviceController.getDeviceDropdown));
             promises.push(Api.Get(apiUrlData.deviceController.getDeviceTypeAction));
             Api.MultiCall(promises).then(res => {
-               if(res.length>0)
-               {
-                setDeviceData(res[0].data);
-                let filteredDeviceData={};
-                res[1].data.filter((ele)=>{
-                    filteredDeviceData[ele.deviceTypeName]=[];
-                        ele.deviceActions.filter((eleInner)=>{
+                setLoadingData(false);
+                if (res.length > 0) {
+                    setDeviceData(res[0].data);
+                    let filteredDeviceData = {};
+                    res[1].data.filter((ele) => {
+                        filteredDeviceData[ele.deviceTypeName] = [];
+                        ele.deviceActions.filter((eleInner) => {
                             filteredDeviceData[ele.deviceTypeName].push({
-                                deviceActionName:  eleInner.deviceActionName,
-                                deviceActionNameBackEnd:eleInner.deviceActionNameBackEnd,
-                                deviceActionValue:eleInner.deviceActionValue
+                                deviceActionName: eleInner.deviceActionName,
+                                deviceActionNameBackEnd: eleInner.deviceActionNameBackEnd,
+                                deviceActionValue: eleInner.deviceActionValue
                             });
                         });
-                })
-                setDeviceTypeActionData(filteredDeviceData);
-                setLoadingData(false)
-               }
+                    })
+                    setDeviceTypeActionData(filteredDeviceData);
+                    setLoadingData(false)
+                }
             });
-            //     await Api.Get(apiUrlData.deviceController.getDeviceDropdown).then(res => {
-            //       
-            //     }).catch(xx => {
-            //         toast.error('Something went wrong');
-            //     })
-        }
-        async function getData() {
-            await Api.Get(apiUrlData.sceneController.getScene + '?scenekey=' + sceneKey).then(res => {
+        } if (sceneKey !== "") {
+            setIsSceneUpdating(true);
+            setLoadingData(true);
+            Api.Get(apiUrlData.sceneController.getScene + '?scenekey=' + sceneKey).then(res => {
                 setScene(res.data);
                 setLoadingData(false);
             }).catch(xx => {
                 toast.error('Something went wrong');
             });
         }
-        if (!loadingData) {
-            if (sceneKey !== "") {
-                setIsSceneUpdating(true);
-                getData();
-            }
-            getDeviceDropdown()
-        }
+        getDeviceDropdown();
     }, [loadingData, apiUrlData.sceneController.getScene]);
 
     const inputHandler = (e) => {
         setScene({ ...scene, [e.target.name]: e.target.value });
     };
     const handleSubmit = () => {
-        debugger;
         if (scene.sceneName.length < 1) {
             toast.warn("Please enter scene name.");
             return;
@@ -93,7 +82,6 @@ export default function SceneCreate() {
         }
         if (scene.sceneActions) {
             let isValid = true;
-            debugger;
             scene.sceneActions.forEach((element, ind) => {
                 if (isNaN(element.deviceId)) {
                     toast.warn("Please select the device in row number " + (ind + 1));
@@ -114,7 +102,6 @@ export default function SceneCreate() {
             toast.error("Something went wrong !");
         });
     }
-
     const handleAdd = (e) => {
         scene.sceneActions.push({
             deviceId: '',
@@ -123,9 +110,12 @@ export default function SceneCreate() {
         });
         setScene({ ...scene });
     }
+    if (!userRole?.canView)
+        return <Unauthorized></Unauthorized>
+    if (loadingData)
+        return <Loader></Loader>
     return (
         <div className="page-container">
-            {loadingData && (<Loader></Loader>)}
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb">
                     <li className="breadcrumb-item"><Link to="/Dashboard">Home</Link></li>
@@ -171,7 +161,7 @@ export default function SceneCreate() {
                                         </tbody>
                                     </table>
                                 </div>
-                                <button type="button" onClick={e => handleSubmit(e)} className="btn btn-primary">{!isSceneUpdating ? 'Add ' : 'Update '} Scene</button>
+                                {((userRole?.canCreate && !isSceneUpdating) || (userRole?.canUpdate && isSceneUpdating)) && <button type="button" onClick={e => handleSubmit(e)} className="btn btn-primary">{!isSceneUpdating ? 'Add ' : 'Update '} Scene</button>}
                                 {isSceneCreated && (
                                     <Redirect to="/scenes"></Redirect>
                                 )}

@@ -7,7 +7,7 @@ export const common = {
     getDateTime: (date) => {
         let dateObj;
         if (date === undefined || date === null)
-           return '';
+            return '';
         else if (typeof (date) === "object")
             dateObj = date;
         else if (typeof (data) === "string")
@@ -108,14 +108,67 @@ export const common = {
     getApiKey: () => {
         return window.iotGlobal.apiKey;
     },
-    cloneObject:(obj)=>
-    {
-        if(typeof(obj)==='object')
-        {
+    cloneObject: (obj) => {
+        if (typeof (obj) === 'object') {
             return JSON.parse(JSON.stringify(obj));
         }
-        throw Error('unable to clone the object')
+        throw Error('unable to clone the object');
+    },
+    dataType: {
+        string: 'string',
+        number: 'number',
+        float: 'float',
+        int: 'int',
+        bool: 'bool',
+        object: 'object',
+        array: 'array',
+        arrayObject: 'arrayObject'
+    },
+    getDefault: (type) => {
+        let params;
+        switch (type) {
+            case undefined:
+                params = ''
+                break;
+            case null:
+                params = '';
+                break;
+            case common.dataType.string:
+                params = "";
+                break;
+            case common.dataType.number:
+                params = 0;
+                break;
+            case common.dataType.float:
+                params = 0.0;
+                break;
+            case common.dataType.int:
+                params = 0;
+                break;
+            case common.dataType.bool:
+                params = false;
+                break;
+            case common.dataType.object:
+                params = {};
+                break;
+            case common.dataType.array:
+                params = [];
+                break;
+            case common.dataType.arrayObject:
+                params = [{}];
+                break;
+            default:
+                params = '';
+                break;
+        }
+        return params;
+    },
+    getDefaultIfEmpty: (params,replaceValue) => {
+        if (!common.hasValue(params) || params.indexOf('undefined')>-1 || params.indexOf('null')>-1 || params.replace(/ /g,'')==='')
+            return common.hasValue(replaceValue)?replaceValue:'';
+        return params;
     }
+
 }
 
 function formatAMPM(date) {

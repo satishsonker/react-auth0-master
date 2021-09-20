@@ -26,7 +26,6 @@ export default function DeviceActionCreate() {
         ApiCalls.push(Api.Get(apiUrlData.userController.getUserPermission));
         ApiCalls.push(Api.Get(apiUrlData.deviceController.getDeviceTypeDropdown));
         Api.MultiCall(ApiCalls).then(res => {
-            debugger;
             setUserRole(res[0].data);
             setDeviceTypeData(res[1].data);
             setLoadingData(false)
@@ -50,7 +49,6 @@ export default function DeviceActionCreate() {
     },[]);
 
     const inputHandler = (e) => {
-        debugger;
         var val=e.target.name==='deviceTypeId'?parseInt(e.target.value):e.target.value;
         setDeviceActionData({ ...deviceActionData, [e.target.name]: val});
     };

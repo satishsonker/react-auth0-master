@@ -41,20 +41,29 @@ export default function DeviceControl({ devicePowerHandler, deviceData }) {
             devicePowerHandler(value, deviceKey);
         }
     }
+    function getDeviceTyoe() {
+        return {
+            isLight:deviceTypeName.indexOf('light') > -1,
+            isStrip:deviceTypeName.indexOf('strip') > -1,
+            isDoorbell:deviceTypeName.indexOf('doorbell') > -1
+        }
+    }
+    function isDeviceOn() {
+        return deviceData?.deviceStatus?.toLowerCase() === 'on';
+    }
 
     function getButton() {
-        if (deviceTypeName.indexOf('doorbell') > -1)
+        if (getDeviceTyoe().isDoorbell)
             return <div className="d-inline-flex p-2 bd-highlight"><button disabled={!common.hasValue(deviceData?.ip)} className="btn btn-success btn-sm" onClick={e => handleDeviceOnOff("PRESS", deviceData?.deviceKey)}>Press Bell</button></div>
-        else if (deviceTypeName.indexOf('light') > -1 || deviceTypeName.indexOf('strip') > -1) {
+        else if (getDeviceTyoe().isLight || getDeviceTyoe().isStrip) {
             if (!common.hasValue(deviceData?.deviceStatus))
                 return <>
-                <div className="d-inline-flex p-2 bd-highlight"><button disabled={!common.hasValue(deviceData?.ip) ||  deviceData?.deviceStatus?.toLowerCase() === 'on'} className="btn btn-success btn-sm" onClick={e => handleDeviceOnOff("ON", deviceData?.deviceKey)}>Turn On</button></div>
-                <div className="d-inline-flex p-2 bd-highlight"><button disabled={!common.hasValue(deviceData?.ip) ||  deviceData?.deviceStatus?.toLowerCase() === 'off'} className="btn btn-danger  btn-sm" onClick={e => handleDeviceOnOff("OFF", deviceData?.deviceKey)}>Turn Off</button></div>
+                <div className="d-inline-flex p-2 bd-highlight"><button disabled={!common.hasValue(deviceData?.ip) ||  isDeviceOn()} className={isDeviceOn()?"btn btn-success btn-sm":"btn btn-danger btn-sm"  }onClick={e => handleDeviceOnOff(isDeviceOn(), deviceData?.deviceKey)}><i className="fas fa-power-off"></i></button></div>
                 </>
         }
     }
     function getSettingButton() {
-        if (deviceTypeName.indexOf('light') > -1 || deviceTypeName.indexOf('strip') > -1) {
+        if (getDeviceTyoe().isLight || getDeviceTyoe().isStrip) {
             return <div className="d-inline-flex p-2 bd-highlight"><button disabled={!common.hasValue(deviceData?.ip)} type="button" className="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target={"#id" + deviceData?.deviceKey}><i className="fas fa-ellipsis-v"></i></button></div>
         }
     }

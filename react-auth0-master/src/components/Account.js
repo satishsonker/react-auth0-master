@@ -30,12 +30,10 @@ export default function Account() {
     }, [loadingData, apiUrlData.userController.getUser]);
 
     const inputHandler = (e, dataType) => {
-        debugger;
         var val = dataType !== undefined && dataType.toLowerCase() === "int" ? Number(e.target.value) : e.target.value;
         setAccountData({ ...accountData, [e.target.name]: val });
     };
     const handleSubmit = () => {
-        debugger;
         if (accountData.email.length < 1) {
             toast.error("Fill email field.");
             return;

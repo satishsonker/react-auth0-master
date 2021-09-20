@@ -5,7 +5,6 @@ import "../css/landing.css";
 export default function LandingPage() {
     const { loginWithRedirect, isLoading, user, isAuthenticated } = useAuth0();
     if (isAuthenticated) {
-        debugger;
         window.iotGlobal = {};
         window.iotGlobal["userKey"] = user.sub.split("|")[1];
     }

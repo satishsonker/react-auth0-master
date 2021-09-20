@@ -11,7 +11,6 @@ export default function DeviceTypeCreate() {
     const [loadingData, setLoadingData] = useState(false);
     const [deviceType, setDeviceType] = useState({});
     useEffect(() => {
-        debugger;
         let devicetypeid = common.queryParam(window.location.search)?.devicetypeid;
         devicetypeid = !common.hasValue(devicetypeid) ? 0 :parseInt(devicetypeid);
         async function getData() {
@@ -23,7 +22,6 @@ export default function DeviceTypeCreate() {
             })
         }
         if (!loadingData) {
-            debugger;
             if (devicetypeid !== 0) {
                 setIsDeviceTypeUpdating(true);
                 getData();

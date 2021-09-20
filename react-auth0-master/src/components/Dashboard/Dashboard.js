@@ -44,9 +44,7 @@ export default function Dashboard() {
                     dashboardData.rooms.forEach((roomCol, roomColInd) => {
                         if (roomCol.length > 0) {
                             roomCol.forEach((roomEle, roomInd) => {
-
                                 if (ele.devices?.indexOf(roomEle.deviceKey) > -1) {
-                                    debugger;
                                     updateDeviceHistory(roomEle.deviceKey);
                                     dashboardData.conntectedDevices += 1;
                                     dashboardData.offDevices = dashboardData.totalDevices - dashboardData.onDevices;
@@ -101,7 +99,8 @@ export default function Dashboard() {
         }
     }, [loadingData, apiUrlData.dashboardController.getDashboardData]);
 
-    const handleTurnOnOffDevice = (value, deviceKey) => {
+    const handleTurnOnOffDevice = (isON, deviceKey) => {
+        let value=isON?'ON':'OFF';
         let localData = common.getStorePubData();
         localData = !common.hasValue(localData) ? [] : localData;
         if (!common.hasValue(deviceKey)) {
@@ -168,8 +167,8 @@ export default function Dashboard() {
                         </div>
                         {
                             dashboardData?.onDevices === 0 ? '' : <div className="card-footer">
-                                <button disabled={dashboardData?.conntectedDevices - dashboardData?.onDevices === 0 ? true : false} className="btn btn-success btn-sm" onClick={e => { handleTurnOnOffDevice("ON") }}>Turn On All</button>
-                                <button disabled={dashboardData?.conntectedDevices - dashboardData?.onDevices > 0 ? true : false} className="btn btn-danger  btn-sm" onClick={e => { handleTurnOnOffDevice("OFF") }} style={{ marginLeft: 10 + 'px' }}>Turn Off All</button>
+                                <button disabled={dashboardData?.conntectedDevices - dashboardData?.onDevices === 0 ? true : false} className="btn btn-success btn-sm" onClick={e => { handleTurnOnOffDevice(true) }}>Turn On All</button>
+                                <button disabled={dashboardData?.conntectedDevices - dashboardData?.onDevices > 0 ? true : false} className="btn btn-danger  btn-sm" onClick={e => { handleTurnOnOffDevice(false) }} style={{ marginLeft: 10 + 'px' }}>Turn Off All</button>
                             </div>
                         }
                     </div>

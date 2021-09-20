@@ -13,7 +13,6 @@ export default function ActivityLog() {
                 setActivityData(res.data);
                 setLoadingData(false)
             }).catch(xx => {
-                debugger;
                 toast.error('Something went wrong');
             })
         }

@@ -29,33 +29,41 @@ import DeviceTypeCreate from './components/Admin/DeviceTypeCreate';
 import DeviceAction from './components/Admin/DeviceAction';
 import DeviceActionCreate from './components/Admin/DeviceActionCreate';
 import AdminPermission from './components/Admin/AdminPermission';
+import Loader from './components/Loader';
 toast.configure();
 function App() {
   const apiUrlData = require('../src/Configurations/apiUrl.json');
-  const [isMenuCollapsed, setIsMenuCollapsed] = useState(false);
+  const [isMenuCollapsed, setIsMenuCollapsed] = useState(true);
   const { isLoading, isAuthenticated, user } = useAuth0();
+  const [userRole, setuserRole] = useState(common.getDefault(common.dataType.object));
   if (isAuthenticated && user) {
-    window.iotGlobal = {};
+    window.iotGlobal = common.getDefault(common.dataType.object);
     window.iotGlobal["userKey"] = user.sub.split("|")[1];
   }
   useEffect(() => {
     if (isAuthenticated && user) {
-      Api.Post(apiUrlData.userController.addUser, {
+      let UserData = {
         "Firstname": user?.given_name,
         "Lastname": user?.family_name,
         "Email": user?.email,
         "UserKey": user?.sub.split("|")[1],
         "AuthProvidor": user?.sub.split("|")[0],
         "Language": user?.locale
-      })
-      Api.Get(apiUrlData.userLocation, false).then(res => {
-        var locData = res.data;
+      };
+      let ApiCalls = common.getDefault(common.dataType.array);
+      ApiCalls.push(Api.Get(apiUrlData.userLocation, false));
+      ApiCalls.push(Api.Get(apiUrlData.userController.getUserPermission));
+      ApiCalls.push(Api.Post(apiUrlData.userController.addUser, UserData));
+      Api.MultiCall(ApiCalls).then(res => {
+        setuserRole(res[1].data);
+        var locData = res[0].data;
         if (window?.iotGlobal?.userKey !== undefined)
           Api.Post(apiUrlData.activityLogController.add, {
             ipAddress: locData.IPv4,
             location: locData?.city + '-' + locData.country_name + "(" + locData.country_code + ")",
             appName: common.getAppName(),
-            activity: 'Login'
+            activity: 'Login',
+            userKey: window?.iotGlobal?.userKey
           })
       });
     }
@@ -66,106 +74,104 @@ function App() {
   if (!isAuthenticated) {
     return <LandingPage></LandingPage>
   }
-  else if (isLoading) { return <div>Loading...</div> }
-  else {
-    return (
-      <>
-        <div>
-          <Router>
-            <Header />
-            <LeftMenu setIsMenuCollapsed={setIsMenuCollapsed} />
-            <div className={!isMenuCollapsed ? 'view-container' : 'view-container view-container-small'}>
-              <Switch>
-                <Route exact path="/Dashboard" render={() => {
-                  return (
-                    <div><Dashboard></Dashboard></div>
-                  );
-                }}></Route>
-                <Route exact path="/Device" render={() => {
-                  return (
-                    <div><Device></Device></div>
-                  );
-                }}></Route>
-                <Route exact path="/Credentials" render={() => {
-                  return (
-                    <div><Credentials></Credentials></div>
-                  );
-                }}></Route>
-                <Route exact path="/Rooms" render={() => {
-                  return (
-                    <div><Rooms></Rooms></div>
-                  );
-                }}></Route>
-                <Route exact path="/RoomCreate" render={() => {
-                  return (
-                    <div><RoomCreate></RoomCreate></div>
-                  );
-                }}></Route>
-                <Route exact path="/DeviceCreate" render={() => {
-                  return (
-                    <div><DeviceCreate></DeviceCreate></div>
-                  );
-                }}></Route>
-                <Route exact path="/Developers" render={() => {
-                  return (
-                    <div><Developers></Developers></div>
-                  );
-                }}></Route>
-                <Route exact path="/Account" render={() => {
-                  return (
-                    <div><Account></Account></div>
-                  );
-                }}></Route>
-                <Route exact path="/Scenes" render={() => {
-                  return (
-                    <div><Scenes></Scenes></div>
-                  );
-                }}></Route>
-                <Route exact path="/SceneCreate" render={() => {
-                  return (
-                    <div><SceneCreate></SceneCreate></div>
-                  );
-                }}></Route>
-                <Route exact path="/activitylog" render={() => {
-                  return (
-                    <div><ActivityLog></ActivityLog></div>
-                  );
-                }}></Route>
-                 <Route exact path="/admin/deviceType" render={() => {
-                  return (
-                    <div><DeviceType></DeviceType></div>
-                  );
-                }}></Route>
-                  <Route exact path="/admin/deviceTypeCreate" render={() => {
-                  return (
-                    <div><DeviceTypeCreate></DeviceTypeCreate></div>
-                  );
-                }}></Route>
-                  <Route exact path="/admin/deviceAction" render={() => {
-                  return (
-                    <div><DeviceAction></DeviceAction></div>
-                  );
-                }}>
-                </Route>
-                  <Route exact path="/admin/deviceActionCreate" render={() => {
-                  return (
-                    <div><DeviceActionCreate></DeviceActionCreate></div>
-                  );
-                }}>
-                </Route>
-                  <Route exact path="/admin/AdminPermission" render={() => {
-                  return (
-                    <div><AdminPermission></AdminPermission></div>
-                  );
-                }}>                  
-                </Route>
-              </Switch>
-            </div>
-          </Router>
-        </div>
-      </>
-    );
-  }
+  if (isLoading) { return <Loader></Loader> }
+  return (
+    <>
+      <div>
+        <Router>
+          <Header />
+          <LeftMenu setIsMenuCollapsed={setIsMenuCollapsed} userRole={userRole} />
+          <div className={!isMenuCollapsed ? 'view-container' : 'view-container view-container-small'}>
+            <Switch>
+              <Route exact path="/Dashboard" render={() => {
+                return (
+                  <div><Dashboard userRole={userRole}></Dashboard></div>
+                );
+              }}></Route>
+              <Route exact path="/Device" render={() => {
+                return (
+                  <div><Device userRole={userRole}></Device></div>
+                );
+              }}></Route>
+              <Route exact path="/Credentials" render={() => {
+                return (
+                  <div><Credentials userRole={userRole}></Credentials></div>
+                );
+              }}></Route>
+              <Route exact path="/Rooms" render={() => {
+                return (
+                  <div><Rooms userRole={userRole}></Rooms></div>
+                );
+              }}></Route>
+              <Route exact path="/RoomCreate" render={() => {
+                return (
+                  <div><RoomCreate userRole={userRole}></RoomCreate></div>
+                );
+              }}></Route>
+              <Route exact path="/DeviceCreate" render={() => {
+                return (
+                  <div><DeviceCreate userRole={userRole}></DeviceCreate></div>
+                );
+              }}></Route>
+              <Route exact path="/Developers" render={() => {
+                return (
+                  <div><Developers userRole={userRole}></Developers></div>
+                );
+              }}></Route>
+              <Route exact path="/Account" render={() => {
+                return (
+                  <div><Account userRole={userRole}></Account></div>
+                );
+              }}></Route>
+              <Route exact path="/Scenes" render={() => {
+                return (
+                  <div><Scenes userRole={userRole}></Scenes></div>
+                );
+              }}></Route>
+              <Route exact path="/SceneCreate" render={() => {
+                return (
+                  <div><SceneCreate userRole={userRole}></SceneCreate></div>
+                );
+              }}></Route>
+              <Route exact path="/activitylog" render={() => {
+                return (
+                  <div><ActivityLog userRole={userRole}></ActivityLog></div>
+                );
+              }}></Route>
+              <Route exact path="/admin/deviceType" render={() => {
+                return (
+                  <div><DeviceType userRole={userRole}></DeviceType></div>
+                );
+              }}></Route>
+              <Route exact path="/admin/deviceTypeCreate" render={() => {
+                return (
+                  <div><DeviceTypeCreate></DeviceTypeCreate></div>
+                );
+              }}></Route>
+              <Route exact path="/admin/deviceAction" render={() => {
+                return (
+                  <div><DeviceAction userRole={userRole}></DeviceAction></div>
+                );
+              }}>
+              </Route>
+              <Route exact path="/admin/deviceActionCreate" render={() => {
+                return (
+                  <div><DeviceActionCreate userRole={userRole}></DeviceActionCreate></div>
+                );
+              }}>
+              </Route>
+              <Route exact path="/admin/AdminPermission" render={() => {
+                return (
+                  <div><AdminPermission userRole={userRole}></AdminPermission></div>
+                );
+              }}>
+              </Route>
+            </Switch>
+          </div>
+        </Router>
+      </div>
+    </>
+  );
 }
 
 export default App;

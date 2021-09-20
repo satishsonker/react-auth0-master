@@ -17,14 +17,12 @@ export default function DeviceType() {
         ApiCalls.push(Api.Get(apiUrlData.userController.getUserPermission));
         ApiCalls.push(Api.Get(apiUrlData.deviceController.getDeviceTypeDropdown));
         Api.MultiCall(ApiCalls).then(res => {
-            debugger;
             setUserRole(res[0].data);
             setDeviceTypeData(res[1].data);
             setLoadingData(false)
         });
     }, []);
     const handleDelete = (e) => {
-        debugger;
         var val = e.target.value ? e.target.value : e.target.dataset.deletekey;
         setLoadingData(true);
         Api.Delete(apiUrlData.adminController.deleteDeviceType + '?devicetypeid=' + val).then(res => {

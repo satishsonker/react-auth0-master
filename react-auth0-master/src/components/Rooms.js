@@ -6,20 +6,12 @@ import Loader from './Loader';
 import UpdateDeleteButton from './Buttons/UpdateDeleteButton';
 import { common } from "../Configurations/common";
 import Unauthorized from './CustomView/Unauthorized';
-export default function Rooms() {
-    const [roomData, setRoomData] = useState([]);
+export default function Rooms({ userRole }) {
+    const [roomData, setRoomData] = useState(common.getDefault(common.dataType.array));
     const [loadingData, setLoadingData] = useState(true);
     const [searchTerm, setsearchTerm] = useState("All");
     const apiUrlData = require('../Configurations/apiUrl.json');
-    const [userRole, setUserRole] = useState({});
-    useEffect(() => {
-        common.getUserRoles().then(res => {
-            debugger;
-            setUserRole(res.data);
-        });
-    }, [])
     const handleDelete = (e) => {
-        debugger;
         var val = e.target.value ? e.target.value : e.target.dataset.deletekey;
         setLoadingData(true);
         Api.Delete(apiUrlData.roomController.deleteRoom + '?roomkey=' + val).then(res => {
@@ -27,10 +19,9 @@ export default function Rooms() {
             setsearchTerm("All");
             handleSerach();
             toast.success("Room Deleted.")
-        })
+        });
     }
     const handleSerach = (e) => {
-        debugger;
         if (searchTerm !== "All" && (searchTerm === "" || searchTerm.length < 3)) {
             toast.warn("Please enter 3 char to search.");
             return;
@@ -39,7 +30,7 @@ export default function Rooms() {
         Api.Get(apiUrlData.roomController.searchRoom + '?searchterm=' + searchTerm).then(res => {
             setRoomData(res.data);
             setLoadingData(false)
-        })
+        });
     }
     useEffect(() => {
         async function getData() {
@@ -54,9 +45,9 @@ export default function Rooms() {
             getData();
         }
     }, [roomData, loadingData, apiUrlData.roomController.getAllRoom]);
-
+    if (!userRole.canView)
+        return <Unauthorized></Unauthorized>
     return (
-
         <div className="page-container">
             {
                 loadingData && <Loader></Loader>
@@ -83,52 +74,47 @@ export default function Rooms() {
                     </div>
                 </div>
             </div>
-            {userRole.canView &&
-                <div className="table-responsive">
-                    <table className="table">
-                        <thead>
+            <div className="table-responsive">
+                <table className="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Room</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {roomData && roomData.length === 0 && (
                             <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">Room</th>
-                                <th scope="col">Description</th>
-                                <th scope="col">Action</th>
+                                <td className="text-center" colSpan="4">No Data Found</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {roomData && roomData.length === 0 && (
-                                <tr>
-                                    <td className="text-center" colSpan="4">No Data Found</td>
-                                </tr>
-                            )
-                            }
-                            {
-                                roomData && (roomData.map((ele, ind) => {
-                                    return (
-                                        <tr key={ele.roomId}>
-                                            <td >{ind + 1}</td>
-                                            <td>{ele.roomName}
-                                                <div>{ele.roomKey}</div>
-                                            </td>
-                                            <td>{ele.roomDesc}</td>
-                                            <td>
-                                                {ele.roomKey && (
-                                                    <UpdateDeleteButton userRole={userRole} deleteHandler={handleDelete} dataKey={ele.roomKey} editUrl="/RoomCreate?roomkey="></UpdateDeleteButton>)}
-                                                {/* <div className="btn-group" role="group" aria-label="Basic example">
+                        )
+                        }
+                        {
+                            roomData && (roomData.map((ele, ind) => {
+                                return (
+                                    <tr key={ele.roomId}>
+                                        <td >{ind + 1}</td>
+                                        <td>{ele.roomName}
+                                            <div>{ele.roomKey}</div>
+                                        </td>
+                                        <td>{ele.roomDesc}</td>
+                                        <td>
+                                            {ele.roomKey && (
+                                                <UpdateDeleteButton userRole={userRole} deleteHandler={handleDelete} dataKey={ele.roomKey} editUrl="/RoomCreate?roomkey="></UpdateDeleteButton>)}
+                                            {/* <div className="btn-group" role="group" aria-label="Basic example">
                                                 <Link to={"/RoomCreate?roomkey="+ele.roomKey}><div className="btn btn-sm btn-outline-success"><i className="fas fa-pencil-alt" aria-hidden="true"></i></div></Link>
                                                 <button type="button" value={ele.roomKey} onClick={e=>handleDelete(e)} className="btn btn-sm btn-outline-danger"><i data-roomkey={ele.roomKey} className="fa fa-trash"></i></button>
                                             </div> */}
-                                            </td>
-                                        </tr>
-                                    )
-                                }))
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
-            {!userRole.canView && <Unauthorized></Unauthorized>
-
-            }
+                                        </td>
+                                    </tr>
+                                )
+                            }))
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     )
 }
