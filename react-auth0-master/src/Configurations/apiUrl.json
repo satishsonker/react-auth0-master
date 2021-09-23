@@ -56,6 +56,12 @@
         "searchDeviceAction":"/admin/SearchDeviceAction",
         "addDeviceAction":"/admin/addDeviceAction",        
         "updateDeviceAction":"/admin/updateDeviceAction",
-        "updateAdminPermission":"/admin/updateAdminPermission"
+        "updateAdminPermission":"/admin/updateAdminPermission",
+        "addDeviceCapability":"/admin/addDeviceCapability",
+        "updateDeviceCapability":"/admin/updateDeviceCapability",
+        "deleteDeviceCapability":"/admin/deleteDeviceCapability",
+        "searchDeviceCapability":"/admin/searchDeviceCapability",
+        "getDeviceCapability":"/admin/getDeviceCapability",
+        "getAllDeviceCapability":"/admin/getAllDeviceCapability"
     }
 }

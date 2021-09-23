@@ -30,6 +30,8 @@ import DeviceAction from './components/Admin/DeviceAction';
 import DeviceActionCreate from './components/Admin/DeviceActionCreate';
 import AdminPermission from './components/Admin/AdminPermission';
 import Loader from './components/Loader';
+import DeviceCapability from './components/Admin/DeviceCapability';
+import DeviceCapabilityCreate from './components/Admin/DeviceCapabilityCreate';
 toast.configure();
 function App() {
   const apiUrlData = require('../src/Configurations/apiUrl.json');
@@ -55,6 +57,7 @@ function App() {
       ApiCalls.push(Api.Get(apiUrlData.userController.getUserPermission));
       ApiCalls.push(Api.Post(apiUrlData.userController.addUser, UserData));
       Api.MultiCall(ApiCalls).then(res => {
+        debugger;
         setuserRole(res[1].data);
         var locData = res[0].data;
         if (window?.iotGlobal?.userKey !== undefined)
@@ -163,6 +166,18 @@ function App() {
               <Route exact path="/admin/AdminPermission" render={() => {
                 return (
                   <div><AdminPermission userRole={userRole}></AdminPermission></div>
+                );
+              }}>
+              </Route>
+              <Route exact path="/admin/DeviceCapability" render={() => {
+                return (
+                  <div><DeviceCapability userRole={userRole}></DeviceCapability></div>
+                );
+              }}>
+              </Route>
+              <Route exact path="/admin/DeviceCapabilityCreate" render={() => {
+                return (
+                  <div><DeviceCapabilityCreate userRole={userRole}></DeviceCapabilityCreate></div>
                 );
               }}>
               </Route>

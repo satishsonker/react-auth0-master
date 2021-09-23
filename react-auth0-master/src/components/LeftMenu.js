@@ -31,7 +31,8 @@ export default function LeftMenu({ setIsMenuCollapsed, userRole }) {
                     <>
                         <Link title="Device Type" to="/admin/devicetype"><li className="item"><i className="fas fa-chalkboard-teacher"></i> {!isCollapsed && ('Device Type')} </li></Link>
                         <Link title="Device Action" to="/admin/deviceaction"><li className="item"><i className="fas fa-chalkboard-teacher"></i> {!isCollapsed && ('Device Action')} </li></Link>
-                        <Link title="Admin Permission" to="/admin/adminPermission"><li className="item"><i className="fas fa-chalkboard-teacher"></i> {!isCollapsed && ('Admin Permission')} </li></Link>
+                        <Link title="Admin Permission" to="/admin/adminPermission"><li className="item"><i className="fas fa-chalkboard-teacher"></i> {!isCollapsed && ('Admin Permission')} </li>
+                        </Link><Link title="Device Capability" to="/admin/DeviceCapability"><li className="item"><i className="fas fa-chalkboard-teacher"></i> {!isCollapsed && ('Device Capability')} </li></Link>
                     </>
                 }
                 <li title="Sign out" className="item" onClick={() => logout()}><i className="fas fa-sign-out-alt"></i> {!isCollapsed && ('Sign out')} </li>

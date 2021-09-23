@@ -1,5 +1,5 @@
 import { Api } from "./Api";
-
+import { toast } from 'react-toastify';
 const mqttSubscribeServerStorageKey = process.env.REACT_APP_MQTT_SUBSCRIBE_SERVER_LOCAL_STORAGE_KEY;
 const mqttPublishStorageKey = process.env.REACT_APP_MQTT_PUBLISH_LOCAL_STORAGE_KEY;
 const apiUrlData = require('../Configurations/apiUrl.json');
@@ -28,6 +28,7 @@ export const common = {
         el.select();
         document.execCommand('copy');
         document.body.removeChild(el);
+        toast.success('Data copied to clipboard');
     },
     queryParam: (params) => {
         if (params === undefined || params === "" || params === null) {
