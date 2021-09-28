@@ -4,7 +4,8 @@ import { common } from "../../Configurations/common";
 import { Api } from "../../Configurations/Api";
 import { toast } from 'react-toastify';
 import Loader from "../Loader";
-export default function DeviceCapabilityCreate() {
+import Unauthorized from '../CustomView/Unauthorized';
+export default function DeviceCapabilityCreate({ userRole }) {
     const apiUrlData = require('../../Configurations/apiUrl.json');
     const [isDeviceCapabilityUpdating, setIsDeviceCapabilityUpdating] = useState(common.getDefault(common.dataType.bool));
     const [isDeviceCapabilityCreated, setIsDeviceCapabilityCreated] = useState(common.getDefault(common.dataType.bool));
@@ -14,7 +15,9 @@ export default function DeviceCapabilityCreate() {
         capabilityType: '',
         version: '',
         capabilityInterface: '',
-        supportedProperty: ''
+        supportedProperty: '',
+        proactivelyReported: 'on',
+        retrievable: 'on'
     });
     const [deviceTypeData, setDeviceTypeData] = useState(common.getDefault(common.dataType.arrayObject));
     useEffect(() => {
@@ -40,11 +43,16 @@ export default function DeviceCapabilityCreate() {
     }, [loadingData, apiUrlData.roomController.getRoom]);
 
     const inputHandler = (e) => {
+        let data = common.cloneObject(deviceCapability);
         let value = e.target.value;
         if (e.target.name === 'deviceTypeId' && value !== '') {
             value = parseInt(value);
         }
-        setDeviceCapability({ ...deviceCapability, [e.target.name]: value });
+        if (e.target.name === 'proactivelyReported' || e.target.name === 'retrievable') {
+            value = data[e.target.name]==='on'?'':'on';
+        }
+        data[e.target.name]=value;
+        setDeviceCapability({ ...data});
     };
     const handleSubmit = () => {
         if (deviceCapability.deviceTypeId === "") {
@@ -67,6 +75,8 @@ export default function DeviceCapabilityCreate() {
             toast.warn("Please enter device capability supported property");
             return;
         }
+        deviceCapability.proactivelyReported = deviceCapability.proactivelyReported === "on" ? true : false;
+        deviceCapability.retrievable = deviceCapability.retrievable === "on" ? true : false;
         Api.Post(!isDeviceCapabilityUpdating ? apiUrlData.adminController.addDeviceCapability : apiUrlData.adminController.updateDeviceCapability, deviceCapability).then(res => {
             toast.success(!isDeviceCapabilityUpdating ? "Device capability is created" : "Device capability is updated");
             setIsDeviceCapabilityCreated(true);
@@ -74,9 +84,12 @@ export default function DeviceCapabilityCreate() {
             toast.error("Something went wrong !");
         });
     }
+    if (loadingData)
+        return <Loader></Loader>
+    if (!userRole?.isAdmin)
+        return <Unauthorized></Unauthorized>
     return (
         <div className="page-container">
-            {loadingData && (<Loader></Loader>)}
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb">
                     <li className="breadcrumb-item"><Link to="/Dashboard">Home</Link></li>
@@ -132,11 +145,11 @@ export default function DeviceCapabilityCreate() {
                                 </div>
                                 <div className="mb-3">
                                     <div class="form-check form-switch">
-                                        <input name="proactivelyReported" onChange={e => inputHandler(e)} class="form-check-input" type="checkbox" id="flexSwitchCheckDisabled" checked={deviceCapability?.proactivelyReported}  />
+                                        <input name="proactivelyReported" onChange={e => inputHandler(e)} class="form-check-input" type="checkbox" id="flexSwitchCheckDisabled" checked={deviceCapability.proactivelyReported} />
                                         <label class="form-check-label" for="flexSwitchCheckDisabled">Proactively Reported</label>
                                     </div>
                                     <div class="form-check form-switch">
-                                        <input name="retrievable" onChange={e => inputHandler(e)} class="form-check-input" type="checkbox" id="flexSwitchCheckCheckedDisabled" checked={deviceCapability?.retrievable} />
+                                        <input name="retrievable" onChange={e => inputHandler(e)} class="form-check-input" type="checkbox" id="flexSwitchCheckCheckedDisabled" checked={deviceCapability.retrievable} />
                                         <label class="form-check-label" for="flexSwitchCheckCheckedDisabled">Retrievable</label>
                                     </div>
                                 </div>

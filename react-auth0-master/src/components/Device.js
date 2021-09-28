@@ -6,11 +6,10 @@ import Loader from './Loader';
 import { common } from '../Configurations/common';
 import Unauthorized from '../components/CustomView/Unauthorized';
 
-export default function Device() {
+export default function Device({userRole}) {
     const [deviceData, setDeviceData] = useState([]);
     const [loadingData, setLoadingData] = useState(true);
     const [searchTerm, setsearchTerm] = useState("All");
-    const [userRole, setuserRole] = useState(common.getDefault(common.dataType.object));
     const apiUrlData = require('../Configurations/apiUrl.json');
     const handleDelete = (e) => {
         var val = e.target.value ? e.target.value : e.target.dataset.devicekey;
@@ -37,21 +36,18 @@ export default function Device() {
     useEffect(() => {
         let ApiCalls = [];
         ApiCalls.push(Api.Get(apiUrlData.deviceController.getAllDevice));
-        ApiCalls.push(Api.Get(apiUrlData.userController.getUserPermission));
         Api.MultiCall(ApiCalls).then(res => {
             setDeviceData(res[0].data);
-            setuserRole(res[1].data);
             setLoadingData(false);
         });
     }, [loadingData, apiUrlData.deviceController.getAllDevice]);
+    if(loadingData)
+    return <Loader></Loader>
     if (!userRole?.canView) {
         return <Unauthorized></Unauthorized>
     }
     return (
         <div className="page-container">
-            {
-                loadingData && <Loader></Loader>
-            }
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb">
                     <li className="breadcrumb-item"><Link to="/Dashboard">Home</Link></li>
@@ -79,6 +75,7 @@ export default function Device() {
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Device</th>
+                            <th scope="col">Friendly Name</th>
                             <th scope="col">Description</th>
                             <th scope="col">Device Type</th>
                             <th scope="col">Power State</th>
@@ -103,6 +100,7 @@ export default function Device() {
                                         <td className="text-center">{ind + 1}</td>
                                         <td className="text-center">{ele.deviceName}
                                             <div className="copy-key">{ele.deviceKey?.substring(0, ele.deviceKey.length - 6) + ele.deviceKey?.substring(ele.deviceKey.length - 6, ele.deviceKey.length).replace(/[a-z\d]/gi, "#")} <i className="fas fa-copy text-primary" title="Copy device Id" onClick={e => common.copyToClipboard(ele.deviceKey)}></i></div></td>
+                                        <td className="text-center">{ele.friendlyName}</td>
                                         <td className="text-center">{ele.deviceDesc}</td>
                                         <td className="text-center"><img alt="Device Type" className="img-icon" src={"/assets/images/" + ele.deviceTypeName + '.png'} /> {' ' + ele.deviceTypeName}
                                         </td>

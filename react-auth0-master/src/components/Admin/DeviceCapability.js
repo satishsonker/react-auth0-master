@@ -12,10 +12,8 @@ export default function DeviceCapability({userRole}) {
     const [searchTerm, setsearchTerm] = useState("All");
     const apiUrlData = require('../../Configurations/apiUrl.json');
     useEffect(() => {
-        console.log(userRole);
         Api.Get(apiUrlData.adminController.getAllDeviceCapability).then(res => {
             setDeviceCapabilityData(res.data);
-            debugger;
             setLoadingData(false)
         });
     }, []);

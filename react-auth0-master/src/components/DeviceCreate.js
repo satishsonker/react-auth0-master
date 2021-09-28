@@ -5,7 +5,8 @@ import { Api } from "../Configurations/Api";
 import { toast } from 'react-toastify';
 import Loader from "../components/Loader";
 import {common  } from "../Configurations/common";
-export default function DeviceCreate() {
+import Unauthorized from './CustomView/Unauthorized';
+export default function DeviceCreate({userRole}) {
     toast.configure();
     const { user } = useAuth0();
     const apiUrlData = require('../Configurations/apiUrl.json');
@@ -31,6 +32,7 @@ export default function DeviceCreate() {
             if (deviceKey !== "") {
                 setIsDeviceUpdate(true);
                 await Api.Get(apiUrlData.deviceController.getAllDevice + "?devicekey=" + deviceKey).then(res => {
+                    res.data[0].friendlyName= res.data[0].deviceName;
                     setDevice(res.data[0]);
                     setLoadingData(false);
                 });
@@ -55,6 +57,14 @@ export default function DeviceCreate() {
             toast.error("Device name should be min 3 char");
             return;
         }
+        if (device.friendlyName.length < 1) {
+            toast.error("Fill device friendly name field.");
+            return;
+        }
+        else if (device.friendlyName.length < 3) {
+            toast.error("Device friendly name should be min 3 char");
+            return;
+        }
         if (device.deviceTypeId === "") {
             toast.error("Please select device type");
             return;
@@ -70,9 +80,12 @@ export default function DeviceCreate() {
             toast.error("Something went wrong !");
         });
     }
+if(loadingData)
+return <Loader></Loader>
+if(!userRole?.canView)
+return <Unauthorized></Unauthorized>
     return (
         <div className="page-container">
-            {loadingData && (<Loader></Loader>)}
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb">
                     <li className="breadcrumb-item"><Link to="/Dashboard">Home</Link></li>
@@ -92,6 +105,11 @@ export default function DeviceCreate() {
                                     <label htmlFor="txtDeviceName" className="form-label">Device Name<strong className="text-danger">*</strong></label>
                                     <input type="text" name="deviceName" value={device.deviceName} onChange={e => inputHandler(e)} className="form-control" id="txtDeviceName" aria-describedby="txtDeviceNameHelp" />
                                     <div id="txtDeviceNameHelp" className="form-text">Enter the device name</div>
+                                </div>
+                                <div className="mb-3">
+                                    <label htmlFor="txtDeviceFriendlyName" className="form-label">Device Friendly Name<strong className="text-danger">*</strong></label>
+                                    <input type="text" name="friendlyName" value={device.friendlyName} onChange={e => inputHandler(e)} className="form-control" id="txtDeviceFriendlyName" aria-describedby="txtDeviceFriendlyNameHelp" />
+                                    <div id="txtDeviceFriendlyNameHelp" className="form-text">Enter the alexa friendly name eg. Living Room Light</div>
                                 </div>
                                 <div className="mb-3">
                                     <label htmlFor="txtDeviceDesc" className="form-label">Device Description</label>

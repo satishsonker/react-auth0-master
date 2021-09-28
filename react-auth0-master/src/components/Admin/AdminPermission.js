@@ -7,7 +7,6 @@ import Loader from "../Loader";
 import Unauthorized from "../CustomView/Unauthorized";
 
 export default function AdminPermission({userRole}) {
-    debugger;
     const apiUrlData = require('../../Configurations/apiUrl.json');
     //const [userRole, setUserRole] = useState(common.getDefault(common.dataType.object));
     const [adminPermissions, setAdminPermissions] = useState(common.getDefault(common.dataType.arrayObject));

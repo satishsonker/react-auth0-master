@@ -52,15 +52,12 @@ function App() {
         "AuthProvidor": user?.sub.split("|")[0],
         "Language": user?.locale
       };
-      let ApiCalls = common.getDefault(common.dataType.array);
-      ApiCalls.push(Api.Get(apiUrlData.userLocation, false));
-      ApiCalls.push(Api.Get(apiUrlData.userController.getUserPermission));
-      ApiCalls.push(Api.Post(apiUrlData.userController.addUser, UserData));
-      Api.MultiCall(ApiCalls).then(res => {
-        debugger;
-        setuserRole(res[1].data);
-        var locData = res[0].data;
-        if (window?.iotGlobal?.userKey !== undefined)
+      Api.Get(apiUrlData.userController.getUserPermission).then(res => {
+        setuserRole(res.data);
+      });
+      if (window?.iotGlobal?.userKey !== undefined) {
+        Api.Get(apiUrlData.userLocation, false).then(res => {
+          var locData = res.data;
           Api.Post(apiUrlData.activityLogController.add, {
             ipAddress: locData.IPv4,
             location: locData?.city + '-' + locData.country_name + "(" + locData.country_code + ")",
@@ -68,10 +65,14 @@ function App() {
             activity: 'Login',
             userKey: window?.iotGlobal?.userKey
           })
+        });
+      }
+      Api.Post(apiUrlData.userController.addUser, UserData).then(res => {
+        console.table(res.data);
       });
     }
 
-  });
+  },[isAuthenticated]);
 
 
   if (!isAuthenticated) {
