@@ -32,6 +32,8 @@ import AdminPermission from './components/Admin/AdminPermission';
 import Loader from './components/Loader';
 import DeviceCapability from './components/Admin/DeviceCapability';
 import DeviceCapabilityCreate from './components/Admin/DeviceCapabilityCreate';
+import MasterData from './components/Admin/MasterData';
+import MasterDataCreate from './components/Admin/MasterDataCreate';
 toast.configure();
 function App() {
   const apiUrlData = require('../src/Configurations/apiUrl.json');
@@ -179,6 +181,18 @@ function App() {
               <Route exact path="/admin/DeviceCapabilityCreate" render={() => {
                 return (
                   <div><DeviceCapabilityCreate userRole={userRole}></DeviceCapabilityCreate></div>
+                );
+              }}>
+              </Route>
+              <Route exact path="/admin/MasterData" render={() => {
+                return (
+                  <div><MasterData userRole={userRole}></MasterData></div>
+                );
+              }}>
+              </Route>
+              <Route exact path="/admin/MasterDataCreate" render={() => {
+                return (
+                  <div><MasterDataCreate userRole={userRole}></MasterDataCreate></div>
                 );
               }}>
               </Route>

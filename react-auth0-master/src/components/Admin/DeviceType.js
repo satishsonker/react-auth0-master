@@ -6,19 +6,16 @@ import { toast } from 'react-toastify';
 import Loader from '../Loader';
 import { common } from "../../Configurations/common";
 import UpdateDeleteButton from '../Buttons/UpdateDeleteButton';
-export default function DeviceType() {
+export default function DeviceType({userRole}) {
     const [deviceTypeData, setDeviceTypeData] = useState([]);
     const [loadingData, setLoadingData] = useState(true);
     const [searchTerm, setsearchTerm] = useState("All");
     const apiUrlData = require('../../Configurations/apiUrl.json');
-    const [userRole, setUserRole] = useState({});
     useEffect(() => {
         let ApiCalls = [];
-        ApiCalls.push(Api.Get(apiUrlData.userController.getUserPermission));
         ApiCalls.push(Api.Get(apiUrlData.deviceController.getDeviceTypeDropdown));
         Api.MultiCall(ApiCalls).then(res => {
-            setUserRole(res[0].data);
-            setDeviceTypeData(res[1].data);
+            setDeviceTypeData(res[0].data);
             setLoadingData(false)
         });
     }, []);

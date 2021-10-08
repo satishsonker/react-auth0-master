@@ -100,7 +100,7 @@ export default function Dashboard() {
     }, [loadingData, apiUrlData.dashboardController.getDashboardData]);
 
     const handleTurnOnOffDevice = (isON, deviceKey) => {
-        let value=isON?'ON':'OFF';
+        let value=!isON?'ON':'OFF';
         let localData = common.getStorePubData();
         localData = !common.hasValue(localData) ? [] : localData;
         if (!common.hasValue(deviceKey)) {

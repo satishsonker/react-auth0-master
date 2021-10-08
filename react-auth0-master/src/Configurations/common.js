@@ -168,6 +168,11 @@ export const common = {
         if (!common.hasValue(params) || params.indexOf('undefined')>-1 || params.indexOf('null')>-1 || params.replace(/ /g,'')==='')
             return common.hasValue(replaceValue)?replaceValue:'';
         return params;
+    },
+    defaultIfEmpty:(input,defaultValue)=>{
+        if(!common.hasValue(input) || input === {} || input === "")
+        return defaultValue;
+        return input;
     }
 
 }

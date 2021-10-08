@@ -4,7 +4,9 @@ import { common } from "../../Configurations/common";
 import { Api } from "../../Configurations/Api";
 import { toast } from 'react-toastify';
 import Loader from "../Loader";
+
 import Unauthorized from '../CustomView/Unauthorized';
+import DropdownMultiselect from "react-multiselect-dropdown-bootstrap";
 export default function DeviceCapabilityCreate({ userRole }) {
     const apiUrlData = require('../../Configurations/apiUrl.json');
     const [isDeviceCapabilityUpdating, setIsDeviceCapabilityUpdating] = useState(common.getDefault(common.dataType.bool));
@@ -19,15 +21,34 @@ export default function DeviceCapabilityCreate({ userRole }) {
         proactivelyReported: 'on',
         retrievable: 'on'
     });
+    const [capInterface, setCapInterface] = useState(common.getDefault(common.dataType.arrayObject));
+    const [capVersion, setCapVersion] = useState(common.getDefault(common.dataType.arrayObject));
+    const [capType, setCapType] = useState(common.getDefault(common.dataType.arrayObject));
+    const [capSupProp, setCapSupProp] = useState(common.getDefault(common.dataType.arrayObject));
+    const [displayCategory, setDisplayCategory] = useState([{key:'LIGHT',label:'Light'}]); //[{ key: 'LIGHT', label: "Light" },{ key: 'SWITCH', label: "Switch" }]
     const [deviceTypeData, setDeviceTypeData] = useState(common.getDefault(common.dataType.arrayObject));
+
     useEffect(() => {
         let deviceCapabilityid = common.queryParam(window.location.search)?.capabilityid;
         deviceCapabilityid = !common.hasValue(deviceCapabilityid) ? 0 : parseInt(deviceCapabilityid);
-        Api.Get(apiUrlData.deviceController.getDeviceTypeDropdown).then(res => {
-            setDeviceTypeData(res.data);
+        let Apis = [];
+        Apis.push(Api.Get(apiUrlData.deviceController.getDeviceTypeDropdown));
+        Apis.push(Api.Get(apiUrlData.masterDataController.getAllCapabilityDropdownData))
+        Api.MultiCall(Apis).then(res => {
+            setDeviceTypeData(res[0].data);
+            setCapInterface(res[1].data.capabilityInterfaces);
+            setCapVersion(res[1].data.capabilityVersions);
+            setCapType(res[1].data.capabilityTypes);
+            setCapSupProp(res[1].data.capabilitySupportedProperties);
+            let disCap = [];
+            res[1].data.displayCategories.map((ele) => {
+                disCap.push({ key: ele.key, label: ele.value });
+            });
+            setDisplayCategory({...displayCategory,disCap});
         });
         async function getData() {
             await Api.Get(apiUrlData.adminController.getDeviceCapability + '?devicecapabilityid=' + deviceCapabilityid).then(res => {
+                res.data.displayCategory = !common.hasValue(res.data.displayCategory) || res.data.displayCategory === '' ? 'LIGHT' : res.data.displayCategory;
                 setDeviceCapability(res.data);
                 setLoadingData(false)
             }).catch(xx => {
@@ -40,19 +61,24 @@ export default function DeviceCapabilityCreate({ userRole }) {
                 getData();
             }
         }
-    }, [loadingData, apiUrlData.roomController.getRoom]);
+    }, [loadingData,displayCategory, apiUrlData.roomController.getRoom]);
 
-    const inputHandler = (e) => {
+    const inputHandler = (e, name) => {
         let data = common.cloneObject(deviceCapability);
-        let value = e.target.value;
-        if (e.target.name === 'deviceTypeId' && value !== '') {
-            value = parseInt(value);
+        if (!common.hasValue(name)) {
+            let value = e.target.value;
+            if (e.target.name === 'deviceTypeId' && value !== '') {
+                value = parseInt(value);
+            }
+            if (e.target.name === 'proactivelyReported' || e.target.name === 'retrievable') {
+                value = data[e.target.name] === 'on' ? '' : 'on';
+            }
+            data[e.target.name] = value;
         }
-        if (e.target.name === 'proactivelyReported' || e.target.name === 'retrievable') {
-            value = data[e.target.name]==='on'?'':'on';
+        else {
+            data[name] = e.toString();
         }
-        data[e.target.name]=value;
-        setDeviceCapability({ ...data});
+        setDeviceCapability({ ...data });
     };
     const handleSubmit = () => {
         if (deviceCapability.deviceTypeId === "") {
@@ -111,7 +137,7 @@ export default function DeviceCapabilityCreate({ userRole }) {
                                         <option value="">Select Device Type</option>
                                         {
                                             deviceTypeData?.map((ele, ind) => {
-                                                return <option value={ele.deviceTypeId}>{ele.deviceTypeName}</option>
+                                                return <option key={ind} value={ele.deviceTypeId}>{ele.deviceTypeName}</option>
                                             })
                                         }
                                     </select>
@@ -120,8 +146,12 @@ export default function DeviceCapabilityCreate({ userRole }) {
                                 <div className="mb-3">
                                     <label htmlFor="txtCapabilityType" className="form-label">Device Capability Type<strong className="text-danger">*</strong></label>
                                     <select name="capabilityType" value={deviceCapability?.capabilityType} onChange={e => inputHandler(e)} className="form-control" id="txtCapabilityType" aria-describedby="txtCapabilityTypeHelp">
-                                        <option value="">Select Interface</option>
-                                        <option value="AlexaInterface">AlexaInterface</option>
+                                        <option value="">Select Type</option>
+                                        {
+                                            capType?.map((ele, ind) => {
+                                                return <option key={ind} value={ele.value}>{ele.value}</option>
+                                            })
+                                        }
                                     </select>
                                     <div id="txtCapabilityTypeHelp" className="form-text">Select device capability type</div>
                                 </div>
@@ -129,28 +159,51 @@ export default function DeviceCapabilityCreate({ userRole }) {
                                     <label htmlFor="ddlVersion" className="form-label">Version<strong className="text-danger">*</strong></label>
                                     <select name="version" value={deviceCapability?.version} onChange={e => inputHandler(e)} className="form-control" id="ddlVersion" aria-describedby="ddlVersioneHelp">
                                         <option value="">Select version</option>
-                                        <option value="3">3</option>
+                                        {
+                                            capVersion?.map((ele, ind) => {
+                                                return <option key={ind} value={ele.value}>{ele.value}</option>
+                                            })
+                                        }
                                     </select>
                                     <div id="ddlVersionHelp" className="form-text">Select device capability version</div>
                                 </div>
                                 <div className="mb-3">
+                                    <label htmlFor="ddlDisplayCategory" className="form-label">Display Category<strong className="text-danger">*</strong></label>
+                                    <DropdownMultiselect options={displayCategory} selected={!common.hasValue(deviceCapability.displayCategory) ? [] : deviceCapability.displayCategory?.split(',')} name="displayCategory" handleOnChange={e => inputHandler(e, 'displayCategory')} />
+                                    <div id="ddlDisplayCategoryHelp" className="form-text">Select device display category</div>
+                                </div>
+                                <div className="mb-3">
                                     <label htmlFor="txtCapabilityInterface" className="form-label">Capability Interface<strong className="text-danger">*</strong></label>
-                                    <input type="text" name="capabilityInterface" value={deviceCapability?.capabilityInterface} onChange={e => inputHandler(e)} className="form-control" id="txtCapabilityInterface" aria-describedby="txtCapabilityInterfaceHelp" />
+                                    <select name="capabilityInterface" value={deviceCapability?.capabilityInterface} onChange={e => inputHandler(e)} className="form-control" id="txtCapabilityInterface" aria-describedby="txtCapabilityInterfaceHelp">
+                                        <option value="">Select Interface</option>
+                                        {
+                                            capInterface?.map((ele, ind) => {
+                                                return <option key={ind} value={ele.value}>{ele.value}</option>
+                                            })
+                                        }
+                                    </select>
                                     <div id="txtCapabilityInterfaceHelp" className="form-text">Enter device capability Interface</div>
                                 </div>
                                 <div className="mb-3">
                                     <label htmlFor="txtSupportedProperty" className="form-label">Supported Property<strong className="text-danger">*</strong></label>
-                                    <input type="text" name="supportedProperty" value={deviceCapability?.supportedProperty} onChange={e => inputHandler(e)} className="form-control" id="txtSupportedProperty" aria-describedby="txtSupportedPropertyHelp" />
+                                    <select type="text" name="supportedProperty" value={deviceCapability?.supportedProperty} onChange={e => inputHandler(e)} className="form-control" id="txtSupportedProperty" aria-describedby="txtSupportedPropertyHelp">
+                                        <option value="">Select Supported Property</option>
+                                        {
+                                            capSupProp?.map((ele, ind) => {
+                                                return <option key={ind} value={ele.value}>{ele.value}</option>
+                                            })
+                                        }
+                                    </select>
                                     <div id="txtSupportedPropertyHelp" className="form-text">Enter device capability Supported Property</div>
                                 </div>
                                 <div className="mb-3">
-                                    <div class="form-check form-switch">
-                                        <input name="proactivelyReported" onChange={e => inputHandler(e)} class="form-check-input" type="checkbox" id="flexSwitchCheckDisabled" checked={deviceCapability.proactivelyReported} />
-                                        <label class="form-check-label" for="flexSwitchCheckDisabled">Proactively Reported</label>
+                                    <div className="form-check form-switch">
+                                        <input name="proactivelyReported" onChange={e => inputHandler(e)} className="form-check-input" type="checkbox" id="flexSwitchCheckDisabled" checked={deviceCapability.proactivelyReported} />
+                                        <label className="form-check-label" htmlFor="flexSwitchCheckDisabled">Proactively Reported</label>
                                     </div>
-                                    <div class="form-check form-switch">
-                                        <input name="retrievable" onChange={e => inputHandler(e)} class="form-check-input" type="checkbox" id="flexSwitchCheckCheckedDisabled" checked={deviceCapability.retrievable} />
-                                        <label class="form-check-label" for="flexSwitchCheckCheckedDisabled">Retrievable</label>
+                                    <div className="form-check form-switch">
+                                        <input name="retrievable" onChange={e => inputHandler(e)} className="form-check-input" type="checkbox" id="flexSwitchCheckCheckedDisabled" checked={deviceCapability.retrievable} />
+                                        <label className="form-check-label" htmlFor="flexSwitchCheckCheckedDisabled">Retrievable</label>
                                     </div>
                                 </div>
                                 <button type="button" onClick={e => handleSubmit(e)} className="btn btn-primary">{!isDeviceCapabilityUpdating ? 'Add ' : 'Update '} Device Capability</button>

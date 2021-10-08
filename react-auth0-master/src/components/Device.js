@@ -21,17 +21,18 @@ export default function Device({userRole}) {
             toast.success("Device Deleted.")
         })
     }
-    const handleSerach = (e) => {
-        if (searchTerm !== "All" && (searchTerm === "" || searchTerm.length < 3)) {
+    const handleSerach = (keyword) => {
+        keyword=!common.hasValue(keyword)?searchTerm:keyword;
+        if (keyword !== "All" && (keyword === "" || keyword.length < 3)) {
             toast.warn("Please enter 3 char to search.");
             return;
         }
         setLoadingData(true);
-        Api.Get(apiUrlData.deviceController.searchDevice + '?searchterm=' + searchTerm).then(res => {
+        Api.Get(apiUrlData.deviceController.searchDevice + '?searchterm=' + keyword).then(res => {
+            debugger;
             setDeviceData(res.data);
             setLoadingData(false);
-
-        })
+        });
     }
     useEffect(() => {
         let ApiCalls = [];
@@ -58,7 +59,7 @@ export default function Device({userRole}) {
                 <div className="p-2 bd-highlight">
                     <div className="btn-group" role="group" aria-label="Basic example">
                         {userRole?.canCreate && <Link to="/devicecreate" > <button type="button" className="btn btn-sm btn-outline-primary"><i className="fa fa-plus"></i> Add</button></Link>}
-                        <button type="button" className="btn btn-sm btn-outline-primary"><i className="fa fa-sync-alt"></i></button>
+                        <button type="button" onClick={e=>handleSerach()} className="btn btn-sm btn-outline-primary"><i className="fa fa-sync-alt"></i></button>
                     </div>
                 </div>
                 <div className="p-2 "><p className="h5">Devices</p></div>
@@ -104,7 +105,7 @@ export default function Device({userRole}) {
                                         <td className="text-center">{ele.deviceDesc}</td>
                                         <td className="text-center"><img alt="Device Type" className="img-icon" src={"/assets/images/" + ele.deviceTypeName + '.png'} /> {' ' + ele.deviceTypeName}
                                         </td>
-                                        <td className="text-center">{1 === 0 && (<div><i className="fas fa-bolt text-danger"></i> OFF</div>)}</td>
+                                        <td className="text-center">{ele?.status?.toLowerCase()==='on'?<div><i className="fas fa-bolt text-success"></i> ON</div>:<div><i className="fas fa-bolt text-danger"></i> OFF</div>}</td>
                                         <td className="text-center">{ele.roomName}</td>
                                         <td className="text-center">Default</td>
                                         <td className="text-center">{common.getDateTime(ele.lastConnected)}</td>

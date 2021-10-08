@@ -17,7 +17,7 @@ export default function DeviceCreate({userRole}) {
     const [isDeviceCreated, setIsDeviceCreated] = useState(false);
     
     const [device, setDevice] = useState({
-        "UserKey": user.sub.split("|")[1]
+        "manufacturerName": process.env.REACT_APP_MANUFACTURER_NAME
     });
     useEffect(() => {
         let deviceKey = common.queryParam(window.location.search)?.id;
@@ -63,6 +63,9 @@ export default function DeviceCreate({userRole}) {
         }
         else if (device.friendlyName.length < 3) {
             toast.error("Device friendly name should be min 3 char");
+            return;
+        } else if (device.manufacturerName.length < 3) {
+            toast.error("Device manufacturer name should be min 3 char");
             return;
         }
         if (device.deviceTypeId === "") {
@@ -117,7 +120,12 @@ return <Unauthorized></Unauthorized>
                                     <div id="txtDeviceDescHelp" className="form-text">Enter the desire Device description</div>
                                 </div>
                                 <div className="mb-3">
-                                    <label htmlFor="txtDeviceType" className="form-label">Device Type</label>
+                                    <label htmlFor="txtManufacturerName" className="form-label">Manufacturer Name<strong className="text-danger">*</strong></label>
+                                    <input type="text" name="manufacturerName" value={device.manufacturerName} onChange={e => inputHandler(e)} className="form-control" id="txtManufacturerName" aria-describedby="txtManufacturerNameHelp" />
+                                    <div id="txtManufacturerNameHelp" className="form-text">Enter the desire Device manufacturer name</div>
+                                </div>
+                                <div className="mb-3">
+                                    <label htmlFor="txtDeviceType" className="form-label">Device Type<strong className="text-danger">*</strong></label>
                                     <select name="deviceTypeId" value={device.deviceTypeId} onChange={e => inputHandler(e, 'int')} className="form-control" id="ddlDeviceType" aria-describedby="txtDeviceTypeHelp">
                                         <option value="">Select Device Type</option>
                                         {
@@ -131,7 +139,7 @@ return <Unauthorized></Unauthorized>
                                     <div id="txtDeviceTypeHelp" className="form-text">Select device type</div>
                                 </div>
                                 <div className="mb-3">
-                                    <label htmlFor="txtRoomKey" className="form-label">Room Name</label>
+                                    <label htmlFor="txtRoomKey" className="form-label">Room Name<strong className="text-danger">*</strong></label>
                                     <select name="roomId" value={device.roomId} onChange={e => inputHandler(e, 'int')} className="form-control" id="ddlRoomKey" aria-describedby="ddlRoomKeyHelp">
                                         <option value="">Select Room</option>
                                         {

@@ -6,11 +6,12 @@ import Loader from './Loader';
 import UpdateDeleteButton from './Buttons/UpdateDeleteButton';
 import { common } from "../Configurations/common";
 import Unauthorized from './CustomView/Unauthorized';
+import TableView from './Tables/TableView';
 export default function Rooms({ userRole }) {
     const [roomData, setRoomData] = useState(common.getDefault(common.dataType.array));
     const [loadingData, setLoadingData] = useState(true);
     const [searchTerm, setsearchTerm] = useState("All");
-    const apiUrlData = require('../Configurations/apiUrl.json');
+    const apiUrlData = require('../Configurations/apiUrl.json');    
     const handleDelete = (e) => {
         var val = e.target.value ? e.target.value : e.target.dataset.deletekey;
         setLoadingData(true);
@@ -20,6 +21,18 @@ export default function Rooms({ userRole }) {
             handleSerach();
             toast.success("Room Deleted.")
         });
+    }
+    let tableOption={
+        headers : ['Room','Description'],
+        columns : ['roomName','roomDesc'],
+        rowData : roomData,
+        idName : 'roomKey',
+        editUrl : "/RoomCreate?roomkey=",
+        rowNumber : true,
+        action : true,
+        userRole :  userRole,
+        NoRecordMsg : 'No Data Found',
+        deleteHandler : handleDelete
     }
     const handleSerach = (e) => {
         if (searchTerm !== "All" && (searchTerm === "" || searchTerm.length < 3)) {
@@ -74,7 +87,8 @@ export default function Rooms({ userRole }) {
                     </div>
                 </div>
             </div>
-            <div className="table-responsive">
+            <TableView options={tableOption}></TableView>
+            {/* <div className="table-responsive">
                 <table className="table">
                     <thead>
                         <tr>
@@ -103,10 +117,6 @@ export default function Rooms({ userRole }) {
                                         <td>
                                             {ele.roomKey && (
                                                 <UpdateDeleteButton userRole={userRole} deleteHandler={handleDelete} dataKey={ele.roomKey} editUrl="/RoomCreate?roomkey="></UpdateDeleteButton>)}
-                                            {/* <div className="btn-group" role="group" aria-label="Basic example">
-                                                <Link to={"/RoomCreate?roomkey="+ele.roomKey}><div className="btn btn-sm btn-outline-success"><i className="fas fa-pencil-alt" aria-hidden="true"></i></div></Link>
-                                                <button type="button" value={ele.roomKey} onClick={e=>handleDelete(e)} className="btn btn-sm btn-outline-danger"><i data-roomkey={ele.roomKey} className="fa fa-trash"></i></button>
-                                            </div> */}
                                         </td>
                                     </tr>
                                 )
@@ -114,7 +124,7 @@ export default function Rooms({ userRole }) {
                         }
                     </tbody>
                 </table>
-            </div>
-        </div>
+            </div>*/}
+        </div> 
     )
 }

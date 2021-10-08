@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import Loader from '../Loader';
 import { common } from "../../Configurations/common";
 import UpdateDeleteButton from '../Buttons/UpdateDeleteButton';
+
 export default function DeviceCapability({userRole}) {
     const [deviceCapabilityData, setDeviceCapabilityData] = useState(common.getDefault(common.dataType));
     const [loadingData, setLoadingData] = useState(true);
@@ -76,7 +77,8 @@ export default function DeviceCapability({userRole}) {
                                 <th scope="col">Device Type</th>
                                 <th scope="col">Capability Type</th>                                
                                 <th scope="col">Version</th>                                
-                                <th scope="col">Capability Interface</th>                                
+                                <th scope="col">Capability Interface</th>   
+                                <th scope="col">Display Category</th>                               
                                 <th scope="col">Proactively Reported</th>
                                 <th scope="col">Retrievable</th>
                                 <th scope="col">Supported Property</th>
@@ -86,22 +88,23 @@ export default function DeviceCapability({userRole}) {
                         <tbody>
                             {deviceCapabilityData && deviceCapabilityData.length === 0 && (
                                 <tr>
-                                    <td className="text-center" colSpan="9">No Data Found</td>
+                                    <td key="0" className="text-center" colSpan="9">No Data Found</td>
                                 </tr>
                             )
                             }
                             {
                                 deviceCapabilityData && (deviceCapabilityData.map((ele, ind) => {
                                     return (
-                                        <tr key={ele.deviceTypeId}>
+                                        <tr key={ind + 1}>
                                             <td >{ind + 1}</td>
                                             <td>{ele?.deviceType?.deviceTypeName}</td>
                                             <td>{ele.capabilityType}</td>
-                                            <td>{ele?.version?.toString()}</td>
-                                            <td>{ele.capabilityInterface}</td>
-                                            <td>{ele?.proactivelyReported?.toString()}</td>
+                                            <td>{ele?.version.toString()}</td>
+                                            <td>{ele?.capabilityInterface}</td>
+                                            <td>{ele?.displayCategory}</td>
+                                            <td>{ele?.proactivelyReported.toString()}</td>
                                             <td>{ele?.retrievable?.toString()}</td>
-                                            <td>{ele?.supportedProperty?.toString()}</td>
+                                            <td>{ele?.supportedProperty.toString()}</td>
                                             <td><UpdateDeleteButton userRole={userRole} deleteHandler={handleDelete} dataKey={ele.deviceCapabilityId} editUrl="/admin/DeviceCapabilityCreate?capabilityid="></UpdateDeleteButton>
                                             </td>
                                         </tr>

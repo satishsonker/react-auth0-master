@@ -49,7 +49,7 @@ export default function DeviceControl({ devicePowerHandler, deviceData }) {
         }
     }
     function isDeviceOn() {
-        return deviceData?.deviceStatus?.toLowerCase() === 'on';
+        return deviceData?.status?.toLowerCase() === 'on';
     }
 
     function getButton() {
@@ -58,7 +58,7 @@ export default function DeviceControl({ devicePowerHandler, deviceData }) {
         else if (getDeviceTyoe().isLight || getDeviceTyoe().isStrip) {
             if (!common.hasValue(deviceData?.deviceStatus))
                 return <>
-                <div className="d-inline-flex p-2 bd-highlight"><button disabled={!common.hasValue(deviceData?.ip) ||  isDeviceOn()} className={isDeviceOn()?"btn btn-success btn-sm":"btn btn-danger btn-sm"  }onClick={e => handleDeviceOnOff(isDeviceOn(), deviceData?.deviceKey)}><i className="fas fa-power-off"></i></button></div>
+                <div className="d-inline-flex p-2 bd-highlight"><button disabled={!common.hasValue(deviceData?.ip)} className={isDeviceOn()?"btn btn-success btn-sm":"btn btn-danger btn-sm"  }onClick={e => handleDeviceOnOff(isDeviceOn(), deviceData?.deviceKey)}><i className="fas fa-power-off"></i></button></div>
                 </>
         }
     }
