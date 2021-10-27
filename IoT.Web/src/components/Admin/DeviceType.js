@@ -62,7 +62,7 @@ export default function DeviceType({userRole}) {
                         {userRole.canView && <button type="button" onClick={e => handleSerach("All")} className="btn btn-sm btn-outline-primary"><i className="fa fa-sync-alt"></i></button>}
                     </div>
                 </div>
-                <div className="p-2 "><p className="h5">Rooms</p></div>
+                <div className="p-2 "><p className="h5">Device Type</p></div>
                 <div className="p-2 bd-highlight">
                     <div className="input-group mb-3">
                         {userRole.canView && (<input type="text" value={searchTerm} onChange={e => setsearchTerm(e.target.value)} className="form-control form-control-sm" placeholder="Search Room" aria-label="Search Devices" aria-describedby="button-addon2" />)}
