@@ -25,7 +25,7 @@ export default function DeviceCapabilityCreate({ userRole }) {
     const [capVersion, setCapVersion] = useState(common.getDefault(common.dataType.arrayObject));
     const [capType, setCapType] = useState(common.getDefault(common.dataType.arrayObject));
     const [capSupProp, setCapSupProp] = useState(common.getDefault(common.dataType.arrayObject));
-    const [displayCategory, setDisplayCategory] = useState([{key:'LIGHT',label:'Light'}]); //[{ key: 'LIGHT', label: "Light" },{ key: 'SWITCH', label: "Switch" }]
+    const [displayCategory, setDisplayCategory] = useState([{key:'DOORBELL',label:'Doorbell'},{key:'LIGHT',label:'Light'},{key:'SWITCH',label:'Switch'}]); //[{ key: 'LIGHT', label: "Light" },{ key: 'SWITCH', label: "Switch" }]
     const [deviceTypeData, setDeviceTypeData] = useState(common.getDefault(common.dataType.arrayObject));
 
     useEffect(() => {
@@ -33,26 +33,33 @@ export default function DeviceCapabilityCreate({ userRole }) {
         deviceCapabilityid = !common.hasValue(deviceCapabilityid) ? 0 : parseInt(deviceCapabilityid);
         let Apis = [];
         Apis.push(Api.Get(apiUrlData.deviceController.getDeviceTypeDropdown));
-        Apis.push(Api.Get(apiUrlData.masterDataController.getAllCapabilityDropdownData))
+        Apis.push(Api.Get(apiUrlData.masterDataController.getAllCapabilityDropdownData));
         Api.MultiCall(Apis).then(res => {
             setDeviceTypeData(res[0].data);
             setCapInterface(res[1].data.capabilityInterfaces);
             setCapVersion(res[1].data.capabilityVersions);
             setCapType(res[1].data.capabilityTypes);
             setCapSupProp(res[1].data.capabilitySupportedProperties);
+            debugger;
             let disCap = [];
             res[1].data.displayCategories.map((ele) => {
                 disCap.push({ key: ele.key, label: ele.value });
             });
-            setDisplayCategory({...displayCategory,disCap});
+            setDisplayCategory(disCap);
+            let cc=displayCategory;
+            setLoadingData(false);
+        }).catch(err=>{
+            setLoadingData(false);
         });
         async function getData() {
+            setLoadingData(true);
             await Api.Get(apiUrlData.adminController.getDeviceCapability + '?devicecapabilityid=' + deviceCapabilityid).then(res => {
                 res.data.displayCategory = !common.hasValue(res.data.displayCategory) || res.data.displayCategory === '' ? 'LIGHT' : res.data.displayCategory;
                 setDeviceCapability(res.data);
-                setLoadingData(false)
+                setLoadingData(false);
             }).catch(xx => {
                 toast.error('Something went wrong');
+                setLoadingData(false);
             })
         }
         if (!loadingData) {
@@ -61,7 +68,7 @@ export default function DeviceCapabilityCreate({ userRole }) {
                 getData();
             }
         }
-    }, [loadingData,displayCategory, apiUrlData.roomController.getRoom]);
+    }, [apiUrlData.roomController.getRoom]);
 
     const inputHandler = (e, name) => {
         let data = common.cloneObject(deviceCapability);

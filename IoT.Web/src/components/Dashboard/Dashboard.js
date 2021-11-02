@@ -107,7 +107,6 @@ export default function Dashboard({ userRole, mqttPayload, setPubMsg }) {
     }, [loadingData, apiUrlData.dashboardController.getDashboardData]);
 
     const handleTurnOnOffDeviceAll = (isOn) => {
-        debugger;
         connectedDeviceId.map(ele => {
             handleTurnOnOffDevice(isOn, ele);
         });

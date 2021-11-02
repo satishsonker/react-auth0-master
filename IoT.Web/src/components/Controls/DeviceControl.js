@@ -5,7 +5,6 @@ import '../../css/deviceControl.css';
 export default function DeviceControl({ devicePowerHandler, deviceData, setPubMsg }) {
     const [isOn, setIsOn] = useState(false);
     useEffect(() => {
-        debugger;
        setIsOn(deviceData?.status?.toLowerCase() === 'on');
     }, [deviceData.status])
     const [publishData, setPublishData] = useState({

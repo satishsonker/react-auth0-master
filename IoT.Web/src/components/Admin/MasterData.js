@@ -7,6 +7,11 @@ import Loader from '../Loader';
 import { common } from "../../Configurations/common";
 import UpdateDeleteButton from '../Buttons/UpdateDeleteButton';
 import '../../css/MasterData.css'
+import Breadcrumb from '../Breadcrumb/Breadcrumb';
+import CapabilityTypesTable from './MasterDataTables/CapabilityTypesTable';
+import CapabilityVersionTable from './MasterDataTables/CapabilityVersionTable';
+import DisplayCategoryTable from './MasterDataTables/DisplayCategoryTable';
+import CapabilityInterfaceTable from './MasterDataTables/CapabilityInterfaceTable';
 export default function MasterData({ userRole }) {
     const [loadingData, setLoadingData] = useState(true);
     const [capabilityType, setCapabilityType] = useState([])
@@ -21,6 +26,8 @@ export default function MasterData({ userRole }) {
     tabType = !common.hasValue(tabType) ? 'catyp' : tabType;
     let showAcc = "accordion-collapse collapse show";
     let hideAcc = "accordion-collapse collapse";
+    
+    const breadcrumbOption = [{ name: 'Home', link: "/Dashboard", isActive: false }, { name: 'Master Data', link: "", isActive: true }]
     const actionType = {
         capType: "catyp",
         capVersion: "cvers",
@@ -30,18 +37,10 @@ export default function MasterData({ userRole }) {
     }
     useEffect(() => {
         let ApiCalls = [];
-        ApiCalls.push(Api.Get(apiUrlData.masterDataController.getCapabilityInterface));
         ApiCalls.push(Api.Get(apiUrlData.masterDataController.getCapabilitySupportedProperty));
-        ApiCalls.push(Api.Get(apiUrlData.masterDataController.getCapabilityType));
-        ApiCalls.push(Api.Get(apiUrlData.masterDataController.getDisplayCategory));
-        ApiCalls.push(Api.Get(apiUrlData.masterDataController.getCapabilityVersion));
         Api.MultiCall(ApiCalls).then(res => {
             if (res.length>0) {
-                setCapabilityType(res[2].data);
-                setCapabilitySupportedProperties(res[1].data);
-                setCapabilityInterfaces(res[0].data);
-                setDisplayCategories(res[3].data); 
-                setCapabilityVersions(res[4].data);
+                setCapabilitySupportedProperties(res[0].data);
             }
             setLoadingData(false)
         });
@@ -92,7 +91,7 @@ export default function MasterData({ userRole }) {
         });
     }
     const handleSearch = (val, type) => {
-       let search=!common.hasValue(val) || val===''?searchTerm:val;
+       let search=!common.hasValue(val) || val===''?'All':val;
         switch (type) {
             case actionType.capType:
                 setLoadingData(true);
@@ -145,12 +144,7 @@ export default function MasterData({ userRole }) {
         return <Unauthorized></Unauthorized>
     return (
         <div className="page-container">
-            <nav aria-label="breadcrumb">
-                <ol className="breadcrumb">
-                    <li className="breadcrumb-item"><Link to="/Dashboard">Home</Link></li>
-                    <li className="breadcrumb-item active" aria-current="page">Device Type</li>
-                </ol>
-            </nav>
+            <Breadcrumb option={breadcrumbOption}></Breadcrumb>            
             <div className="accordion" id="accordionExample">
                 <div className="accordion-item">
                     <h2 className="accordion-header" id="headingOne">
@@ -160,54 +154,7 @@ export default function MasterData({ userRole }) {
                     </h2>
                     <div id="collapseOne" className={tabType === 'catyp' ? showAcc : hideAcc} aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                         <div className="accordion-body">
-                            <div className="d-flex justify-content-between bd-highlight mb-3">
-                                <div className="p-2 bd-highlight">
-                                    <div className="btn-group" role="group" aria-label="Basic example">
-                                        {userRole.canCreate && <Link to="/admin/MasterDataCreate?type=catyp"><div className="btn btn-sm btn-outline-primary"><i className="fa fa-plus"></i> Add</div></Link>}
-                                        {userRole.canView && <button type="button" onClick={e => handleSearch('All',actionType.capType)} className="btn btn-sm btn-outline-primary"><i className="fa fa-sync-alt"></i></button>}
-                                    </div>
-                                </div>
-                                <div className="p-2 "><p className="h5">Capability Types</p></div>
-                                <div className="p-2 bd-highlight">
-                                    <div className="input-group mb-3">
-                                        {userRole.canView && (<input type="text" value={searchTerm} onChange={e => setsearchTerm(e.target.value)} className="form-control form-control-sm" placeholder="Search Room" aria-label="Search Capability Type" aria-describedby="button-addon2" />)}
-                                        {userRole.canView && (<button className="btn btn-outline-secondary" type="button" id="button-addon2" onClick={e => handleSearch(e.target.value,actionType.capType)}><i className="fa fa-search"></i></button>)}
-                                    </div>
-                                </div>
-                            </div>
-                            {userRole.canView &&
-                                <div className="table-responsive">
-                                    <table className="table">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">#</th>
-                                                <th scope="col">Capability Type Name</th>
-                                                <th scope="col">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {capabilityType && capabilityType.length === 0 && (
-                                                <tr>
-                                                    <td className="text-center" colSpan="3">No Data Found</td>
-                                                </tr>
-                                            )
-                                            }
-                                            {
-                                                capabilityType && (capabilityType.map((ele, ind) => {
-                                                    return (
-                                                        <tr key={ele.capabilityTypeId}>
-                                                            <td >{ind + 1}</td>
-                                                            <td>{ele.capabilityTypeName}</td>
-                                                            <td><UpdateDeleteButton userRole={userRole} deleteHandler={handleDeleteCapType} dataKey={ele.capabilityTypeId} editUrl={editUrl + "catyp&id="}></UpdateDeleteButton>
-                                                            </td>
-                                                        </tr>
-                                                    )
-                                                }))
-                                            }
-                                        </tbody>
-                                    </table>
-                                </div>
-                            }
+                             <CapabilityTypesTable userRole={userRole}></CapabilityTypesTable>
                         </div>
                     </div>
                 </div>
@@ -219,54 +166,7 @@ export default function MasterData({ userRole }) {
                     </h2>
                     <div id="collapseTwo" className={tabType === 'cvers' ? showAcc : hideAcc} aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
                         <div className="accordion-body">
-                            <div className="d-flex justify-content-between bd-highlight mb-3">
-                                <div className="p-2 bd-highlight">
-                                    <div className="btn-group" role="group" aria-label="Basic example">
-                                        {userRole.canCreate && <Link to="/admin/MasterDataCreate?type=cvers"><div className="btn btn-sm btn-outline-primary"><i className="fa fa-plus"></i> Add</div></Link>}
-                                        {userRole.canView && <button type="button" onClick={e => handleSearch("All",actionType.capVersion)} className="btn btn-sm btn-outline-primary"><i className="fa fa-sync-alt"></i></button>}
-                                    </div>
-                                </div>
-                                <div className="p-2 "><p className="h5">Capability Versions</p></div>
-                                <div className="p-2 bd-highlight">
-                                    <div className="input-group mb-3">
-                                        {userRole.canView && (<input type="text" value={searchTerm} onChange={e => setsearchTerm(e.target.value)} className="form-control form-control-sm" placeholder="Search Room" aria-label="Search Devices" aria-describedby="button-addon2" />)}
-                                        {userRole.canView && (<button className="btn btn-outline-secondary" type="button" id="button-addon2" onClick={e => handleSearch(e.target.value,actionType.capVersion)}><i className="fa fa-search"></i></button>)}
-                                    </div>
-                                </div>
-                            </div>
-                            {userRole.canView &&
-                                <div className="table-responsive">
-                                    <table className="table">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">#</th>
-                                                <th scope="col">Capability Version</th>
-                                                <th scope="col">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {capabilityVersions && capabilityVersions.length === 0 && (
-                                                <tr>
-                                                    <td className="text-center" colSpan="3">No Data Found</td>
-                                                </tr>
-                                            )
-                                            }
-                                            {
-                                                capabilityVersions && (capabilityVersions.map((ele, ind) => {
-                                                    return (
-                                                        <tr key={ele.capabilityVersionId}>
-                                                            <td >{ind + 1}</td>
-                                                            <td>{ele.capabilityVersionName}</td>
-                                                            <td><UpdateDeleteButton userRole={userRole} deleteHandler={handleDeleteCapVer} dataKey={ele.capabilityVersionId} editUrl={editUrl + "cvers&id="}></UpdateDeleteButton>
-                                                            </td>
-                                                        </tr>
-                                                    )
-                                                }))
-                                            }
-                                        </tbody>
-                                    </table>
-                                </div>
-                            }
+                           <CapabilityVersionTable userRole={userRole}></CapabilityVersionTable>
                         </div>
                     </div>
                 </div>
@@ -278,56 +178,7 @@ export default function MasterData({ userRole }) {
                     </h2>
                     <div id="collapseThree" className={tabType === 'cdcat' ? showAcc : hideAcc} aria-labelledby="headingThree" data-bs-parent="#accordionExample">
                         <div className="accordion-body">
-                            <div className="d-flex justify-content-between bd-highlight mb-3">
-                                <div className="p-2 bd-highlight">
-                                    <div className="btn-group" role="group" aria-label="Basic example">
-                                        {userRole.canCreate && <Link to="/admin/MasterDataCreate?type=cdcat"><div className="btn btn-sm btn-outline-primary"><i className="fa fa-plus"></i> Add</div></Link>}
-                                        {userRole.canView && <button type="button" onClick={e => handleSearch("All",actionType.disCat)} className="btn btn-sm btn-outline-primary"><i className="fa fa-sync-alt"></i></button>}
-                                    </div>
-                                </div>
-                                <div className="p-2 "><p className="h5">Display Category</p></div>
-                                <div className="p-2 bd-highlight">
-                                    <div className="input-group mb-3">
-                                        {userRole.canView && (<input type="text" value={searchTerm} onChange={e => setsearchTerm(e.target.value)} className="form-control form-control-sm" placeholder="Search Room" aria-label="Search Display Category" aria-describedby="button-addon2" />)}
-                                        {userRole.canView && (<button className="btn btn-outline-secondary" type="button" id="button-addon2" onClick={e => handleSearch(e.target.value,actionType.disCat)}><i className="fa fa-search"></i></button>)}
-                                    </div>
-                                </div>
-                            </div>
-                            {userRole.canView &&
-                                <div className="table-responsive">
-                                    <table className="table">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">#</th>
-                                                <th scope="col">Display Category Value</th>
-                                                <th scope="col">Display Category Label</th>
-                                                <th scope="col">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {displayCategories && displayCategories.length === 0 && (
-                                                <tr>
-                                                    <td className="text-center" colSpan="3">No Data Found</td>
-                                                </tr>
-                                            )
-                                            }
-                                            {
-                                                displayCategories && (displayCategories.map((ele, ind) => {
-                                                    return (
-                                                        <tr key={ele.displayCategoryId}>
-                                                            <td >{ind + 1}</td>
-                                                            <td>{ele.displayCategoryValue}</td>
-                                                            <td>{ele.displayCategoryLabel}</td>
-                                                            <td><UpdateDeleteButton userRole={userRole} deleteHandler={handleDeleteDisCat} dataKey={ele.displayCategoryId} editUrl={editUrl + "cdcat&id="}></UpdateDeleteButton>
-                                                            </td>
-                                                        </tr>
-                                                    )
-                                                }))
-                                            }
-                                        </tbody>
-                                    </table>
-                                </div>
-                            }
+                           <DisplayCategoryTable userRole={userRole}></DisplayCategoryTable>
                         </div>
                     </div>
                 </div>
@@ -339,54 +190,7 @@ export default function MasterData({ userRole }) {
                     </h2>
                     <div id="collapseFour" className={tabType === 'cifa' ? showAcc : hideAcc} aria-labelledby="headingFour" data-bs-parent="#accordionExample">
                         <div className="accordion-body">
-                            <div className="d-flex justify-content-between bd-highlight mb-3">
-                                <div className="p-2 bd-highlight">
-                                    <div className="btn-group" role="group" aria-label="Basic example">
-                                        {userRole.canCreate && <Link to="/admin/masterdatacreate?type=cifa"><div className="btn btn-sm btn-outline-primary"><i className="fa fa-plus"></i> Add</div></Link>}
-                                        {userRole.canView && <button type="button" onClick={e => handleSearch("All",actionType.capInt)} className="btn btn-sm btn-outline-primary"><i className="fa fa-sync-alt"></i></button>}
-                                    </div>
-                                </div>
-                                <div className="p-2 "><p className="h5">Capability Interface</p></div>
-                                <div className="p-2 bd-highlight">
-                                    <div className="input-group mb-3">
-                                        {userRole.canView && (<input type="text" value={searchTerm} onChange={e => setsearchTerm(e.target.value)} className="form-control form-control-sm" placeholder="Search Room" aria-label="Search Capability Interface" aria-describedby="button-addon2" />)}
-                                        {userRole.canView && (<button className="btn btn-outline-secondary" type="button" id="button-addon2" onClick={e => handleSearch(e.target.value,actionType.capInt)}><i className="fa fa-search"></i></button>)}
-                                    </div>
-                                </div>
-                            </div>
-                            {userRole.canView &&
-                                <div className="table-responsive">
-                                    <table className="table">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">#</th>
-                                                <th scope="col">Capability Interface Name</th>
-                                                <th scope="col">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {capabilityInterfaces && capabilityInterfaces.length === 0 && (
-                                                <tr>
-                                                    <td className="text-center" colSpan="3">No Data Found</td>
-                                                </tr>
-                                            )
-                                            }
-                                            {
-                                                capabilityInterfaces && (capabilityInterfaces.map((ele, ind) => {
-                                                    return (
-                                                        <tr key={ele.capabilityInterfaceId}>
-                                                            <td >{ind + 1}</td>
-                                                            <td>{ele.capabilityInterfaceName}</td>
-                                                            <td><UpdateDeleteButton userRole={userRole} deleteHandler={handleDeleteCapInt} dataKey={ele.capabilityInterfaceId} editUrl={editUrl + "cifa&id="}></UpdateDeleteButton>
-                                                            </td>
-                                                        </tr>
-                                                    )
-                                                }))
-                                            }
-                                        </tbody>
-                                    </table>
-                                </div>
-                            }
+                           <CapabilityInterfaceTable userRole={userRole}></CapabilityInterfaceTable>
                         </div>
                     </div>
                 </div>

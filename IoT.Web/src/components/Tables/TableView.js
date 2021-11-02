@@ -2,7 +2,7 @@ import React from 'react'
 import { common } from '../../Configurations/common'
 
 import UpdateDeleteButton from '../Buttons/UpdateDeleteButton';
-export default function TableView({ options }) {
+export default function TableView({ options,userRole }) {
     options.headers = common.defaultIfEmpty(options.headers, []);
     options.columns = common.defaultIfEmpty(options.columns, []);
     options.rowData = common.defaultIfEmpty(options.rowData, []);
@@ -15,14 +15,14 @@ export default function TableView({ options }) {
     options.deleteHandler = common.defaultIfEmpty(options.deleteHandler, () => { });
     return (
         <div>
-            <div className="table-responsive">
+            <div className="table-responsive px-3">
                 <table className="table">
                     <thead>
                         <tr>
                             {options.rowNumber && <th scope="col">#</th>}
                             {
                                 options.headers.map((ele) => {
-                                    return <th scope="col">{ele}</th>
+                                    return <th key={ele} scope="col">{ele}</th>
                                 })
                             }
                             {options.action && <th scope="col">Action</th>}
@@ -38,16 +38,16 @@ export default function TableView({ options }) {
                         {
                             options.rowData && (options.rowData.map((ele, ind) => {
                                 return (
-                                    <tr key={ele[options.idName]}>
+                                    <tr key={ind}>
                                         {options.rowNumber && <td >{ind + 1}</td>}
                                         {
                                             options.columns.map((eleCol) => {
-                                                return <td>{ele[eleCol]}</td>
+                                                return <td key={ele[eleCol]+Math.random()*1000} >{ele[eleCol]}</td>
                                             })
                                         }
                                         <td>
                                             {options.action && (
-                                                <UpdateDeleteButton userRole={options.userRole} deleteHandler={options.deleteHandler} dataKey={ele[options.idName]} editUrl={options.editUrl}></UpdateDeleteButton>)}
+                                                <UpdateDeleteButton userRole={userRole} deleteHandler={options.deleteHandler} dataKey={ele[options.idName]} editUrl={options.editUrl}></UpdateDeleteButton>)}
 
                                         </td>
                                     </tr>

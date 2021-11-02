@@ -29,14 +29,12 @@ export default function Device({userRole}) {
         }
         setLoadingData(true);
         Api.Get(apiUrlData.deviceController.searchDevice + '?searchterm=' + keyword).then(res => {
-            debugger;
             setDeviceData(res.data);
             setLoadingData(false);
         });
     }
     useEffect(() => {
         let ApiCalls = [];
-        debugger;
         ApiCalls.push(Api.Get(apiUrlData.deviceController.getAllDevice));
         Api.MultiCall(ApiCalls).then(res => {
             setDeviceData(res[0].data);

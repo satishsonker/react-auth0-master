@@ -55,7 +55,6 @@ export default function MqttConnection({ connectionOptions, connectionStatus, mq
   useEffect(() => {
     if(pubMsg && mqttSubscribeTopic.length>0)
     {
-      debugger;
       let pubData=typeof pubMsg==="string"?pubMsg:JSON.stringify(pubMsg);
       client.publish(mqttSubscribeTopic[0].replace('/server',''),pubData,1, (error) => {
         if (error) {
