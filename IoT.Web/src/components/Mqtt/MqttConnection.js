@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import mqtt from 'mqtt';
 import { common } from '../../Configurations/common';
-export default function MqttConnection({ connectionOptions, connectionStatus, mqttClient, setPayload, mqttSubscribeTopic,pubMsg }) {
+export default function MqttConnection({ connectionOptions, connectionStatus, mqttClient, setPayload, mqttSubscribeTopic, pubMsg }) {
   const [client, setClient] = useState(null);
   const [clientStatus, setClientStatus] = useState(common.getDefault(common.dataType.string));
   useEffect(() => {
@@ -53,14 +53,26 @@ export default function MqttConnection({ connectionOptions, connectionStatus, mq
     }
   }, [mqttSubscribeTopic]);
   useEffect(() => {
-    if(pubMsg && mqttSubscribeTopic.length>0)
-    {
-      let pubData=typeof pubMsg==="string"?pubMsg:JSON.stringify(pubMsg);
-      client.publish(mqttSubscribeTopic[0].replace('/server',''),pubData,1, (error) => {
-        if (error) {
-          console.log("Publish error: ", error);
-        }
-      });
+    let pubData;
+    if (pubMsg && mqttSubscribeTopic.length > 0) {
+      if (pubMsg.length === undefined) {
+        pubData = typeof pubMsg === "string" ? pubMsg : JSON.stringify(pubMsg);
+        client.publish(mqttSubscribeTopic[0].replace('/server', ''), pubData, 1, (error) => {
+          if (error) {
+            console.log("Publish error: ", error);
+          }
+        });
+      }
+      if (pubMsg.length > 0) {
+        pubMsg.forEach(element => {
+          pubData = typeof element === "string" ? element : JSON.stringify(element);
+          client.publish(mqttSubscribeTopic[0].replace('/server', ''), pubData, 1, (error) => {
+            if (error) {
+              console.log("Publish error: ", error);
+            }
+          });
+        });
+      }
     }
   }, [pubMsg])
   useEffect(() => {

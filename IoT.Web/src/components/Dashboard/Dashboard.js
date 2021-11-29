@@ -59,7 +59,7 @@ export default function Dashboard({ userRole, mqttPayload, setPubMsg }) {
                 common.setStoreSubServerData([]);
             }
         }
-    }, [messages])
+    }, [messages]);
     function OnDeviceCounter(params) {
         var data = {
             online: 0,
@@ -105,11 +105,38 @@ export default function Dashboard({ userRole, mqttPayload, setPubMsg }) {
             getDashboardData();
         }
     }, [loadingData, apiUrlData.dashboardController.getDashboardData]);
-
-    const handleTurnOnOffDeviceAll = (isOn) => {
-        connectedDeviceId.map(ele => {
-            handleTurnOnOffDevice(isOn, ele);
+    const getDeviceListFromEachRoom=(deviceData)=>{
+        let deviceList=[];
+        deviceData.map(ele=>{
+            deviceList.push(ele.deviceKey);
         });
+        return deviceList;
+    }
+    const handleTurnOnOffDeviceRoom = (deviceList,isOn) => {
+        let pubMsgs=[];
+        let value = isOn ? 'OFF' : 'ON';
+        deviceList.map(ele => {
+            pubMsgs.push({
+                deviceId: ele,
+                action: common.getCommandObj(value).action,
+                topic: common.getApiKey(),
+                value: common.getCommandObj(value).value,
+            });
+        });
+        setPubMsg(pubMsgs);
+    }
+    const handleTurnOnOffDeviceAll = (isOn) => {
+        let pubMsgs=[];
+        let value = isOn ? 'OFF' : 'ON';
+        connectedDeviceId.map(ele => {
+            pubMsgs.push({
+                deviceId: ele,
+                action: common.getCommandObj(value).action,
+                topic: common.getApiKey(),
+                value: common.getCommandObj(value).value,
+            });
+        });
+        setPubMsg(pubMsgs);
     }
     const handleTurnOnOffDevice = (isON, deviceKey) => {
         let value = isON ? 'OFF' : 'ON';
@@ -122,7 +149,7 @@ export default function Dashboard({ userRole, mqttPayload, setPubMsg }) {
     };
 
     const sendPingRequest = () => {
-        setPubMsg({action:"ping"});
+        setPubMsg({ action: "ping" });
     }
 
     return (
@@ -142,6 +169,9 @@ export default function Dashboard({ userRole, mqttPayload, setPubMsg }) {
                         <div className="card-body">
                             <p className="card-text text-center">  <span className="device-count">{dashBoardStatus.connected}</span> Out of <span className="device-count">{dashBoardStatus.totalDevice}</span></p>
                         </div>
+                        <div className="card-footer">
+                            <button className="btn btn-success btn-sm" onClick={e => { sendPingRequest() }}>Refresh</button>
+                            </div>
                     </div>
                 </div>
                 <div className="col mb-3">
@@ -160,8 +190,8 @@ export default function Dashboard({ userRole, mqttPayload, setPubMsg }) {
                         </div>
                         {
                             dashBoardStatus.connected === 0 ? '' : <div className="card-footer">
-                                <button disabled={dashBoardStatus.connected - dashBoardStatus.onDevices === 0 ? true : false} className="btn btn-success btn-sm" onClick={e => { handleTurnOnOffDeviceAll(true) }}>Turn On All</button>
-                                <button disabled={dashBoardStatus.connected - dashBoardStatus.onDevices > 0 ? true : false} className="btn btn-danger  btn-sm" onClick={e => { handleTurnOnOffDeviceAll(false) }} style={{ marginLeft: 10 + 'px' }}>Turn Off All</button>
+                                <button disabled={dashBoardStatus.connected - dashBoardStatus.onDevices === 0 ? true : false} className="btn btn-success btn-sm" onClick={e => { handleTurnOnOffDeviceAll(false) }}>Turn On All</button>
+                                <button disabled={dashBoardStatus.connected - dashBoardStatus.onDevices > 0 ? true : false} className="btn btn-danger  btn-sm" onClick={e => { handleTurnOnOffDeviceAll(true) }} style={{ marginLeft: 10 + 'px' }}>Turn Off All</button>
                             </div>
                         }
                     </div>
@@ -179,11 +209,13 @@ export default function Dashboard({ userRole, mqttPayload, setPubMsg }) {
                                 return <>
                                     <div className="accordion-item">
                                         <h2 className="accordion-header" id={"heading" + ind}>
-                                            <button className="accordion-button bg-primary" type="button" data-bs-toggle="collapse" data-bs-target={"#collapse" + ind} aria-expanded="true" aria-controls={"collapse" + ind}>
+                                            <div className="accordion-button bg-primary" type="button" data-bs-toggle="collapse" data-bs-target={"#collapse" + ind} aria-expanded="true" aria-controls={"collapse" + ind}>
                                                 {
                                                     ele[0].roomName + " - " + ele.length + " Device(s) - " + OnDeviceCounter(ele).online + " Online - " + OnDeviceCounter(ele).on + " Turn On"
                                                 }
-                                            </button>
+                                                <div className="d-inline-flex p-2 bd-highlight"><button onClick={e=>{handleTurnOnOffDeviceRoom(getDeviceListFromEachRoom(ele),false)}} type="button" title="Turn All On" className="btn btn-success btn-sm" data-bs-toggle="modal"><i className="fas fa-power-off"></i></button></div>
+                                                <div className="d-inline-flex p-2 bd-highlight"><button onClick={e=>{handleTurnOnOffDeviceRoom(getDeviceListFromEachRoom(ele),true)}} type="button" title="Turn All Off" className="btn btn-danger btn-sm" data-bs-toggle="modal"><i className="fas fa-power-off"></i></button></div>
+                                            </div>
                                         </h2>
                                         <div id={"collapse" + ind} className={"accordion-collapse collapse" + (ind === 0 ? 'show' : '')} aria-labelledby={"heading" + ind} data-bs-parent="#accordionExample">
                                             <div className="accordion-body">

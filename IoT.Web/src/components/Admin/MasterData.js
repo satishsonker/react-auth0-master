@@ -137,11 +137,11 @@ export default function MasterData({ userRole }) {
             default:
                 break;
         }
-    }
+    }   
+    if (!userRole.isAdmin)
+        return <Unauthorized></Unauthorized> 
     if (loadingData)
         return <Loader></Loader>
-    if (!userRole.isAdmin)
-        return <Unauthorized></Unauthorized>
     return (
         <div className="page-container">
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>            

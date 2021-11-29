@@ -87,7 +87,7 @@ export default function Rooms({ userRole }) {
                     </div>
                 </div>
             </div>
-            <TableView options={tableOption}></TableView>
+            <TableView options={tableOption} userRole={userRole}></TableView>
             {/* <div className="table-responsive">
                 <table className="table">
                     <thead>

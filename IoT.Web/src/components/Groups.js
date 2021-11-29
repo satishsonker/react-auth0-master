@@ -1,0 +1,135 @@
+import React, { useState, useEffect } from 'react'
+import { Link, Redirect } from "react-router-dom";
+import { Api } from "../Configurations/Api";
+import { toast } from 'react-toastify';
+import Loader from './Loader';
+import UpdateDeleteButton from './Buttons/UpdateDeleteButton';
+import { common } from "../Configurations/common";
+import Unauthorized from './CustomView/Unauthorized';
+import Breadcrumb from './Breadcrumb/Breadcrumb';
+import TableHeader from './Tables/TableHeader';
+
+export default function Groups({ userRole, setPubMsg }) {
+    const handleDelete = (e) => {
+        var val = e.target.value ? e.target.value : e.target.dataset.deletekey;
+        setLoadingData(true);
+        Api.Delete(apiUrlData.adminController.deleteDeviceType + '?devicetypeid=' + val).then(res => {
+            setLoadingData(false);
+            handleSerach();
+            toast.success("Device type deleted.")
+        })
+    }
+    const [loadingData, setLoadingData] = useState(false);
+    const [groupData, setGroupData] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("All");
+    const apiUrlData = require('../Configurations/apiUrl.json');
+    const breadcrumbOption = [{ name: 'Home', link: "/Dashboard", isActive: true }, { name: 'Groups', link: "", isActive: false }]
+    const handleSerach = (searchTerm) => {
+        if (searchTerm !== "All" && (searchTerm === "" || searchTerm.length < 3)) {
+            toast.warn("Please enter 3 char to search.");
+            return;
+        }
+        setLoadingData(true);
+        Api.Get(apiUrlData.deviceGroupController.searchDeviceGroup + searchTerm).then(res => {
+            setLoadingData(false);
+            setGroupData(res.data);
+        }).catch(err => {
+            toast.error(common.toastMsg.error);
+            setGroupData(false);
+        })
+    };
+    const tableHeaderOption = {
+        searchHandler: handleSerach,
+        headerName: 'Device Group',
+        addUrl: "/group/createGroup"
+    }
+    useEffect(() => {
+        setLoadingData(true);
+        let ApiCalls = [];
+        ApiCalls.push(Api.Get(`${apiUrlData.deviceGroupController.getDeviceGroups}`));
+        Api.MultiCall(ApiCalls).then(res => {
+            setLoadingData(false);
+            setGroupData(res[0].data);
+        });
+    }, [userRole]);
+    const getDeviceList = (ele) => {
+        debugger;
+        let deviceList = [];
+        ele.deviceGroupDetails.forEach(element => {
+            deviceList.push(element.device.deviceKey);
+        });
+        return deviceList;
+    }
+    const handleTurnOnOffDevice = (deviceList, isOn) => {
+        let pubMsgs = [];
+        let value = isOn ? 'OFF' : 'ON';
+        deviceList.map(ele => {
+            pubMsgs.push({
+                deviceId: ele,
+                action: common.getCommandObj(value).action,
+                topic: common.getApiKey(),
+                value: common.getCommandObj(value).value,
+            });
+        });
+        setPubMsg(pubMsgs);
+    }
+    if (loadingData)
+        return <Loader></Loader>
+    return (
+        <div className="page-container">
+            {userRole.canView &&
+                <>
+                    <Breadcrumb option={breadcrumbOption}></Breadcrumb>
+                    <TableHeader option={tableHeaderOption} userRole={userRole}></TableHeader>
+                    <div className="row row-cols-12 row-cols-md-12 g-4">
+                    <div className="col">
+                            {
+                                groupData.map(ele => {
+                                    return <>
+                                        {ele.groupName}.
+                                    </>
+                                })
+                            }
+
+                        </div>
+                        </div>
+                    <div className="row row-cols-1 row-cols-md-4 g-4">
+                        {
+                            groupData.map(ele => {
+                                return <>
+                                    <div className="col">
+                                        <div className="card h-100">
+                                            <div className="card-header">
+                                                <div className="d-flex bd-highlight">
+                                                    <div className="p-2 flex-grow-1 bd-highlight"> {ele.groupName}</div>
+                                                    <div className="p-2 bd-highlight">
+                                                        <i title="Turn On" onClick={e => handleTurnOnOffDevice(getDeviceList(ele), false)} className="fas fa-power-off text-success" style={{ cursor: 'pointer' }}></i>
+                                                    </div>
+                                                    <div className="p-2 bd-highlight">
+                                                        <i title="Turn Off" onClick={e => handleTurnOnOffDevice(getDeviceList(ele), true)} className="fas fa-power-off text-danger" style={{ cursor: 'pointer' }}></i>
+                                                    </div>
+                                                    <div className="p-2 bd-highlight">
+                                                        <Link to={"/group/createGroup?name=" + ele.groupName + "&id=" + ele.groupKey}><i title="Edit group" className="fas fa-pencil-alt" style={{ cursor: 'pointer' }}></i></Link>
+                                                    </div>
+                                                    <div className="p-2 bd-highlight">
+                                                        <Link to={"/group/createGroup?name=" + ele.groupName + "&id=" + ele.groupKey}><i  title="Delete group" className="fas fa-trash-alt" style={{ cursor: 'pointer' }}></i></Link>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="card-body">
+                                                <h5 className="card-title">Total Devices</h5>
+                                                <Link to={"/group/addDevice?name=" + ele.groupName + "&id=" + ele.groupKey}>
+                                                    <p className="card-text">{ele.deviceGroupDetails.length}</p>
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </>
+                            })
+                        }
+                    </div>
+                </>
+            }
+        </div>
+    )
+}

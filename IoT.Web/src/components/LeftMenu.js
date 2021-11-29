@@ -17,6 +17,7 @@ export default function LeftMenu({ setIsMenuCollapsed, userRole }) {
                 {/* <Link to="/"><li className="item"><i className="fa fa-cubes"></i> {!isCollapsed && ('Device Template')} </li></Link> */}
                 <Link title="Credential" to="/Credentials"><li className="item"><i className="fa fa-unlock-alt"></i> {!isCollapsed && ('Credentials')} </li></Link>
                 <Link title="Room" to="/Rooms"><li className="item"><i className="fa fa-clone"></i> {!isCollapsed && ('Rooms')} </li></Link>
+                <Link title="Groups" to="/Groups"><li className="item"><i className="fas fa-object-ungroup"></i> {!isCollapsed && ('Groups')} </li></Link>
                 <Link title="Scenes" to="/Scenes"><li className="item"><i className="far fa-play-circle"></i> {!isCollapsed && ('Scenes')} </li></Link>
                 <Link title="Schedule" to="/"><li className="item"><i className="fa fa-calendar"></i> {!isCollapsed && ('Schedules')} </li></Link>
                 <Link title="Activity Log" to="/activitylog"><li className="item"><i className="fa fa-history"></i> {!isCollapsed && ('Activity Log')} </li></Link>
@@ -29,10 +30,10 @@ export default function LeftMenu({ setIsMenuCollapsed, userRole }) {
                 {
                     userRole?.isAdmin && 
                     <>
-                        <Link title="Device Type" to="/admin/devicetype"><li className="item"><i className="fas fa-chalkboard-teacher"></i> {!isCollapsed && ('Device Type')} </li></Link>
-                        <Link title="Device Action" to="/admin/deviceaction"><li className="item"><i className="fas fa-chalkboard-teacher"></i> {!isCollapsed && ('Device Action')} </li></Link>
-                        <Link title="Admin Permission" to="/admin/adminPermission"><li className="item"><i className="fas fa-chalkboard-teacher"></i> {!isCollapsed && ('Admin Permission')} </li></Link>
-                        <Link title="Device Capability" to="/admin/DeviceCapability"><li className="item"><i className="fas fa-file-invoice"></i> {!isCollapsed && ('Device Capability')} </li></Link>
+                        <Link title="Device Type" to="/admin/devicetype"><li className="item"><i className="fas fa-bezier-curve"></i> {!isCollapsed && ('Device Type')} </li></Link>
+                        <Link title="Device Action" to="/admin/deviceaction"><li className="item"><i className="fas fa-fire"></i> {!isCollapsed && ('Device Action')} </li></Link>
+                        <Link title="Admin Permission" to="/admin/adminPermission"><li className="item"><i className="fas fa-users-cog"></i> {!isCollapsed && ('Admin Permission')} </li></Link>
+                        <Link title="Device Capability" to="/admin/DeviceCapability"><li className="item"><i className="fas fa-microchip"></i> {!isCollapsed && ('Device Capability')} </li></Link>
                         <Link title="Master Data" to="/admin/MasterData"><li className="item"><i className="fas fa-file-invoice"></i> {!isCollapsed && ('Master Data')} </li></Link>
                     </>
                 }

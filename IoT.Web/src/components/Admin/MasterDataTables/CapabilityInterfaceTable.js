@@ -20,7 +20,6 @@ export default function CapabilityInterfaceTable({ userRole }) {
         Api.MultiCall(ApiCalls).then(res => {
             if (res.length > 0) {
                 setLoadingData(false);
-                debugger
                 setTableOptionTemplate({ ...tableOptionTemplate, ['rowData']: res[0].data.data });
                 if (footerOption.totalRecord !== res[0].data.totalRecords) {
                     setFooterOption({ ...footerOption, ['totalRecord']: res[0].data.totalRecords });

@@ -35,6 +35,9 @@ import DeviceCapabilityCreate from './components/Admin/DeviceCapabilityCreate';
 import MasterData from './components/Admin/MasterData';
 import MasterDataCreate from './components/Admin/MasterDataCreate';
 import MqttConnection from './components/Mqtt/MqttConnection';
+import Groups from './components/Groups';
+import GroupCreate from './components/GroupCreate';
+import GroupAddDevice from './components/GroupAddDevice';
 toast.configure();
 function App() {
   const apiUrlData = require('../src/Configurations/apiUrl.json');
@@ -105,6 +108,11 @@ function App() {
           <div className={!isMenuCollapsed ? 'view-container' : 'view-container view-container-small'}>
             <Switch>
               <Route exact path="/Dashboard" render={() => {
+                return (
+                  <div><Dashboard setPubMsg={setPubMsg} userRole={userRole} mqttPayload={mqttPayload}></Dashboard></div>
+                );
+              }}></Route>
+              <Route exact path="/" render={() => {
                 return (
                   <div><Dashboard setPubMsg={setPubMsg} userRole={userRole} mqttPayload={mqttPayload}></Dashboard></div>
                 );
@@ -211,6 +219,23 @@ function App() {
                 );
               }}>
               </Route>
+              <Route exact path="/Groups" render={() => {
+                return (
+                  <div><Groups userRole={userRole} setPubMsg={setPubMsg}></Groups></div>
+                );
+              }}>
+              </Route>
+              <Route exact path="/group/createGroup" render={() => {
+                return (
+                  <div><GroupCreate userRole={userRole}></GroupCreate></div>
+                );
+              }}>                
+              </Route>
+                 <Route exact path="/group/addDevice" render={() => {
+                return (
+                  <div><GroupAddDevice userRole={userRole}></GroupAddDevice></div>
+                );
+              }}></Route>
             </Switch>
           </div>
         </Router>

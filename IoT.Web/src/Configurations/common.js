@@ -35,7 +35,7 @@ export const common = {
             return {};
         }
         params = "{\"" +
-            params
+        decodeURIComponent(params)
                 .replace(/\?/gi, "")
                 .replace(/&/gi, "\",\"")
                 .replace(/=/gi, "\":\"") +
@@ -176,6 +176,10 @@ export const common = {
     },
     generateClientId:()=>{
         return `AreanaIoT_${Math.random().toString(16).substr(2, 8)}_${Math.random().toString(16).substr(2, 8)}`
+    },
+    toastMsg:{
+        error:"Something went wrong. Please try later.",
+        update:"`${msg} updated successfully`"
     }
 
 }
