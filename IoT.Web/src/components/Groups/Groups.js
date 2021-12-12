@@ -1,28 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import { Link, Redirect } from "react-router-dom";
-import { Api } from "../Configurations/Api";
+import { Api } from "../../Configurations/Api";
 import { toast } from 'react-toastify';
-import Loader from './Loader';
-import UpdateDeleteButton from './Buttons/UpdateDeleteButton';
-import { common } from "../Configurations/common";
-import Unauthorized from './CustomView/Unauthorized';
-import Breadcrumb from './Breadcrumb/Breadcrumb';
-import TableHeader from './Tables/TableHeader';
+import Loader from '../Loader';
+import { common } from "../../Configurations/common";
+import Breadcrumb from '../Breadcrumb/Breadcrumb';
+import TableHeader from '../Tables/TableHeader';
+import ConfirmationBox from '../Controls/ConfirmationBox';
 
 export default function Groups({ userRole, setPubMsg }) {
-    const handleDelete = (e) => {
-        var val = e.target.value ? e.target.value : e.target.dataset.deletekey;
-        setLoadingData(true);
-        Api.Delete(apiUrlData.adminController.deleteDeviceType + '?devicetypeid=' + val).then(res => {
-            setLoadingData(false);
-            handleSerach();
-            toast.success("Device type deleted.")
-        })
-    }
     const [loadingData, setLoadingData] = useState(false);
     const [groupData, setGroupData] = useState([]);
-    const [searchTerm, setSearchTerm] = useState("All");
-    const apiUrlData = require('../Configurations/apiUrl.json');
+    const [deletingGroupKey, setDeletingGroupKey] = useState("");
+    const apiUrlData = require('../../Configurations/apiUrl.json');
     const breadcrumbOption = [{ name: 'Home', link: "/Dashboard", isActive: true }, { name: 'Groups', link: "", isActive: false }]
     const handleSerach = (searchTerm) => {
         if (searchTerm !== "All" && (searchTerm === "" || searchTerm.length < 3)) {
@@ -34,9 +24,9 @@ export default function Groups({ userRole, setPubMsg }) {
             setLoadingData(false);
             setGroupData(res.data);
         }).catch(err => {
+            setLoadingData(false);
             toast.error(common.toastMsg.error);
-            setGroupData(false);
-        })
+        });
     };
     const tableHeaderOption = {
         searchHandler: handleSerach,
@@ -50,6 +40,9 @@ export default function Groups({ userRole, setPubMsg }) {
         Api.MultiCall(ApiCalls).then(res => {
             setLoadingData(false);
             setGroupData(res[0].data);
+        }).catch(err => {
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
         });
     }, [userRole]);
     const getDeviceList = (ele) => {
@@ -73,6 +66,27 @@ export default function Groups({ userRole, setPubMsg }) {
         });
         setPubMsg(pubMsgs);
     }
+
+    const handleSetDelete = (groupKey) => {
+        debugger;
+        setDeletingGroupKey(groupKey);
+    }
+
+    const handleDelete = (key) => {
+        alert(key);
+        debugger;
+        if (deletingGroupKey.length > 0) {
+            setLoadingData(true);
+            Api.Delete(apiUrlData.deviceGroupController.deleteDeviceGroup + deletingGroupKey).then(res => {
+                setLoadingData(false);
+                handleSerach("All");
+                toast.success("Group deleted successfully.")
+            }).catch(err => {
+                setLoadingData(false);
+                toast.error(common.toastMsg.error);
+            });
+        }
+    }
     if (loadingData)
         return <Loader></Loader>
     return (
@@ -81,18 +95,7 @@ export default function Groups({ userRole, setPubMsg }) {
                 <>
                     <Breadcrumb option={breadcrumbOption}></Breadcrumb>
                     <TableHeader option={tableHeaderOption} userRole={userRole}></TableHeader>
-                    <div className="row row-cols-12 row-cols-md-12 g-4">
-                    <div className="col">
-                            {
-                                groupData.map(ele => {
-                                    return <>
-                                        {ele.groupName}.
-                                    </>
-                                })
-                            }
-
-                        </div>
-                        </div>
+                    <ConfirmationBox options={{data:deletingGroupKey, deleteHandler: handleDelete, modelBoxId: "deleteModal" }}></ConfirmationBox>
                     <div className="row row-cols-1 row-cols-md-4 g-4">
                         {
                             groupData.map(ele => {
@@ -112,13 +115,13 @@ export default function Groups({ userRole, setPubMsg }) {
                                                         <Link to={"/group/createGroup?name=" + ele.groupName + "&id=" + ele.groupKey}><i title="Edit group" className="fas fa-pencil-alt" style={{ cursor: 'pointer' }}></i></Link>
                                                     </div>
                                                     <div className="p-2 bd-highlight">
-                                                        <Link to={"/group/createGroup?name=" + ele.groupName + "&id=" + ele.groupKey}><i  title="Delete group" className="fas fa-trash-alt" style={{ cursor: 'pointer' }}></i></Link>
+                                                        <i title="Delete group" data-bs-toggle="modal" data-bs-target="#deleteModal" onClick={e => handleSetDelete(ele.groupKey)} className="fas fa-trash-alt" style={{ cursor: 'pointer' }}></i>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div className="card-body">
                                                 <h5 className="card-title">Total Devices</h5>
-                                                <Link to={"/group/addDevice?name=" + ele.groupName + "&id=" + ele.groupKey}>
+                                                <Link to={"/group/groupdetails?name=" + ele.groupName + "&id=" + ele.groupKey}>
                                                     <p className="card-text">{ele.deviceGroupDetails.length}</p>
                                                 </Link>
                                             </div>

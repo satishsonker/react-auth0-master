@@ -34,10 +34,10 @@ export default function MasterDataCreate({ userRole }) {
                             if (res.data.length > 0)
                                 setCapabilityType(res.data[0]);
                             setLoadingData(false);
-                        })
-                        .catch(err => {
+                        }).catch(err=>{
                             setLoadingData(false);
-                        });
+                            toast.error(common.toastMsg.error);
+                          });
                     break;
                 case 'cvers':
                     setLoadingData(true);
@@ -46,10 +46,10 @@ export default function MasterDataCreate({ userRole }) {
                             if (res.data.length > 0)
                                 setCapabilityVersions(res.data[0]);
                             setLoadingData(false);
-                        })
-                        .catch(err => {
+                        }).catch(err=>{
                             setLoadingData(false);
-                        });
+                            toast.error(common.toastMsg.error);
+                          });
                     break;
                 case 'cdcat':
                     setLoadingData(true);
@@ -58,10 +58,10 @@ export default function MasterDataCreate({ userRole }) {
                             if (res.data.length > 0)
                                 setDisplayCategories(res.data[0]);
                             setLoadingData(false);
-                        })
-                        .catch(err => {
+                        }).catch(err=>{
                             setLoadingData(false);
-                        });
+                            toast.error(common.toastMsg.error);
+                          });
                     break;
                 case 'cifa':
                     setLoadingData(true);
@@ -70,10 +70,10 @@ export default function MasterDataCreate({ userRole }) {
                             if (res.data.length > 0)
                                 setCapabilityInterfaces(res.data[0]);
                             setLoadingData(false);
-                        })
-                        .catch(err => {
+                        }).catch(err=>{
                             setLoadingData(false);
-                        });
+                            toast.error(common.toastMsg.error);
+                          });
                     break;
                 case 'cspro':
                     setLoadingData(true);
@@ -82,10 +82,10 @@ export default function MasterDataCreate({ userRole }) {
                             if (res.data.length > 0)
                                 setCapabilitySupportedProperties(res.data[0]);
                             setLoadingData(false);
-                        })
-                        .catch(err => {
+                        }).catch(err=>{
                             setLoadingData(false);
-                        });
+                            toast.error(common.toastMsg.error);
+                          });
                     break;
 
                 default:
@@ -187,10 +187,10 @@ export default function MasterDataCreate({ userRole }) {
             setIsCreated(true);
             setLoadingData(false);
             return<Redirect to={"/admin/MasterData?type=" + queryStringType}></Redirect>
-        }).catch(err => {
-            toast.warn(errorMsg);
+        }).catch(err=>{
             setLoadingData(false);
-        });
+            toast.error(common.toastMsg.error);
+          });
     }
     if(isCreated)
     return <Redirect to={"/admin/MasterData?type=" + queryStringType}></Redirect>

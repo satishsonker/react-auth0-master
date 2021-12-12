@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Api } from "../Configurations/Api";
 import { toast } from 'react-toastify';
 import Loader from "../components/Loader";
+import { common } from "../Configurations/common";
 export default function Account() {
     const [loadingData, setLoadingData] = useState(true);
     const apiUrlData = require('../Configurations/apiUrl.json');
@@ -22,6 +23,9 @@ export default function Account() {
                 res.data['name'] = res.data.firstName + ' ' + res.data.lastName;
                 setAccountData(res.data);
                 setLoadingData(false);
+            }).catch(err => {
+                setLoadingData(false);
+                toast.error(common.toastMsg.error);
             });
         }
         if (loadingData) {
@@ -41,23 +45,24 @@ export default function Account() {
         if (accountData.name.length < 3) {
             toast.error("Fill user name.");
             return;
-        }        
-        if (accountData.language === undefined || accountData.language === null ||accountData.language === "") {
+        }
+        if (accountData.language === undefined || accountData.language === null || accountData.language === "") {
             toast.error("Please select language.");
             return;
         }
-        if (accountData.temperature === undefined ||accountData.temperature === null || accountData.temperature === "") {
+        if (accountData.temperature === undefined || accountData.temperature === null || accountData.temperature === "") {
             toast.error("Please select temperature unit.");
             return;
         }
-        if (accountData.timezone === undefined || accountData.timezone === null ||accountData.timezone === "") {
+        if (accountData.timezone === undefined || accountData.timezone === null || accountData.timezone === "") {
             toast.error("Please select timezone.");
             return;
         }
         Api.Post(apiUrlData.userController.updateUser, accountData).then(res => {
             toast.success("Account is updated.");
-        }).catch(ee => {
-            toast.error("Something went wrong !");
+        }).catch(err => {
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
         });
     }
     return (

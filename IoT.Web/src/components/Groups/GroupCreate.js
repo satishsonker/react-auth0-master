@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { Redirect } from "react-router-dom";
-import { Api } from "../Configurations/Api";
-import Loader from './Loader';
-import { common } from "../Configurations/common";
-import Breadcrumb from './Breadcrumb/Breadcrumb';
+import { Api } from "../../Configurations/Api";
+import Loader from '../Loader';
+import { common } from "../../Configurations/common";
+import Breadcrumb from '../Breadcrumb/Breadcrumb';
 import { toast } from 'react-toastify';
 export default function GroupCreate({ userRole }) {
     const [loadingData, setLoadingData] = useState(false);
-    const apiUrlData = require('../Configurations/apiUrl.json');
+    const apiUrlData = require('../../Configurations/apiUrl.json');
     const [isGroupCreated, setIsGroupCreated] = useState(common.getDefault(common.dataType.bool));
     const [group, setGroup] = useState({
         groupName: '',
@@ -36,7 +36,8 @@ export default function GroupCreate({ userRole }) {
                 toast.warn(isGroupUpdate ? "unable to update Group" : "unable to add Group");
         }).catch(err=>{
             setLoadingData(false);
-        });
+            toast.error(common.toastMsg.error);
+          });
     }
     useEffect(() => {
         debugger;

@@ -24,7 +24,10 @@ export default function DeviceType({ userRole }) {
             tblOption.rowData = res.data;
             setTableOption(tblOption);
             setLoadingData(false)
-        })
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     };
     const tableHeaderOption = {
         searchHandler: handleSerach,
@@ -45,7 +48,10 @@ export default function DeviceType({ userRole }) {
             tblOption.userRole = userRole;
             setTableOption(tblOption);
             setLoadingData(false);
-        });
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }, [userRole,pagingData]);
     const handleDelete = (e) => {
         var val = e.target.value ? e.target.value : e.target.dataset.deletekey;
@@ -54,7 +60,10 @@ export default function DeviceType({ userRole }) {
             setLoadingData(false);
             handleSerach();
             toast.success("Device type deleted.")
-        })
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }
     const tableOptionTemplate = {
         headers: ['Device Type'],

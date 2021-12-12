@@ -1,11 +1,11 @@
-import React, { useState,useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { toast } from 'react-toastify';
 import { common } from "../../Configurations/common";
 import '../../css/deviceControl.css';
 export default function DeviceControl({ devicePowerHandler, deviceData, setPubMsg }) {
     const [isOn, setIsOn] = useState(false);
     useEffect(() => {
-       setIsOn(deviceData?.status?.toLowerCase() === 'on');
+        setIsOn(deviceData?.status?.toLowerCase() === 'on');
     }, [deviceData.status])
     const [publishData, setPublishData] = useState({
         brightness: 100,
@@ -50,7 +50,8 @@ export default function DeviceControl({ devicePowerHandler, deviceData, setPubMs
             isLight: deviceTypeName?.toLowerCase().indexOf('light') > -1,
             isStrip: deviceTypeName?.toLowerCase().indexOf('strip') > -1,
             isDoorbell: deviceTypeName?.toLowerCase().indexOf('doorbell') > -1,
-            isSwitch: deviceTypeName?.toLowerCase().indexOf('switch') > -1
+            isSwitch: deviceTypeName?.toLowerCase().indexOf('switch') > -1,
+            isLock: deviceTypeName?.toLowerCase().indexOf('lock') > -1
         }
     }
     function isDeviceOn() {
@@ -58,8 +59,14 @@ export default function DeviceControl({ devicePowerHandler, deviceData, setPubMs
     }
 
     function getButton() {
+        if (getDeviceTyoe().isLock) {
+            return <>
+                <div className="d-inline-flex p-2 bd-highlight"><button disabled={!common.hasValue(deviceData?.ip)} className="btn btn-success btn-sm" onClick={e => handleDeviceOnOff("LOCK", deviceData?.deviceKey)}><i className="fas fa-lock"></i></button></div>
+                <div className="d-inline-flex p-2 bd-highlight"><button disabled={!common.hasValue(deviceData?.ip)} className="btn btn-danger btn-sm" onClick={e => handleDeviceOnOff("UNLOCK", deviceData?.deviceKey)}><i className="fas fa-lock-open"></i></button></div>
+            </>
+        }
         if (getDeviceTyoe().isDoorbell)
-            return <div className="d-inline-flex p-2 bd-highlight"><button disabled={!common.hasValue(deviceData?.ip)} className="btn btn-success btn-sm" onClick={e => handleDeviceOnOff("PRESS", deviceData?.deviceKey)}>Press Bell</button></div>
+            return <div className="d-inline-flex p-2 bd-highlight"><button disabled={!common.hasValue(deviceData?.ip)} className="btn btn-success btn-sm" onClick={e => handleDeviceOnOff("PRESS", deviceData?.deviceKey)}><i className="fas fa-bell"></i></button></div>
         else if (getDeviceTyoe().isLight || getDeviceTyoe().isStrip || getDeviceTyoe().isSwitch) {
             if (!common.hasValue(deviceData?.deviceStatus))
                 return <>

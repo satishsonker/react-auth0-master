@@ -101,9 +101,9 @@
         "addDeviceGroup": "/DeviceGroup/add",
         "addDeviceGroupDetail": "/DeviceGroup/AddGroupDetails/",
         "getDeviceGroupDetail": "/DeviceGroup/getGroupDetails/",
-        "updateDeviceGroup": "/DeviceGroup/update",
-        "deleteDeviceGroup": "/DeviceGroup/delete/{groupId}",
-        "getDeviceGroup": "/DeviceGroup/GetGroup/{groupId}",
+        "updateDeviceGroup": "/DeviceGroup/updateGroup",
+        "deleteDeviceGroup": "/DeviceGroup/deleteGroup/",
+        "getDeviceGroup": "/DeviceGroup/GetGroup/",
         "getDeviceGroups": "/DeviceGroup/GetGroups",
         "searchDeviceGroup": "/DeviceGroup/Search/"
     }

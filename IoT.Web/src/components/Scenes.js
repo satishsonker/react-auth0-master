@@ -47,7 +47,10 @@ export default function Scenes({userRole}) {
                 });
                 common.setStorePubData(pubData);
             }
-        });
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }
     const handleDelete = (e) => {
         var val = e.target.value ? e.target.value : e.target.dataset.scenekey;
@@ -57,7 +60,10 @@ export default function Scenes({userRole}) {
             setsearchTerm("All");
             handleSerach();
             toast.success("Scene Deleted.")
-        })
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }
     const handleSerach = (e) => {
         if (searchTerm !== "All" && (searchTerm === "" || searchTerm.length < 3)) {
@@ -68,13 +74,19 @@ export default function Scenes({userRole}) {
         Api.Get(apiUrlData.sceneController.searchScene + '?searchterm=' + searchTerm).then(res => {
             setSceneData(res.data);
             setLoadingData(false)
-        })
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }
     useEffect(() => {
         Api.Get(apiUrlData.sceneController.getAllScene).then(res => {
                 setSceneData(res.data);
                 setLoadingData(false);
-            });
+            }).catch(err=>{
+                setLoadingData(false);
+                toast.error(common.toastMsg.error);
+              });
         }, [loadingData, apiUrlData.sceneController.getAllScene]);
         if (loadingData)
             return <Loader></Loader>

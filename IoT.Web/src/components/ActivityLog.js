@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Loader from "../components/Loader";
 import { Link } from "react-router-dom";
 import { Api } from "../Configurations/Api";
+import { common } from "../Configurations/common";
 import { toast } from 'react-toastify';
 export default function ActivityLog() {
     const [activityData, setActivityData] = useState([]);
@@ -12,9 +13,10 @@ export default function ActivityLog() {
             await Api.Get(apiUrlData.activityLogController.getAll).then(res => {
                 setActivityData(res.data);
                 setLoadingData(false)
-            }).catch(xx => {
-                toast.error('Something went wrong');
-            })
+            }).catch(err=>{
+                setLoadingData(false);
+                toast.error(common.toastMsg.error);
+              });
         }
         if (loadingData) {
             getData();

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Loader from '../Loader';
 import '../../css/dashboard.css';
+import { toast } from 'react-toastify';
 import { Link, Redirect } from "react-router-dom";
 import { Api } from "../../Configurations/Api";
 import { common } from "../../Configurations/common";
@@ -99,7 +100,10 @@ export default function Dashboard({ userRole, mqttPayload, setPubMsg }) {
                 setDashboardData(_data);
                 setLoadingData(false);
                 sendPingRequest();
-            })
+            }).catch(err=>{
+                setLoadingData(false);
+                toast.error(common.toastMsg.error);
+              });
         }
         if (loadingData) {
             getDashboardData();
@@ -207,7 +211,7 @@ export default function Dashboard({ userRole, mqttPayload, setPubMsg }) {
                                 return <div key={ind + "2"}></div>
                             else {
                                 return <>
-                                    <div className="accordion-item">
+                                    <div className="accordion-item" key={ind}>
                                         <h2 className="accordion-header" id={"heading" + ind}>
                                             <div className="accordion-button bg-primary" type="button" data-bs-toggle="collapse" data-bs-target={"#collapse" + ind} aria-expanded="true" aria-controls={"collapse" + ind}>
                                                 {
@@ -222,7 +226,7 @@ export default function Dashboard({ userRole, mqttPayload, setPubMsg }) {
                                                 <div className="row">
                                                     {
                                                         ele.map((device, index) => {
-                                                            return <DeviceCard deviceData={device} index={index} setPubMessage={setPubMsg} devicePowerHandler={handleTurnOnOffDevice}></DeviceCard>
+                                                            return <DeviceCard key={index} deviceData={device} index={index} setPubMessage={setPubMsg} devicePowerHandler={handleTurnOnOffDevice}></DeviceCard>
                                                         })
                                                     }
                                                 </div>

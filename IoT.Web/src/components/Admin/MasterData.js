@@ -43,7 +43,10 @@ export default function MasterData({ userRole }) {
                 setCapabilitySupportedProperties(res[0].data);
             }
             setLoadingData(false)
-        });
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }, []);
     const handleDeleteCapType = (e) => {
         var val = e.target.value ? e.target.value : e.target.dataset.deletekey;
@@ -52,7 +55,10 @@ export default function MasterData({ userRole }) {
             setLoadingData(false);
             handleSearch("All",actionType.capType);
             toast.success("Capability type deleted.")
-        });
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }
     const handleDeleteCapInt = (e) => {
         var val = e.target.value ? e.target.value : e.target.dataset.deletekey;
@@ -61,7 +67,10 @@ export default function MasterData({ userRole }) {
             setLoadingData(false);
             handleSearch("All",actionType.capInt);
             toast.success("Capability interface type deleted.")
-        });
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }
     const handleDeleteCapVer= (e) => {
         var val = e.target.value ? e.target.value : e.target.dataset.deletekey;
@@ -70,7 +79,10 @@ export default function MasterData({ userRole }) {
             setLoadingData(false);
             handleSearch("All",actionType.capVersion);
             toast.success("Capability version type deleted.")
-        });
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }
     const handleDeleteDisCat = (e) => {
         var val = e.target.value ? e.target.value : e.target.dataset.deletekey;
@@ -79,7 +91,10 @@ export default function MasterData({ userRole }) {
             setLoadingData(false);
             handleSearch("All",actionType.disCat);
             toast.success("Display categoty type deleted.")
-        });
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }
     const handleDeleteSupp= (e) => {
         var val = e.target.value ? e.target.value : e.target.dataset.deletekey;
@@ -88,7 +103,10 @@ export default function MasterData({ userRole }) {
             setLoadingData(false);
             handleSearch("All",actionType.capSupp);
             toast.success("Supported property type deleted.")
-        });
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }
     const handleSearch = (val, type) => {
        let search=!common.hasValue(val) || val===''?'All':val;
@@ -99,7 +117,10 @@ export default function MasterData({ userRole }) {
                     .then(res => {
                         setLoadingData(false);
                         setCapabilityType(res.data);
-                    });
+                    }).catch(err=>{
+                        setLoadingData(false);
+                        toast.error(common.toastMsg.error);
+                      });
                 break;
                 case actionType.capVersion:
                 setLoadingData(true);
@@ -107,7 +128,10 @@ export default function MasterData({ userRole }) {
                     .then(res => {                        
                         setLoadingData(false);
                         setCapabilityVersions(res.data);
-                    });
+                    }).catch(err=>{
+                        setLoadingData(false);
+                        toast.error(common.toastMsg.error);
+                      });
                 break;
                 case actionType.disCat:
                 setLoadingData(true);
@@ -115,7 +139,10 @@ export default function MasterData({ userRole }) {
                     .then(res => {                        
                         setLoadingData(false);
                         setDisplayCategories(res.data);
-                    });
+                    }).catch(err=>{
+                        setLoadingData(false);
+                        toast.error(common.toastMsg.error);
+                      });
                 break;
                 case actionType.capInt:
                     setLoadingData(true);
@@ -123,7 +150,10 @@ export default function MasterData({ userRole }) {
                         .then(res => {                        
                             setLoadingData(false);
                             setCapabilityInterfaces(res.data);
-                        });
+                        }).catch(err=>{
+                            setLoadingData(false);
+                            toast.error(common.toastMsg.error);
+                          });
                     break;
                     case actionType.capSupp:
                     setLoadingData(true);
@@ -131,7 +161,10 @@ export default function MasterData({ userRole }) {
                         .then(res => {                        
                             setLoadingData(false);
                             setCapabilitySupportedProperties(res.data);
-                        });
+                        }).catch(err=>{
+                            setLoadingData(false);
+                            toast.error(common.toastMsg.error);
+                          });
                     break;
 
             default:

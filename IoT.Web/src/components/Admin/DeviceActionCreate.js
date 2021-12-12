@@ -29,16 +29,20 @@ export default function DeviceActionCreate() {
             setUserRole(res[0].data);
             setDeviceTypeData(res[1].data);
             setLoadingData(false)
-        });
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
         let devicetypeid = common.queryParam(window.location.search)?.deviceActionId;
         devicetypeid = !common.hasValue(devicetypeid) ? 0 :parseInt(devicetypeid);
         async function getData() {
             await Api.Get(apiUrlData.adminController.getDeviceAction + '?deviceActionId=' + devicetypeid).then(res => {
                 setDeviceActionData(res.data);
                 setLoadingData(false)
-            }).catch(xx => {
-                toast.error('Something went wrong');
-            })
+            }).catch(err=>{
+                setLoadingData(false);
+                toast.error(common.toastMsg.error);
+              });
         }
         if (!loadingData) {
             if (devicetypeid !== 0) {
@@ -73,9 +77,10 @@ export default function DeviceActionCreate() {
         Api.Post(!isDeviceTypeUpdating ? apiUrlData.adminController.addDeviceAction : apiUrlData.adminController.updateDeviceAction, deviceActionData).then(res => {
             toast.success(!isDeviceTypeUpdating ? "Device action is created" : "Device action is updated");
             setIsDeviceTypeCreated(true);
-        }).catch(ee => {
-            toast.error("Something went wrong !");
-        });
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }
     if(!userRole?.isAdmin)
     {

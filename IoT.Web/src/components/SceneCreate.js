@@ -54,16 +54,20 @@ export default function SceneCreate({ userRole }) {
                     setDeviceTypeActionData(filteredDeviceData);
                     setLoadingData(false)
                 }
-            });
+            }).catch(err=>{
+                setLoadingData(false);
+                toast.error(common.toastMsg.error);
+              });;
         } if (sceneKey !== "") {
             setIsSceneUpdating(true);
             setLoadingData(true);
             Api.Get(apiUrlData.sceneController.getScene + '?scenekey=' + sceneKey).then(res => {
                 setScene(res.data);
                 setLoadingData(false);
-            }).catch(xx => {
-                toast.error('Something went wrong');
-            });
+            }).catch(err=>{
+                setLoadingData(false);
+                toast.error(common.toastMsg.error);
+              });
         }
         getDeviceDropdown();
     }, [loadingData, apiUrlData.sceneController.getScene]);
@@ -98,9 +102,10 @@ export default function SceneCreate({ userRole }) {
         Api.Post(!isSceneUpdating ? apiUrlData.sceneController.addScene : apiUrlData.sceneController.updateScene, scene).then(res => {
             toast.success(!isSceneUpdating ? "Scene is created" : "Scene is updated");
             setIsSceneCreated(true);
-        }).catch(ee => {
-            toast.error("Something went wrong !");
-        });
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }
     const handleAdd = (e) => {
         scene.sceneActions.push({

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import Breadcrumb from './Breadcrumb/Breadcrumb';
-import { Api } from "../Configurations/Api";
-import Loader from './Loader';
-import { common } from "../Configurations/common";
+import Breadcrumb from '../Breadcrumb/Breadcrumb';
+import { Api } from "../../Configurations/Api";
+import Loader from '../Loader';
+import { common } from "../../Configurations/common";
 import { toast } from 'react-toastify';
 import { Redirect } from 'react-router-dom';
 export default function GroupAddDevice({ userRole }) {
-    const apiUrlData = require('../Configurations/apiUrl.json');
+    const apiUrlData = require('../../Configurations/apiUrl.json');
     const [groupName, setGroupName] = useState('Group');
     const [groupKey, setGroupId] = useState('');
     const breadcrumbOption = [
@@ -31,7 +31,6 @@ export default function GroupAddDevice({ userRole }) {
             ApiCalls.push(Api.Get(apiUrlData.deviceGroupController.getDeviceGroupDetail + queryParam.id));
             debugger;
             Api.MultiCall(ApiCalls).then(res => {
-                debugger;
                 setLoadingData(false);
                 setDeviceGroupData(res[1].data);
                 setDeviceData(res[0].data);
@@ -47,11 +46,10 @@ export default function GroupAddDevice({ userRole }) {
                 });
                 setDeviceGroupDataPost(data);
                 setDeviceInGroup(deviceIds);
-            }).catch(err => {
-                debugger;
-                toast.warn('Unable to fetch Devices');
+            }).catch(err=>{
                 setLoadingData(false);
-            });
+                toast.error(common.toastMsg.error);
+              });
         }
     }, []);
     const handleSubmit = () => {

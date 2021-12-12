@@ -35,9 +35,10 @@ import DeviceCapabilityCreate from './components/Admin/DeviceCapabilityCreate';
 import MasterData from './components/Admin/MasterData';
 import MasterDataCreate from './components/Admin/MasterDataCreate';
 import MqttConnection from './components/Mqtt/MqttConnection';
-import Groups from './components/Groups';
-import GroupCreate from './components/GroupCreate';
-import GroupAddDevice from './components/GroupAddDevice';
+import Groups from './components/Groups/Groups';
+import GroupCreate from './components/Groups/GroupCreate';
+import GroupAddDevice from './components/Groups/GroupAddDevice';
+import GroupDetails from './components/Groups/GroupDetails';
 toast.configure();
 function App() {
   const apiUrlData = require('../src/Configurations/apiUrl.json');
@@ -55,9 +56,10 @@ function App() {
   }
   useEffect(() => {
     if (isAuthenticated && user) {
-    Api.Get(apiUrlData.userController.getApiKey).then(res => {
-      
+    Api.Get(apiUrlData.userController.getApiKey).then(res => {      
       setMqttSubscribeTopic([res.data.apiKey+'/server']);
+    }).catch(err=>{
+      toast.error(common.toastMsg.error);
     });
   }
   }, [isAuthenticated])
@@ -73,6 +75,8 @@ function App() {
       };
       Api.Get(apiUrlData.userController.getUserPermission).then(res => {
         setuserRole(res.data);
+      }).catch(err=>{
+        toast.error(common.toastMsg.error);
       });
       if (window?.iotGlobal?.userKey !== undefined) {
         Api.Get(apiUrlData.userLocation, false).then(res => {
@@ -83,12 +87,16 @@ function App() {
             appName: common.getAppName(),
             activity: 'Login',
             userKey: window?.iotGlobal?.userKey
-          })
-        });
+          });
+        }).catch(err=>{
+          toast.error(common.toastMsg.error);
+        });;
       }
       Api.Post(apiUrlData.userController.addUser, UserData).then(res => {
         console.table(res.data);
-      });
+      }).catch(err=>{
+        toast.error(common.toastMsg.error);
+      });;
     }
 
   }, [isAuthenticated]);
@@ -234,6 +242,11 @@ function App() {
                  <Route exact path="/group/addDevice" render={() => {
                 return (
                   <div><GroupAddDevice userRole={userRole}></GroupAddDevice></div>
+                );
+              }}></Route>
+                 <Route exact path="/group/groupdetails" render={() => {
+                return (
+                  <div><GroupDetails userRole={userRole} setPubMsg={setPubMsg}></GroupDetails></div>
                 );
               }}></Route>
             </Switch>

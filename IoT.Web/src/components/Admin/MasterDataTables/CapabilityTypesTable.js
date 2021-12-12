@@ -21,16 +21,21 @@ export default function CapabilityTypesTable({userRole }) {
                 setLoadingData(false);
                 setTableOptionTemplate({...tableOptionTemplate,['rowData']:res[0].data});
             }
-        });
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     },[pagingData]);
-    const handleDeleteCapType = (e) => {
-        var val = e.target.value ? e.target.value : e.target.dataset.deletekey;
+    const handleDeleteCapType = (val) => {
         setLoadingData(true);
         Api.Delete(apiUrlData.masterDataController.deleteCapabilityType + '?capabilityTypeId=' + val).then(res => {
             setLoadingData(false);
             handleSearch("All",actionType.capType);
             toast.success("Capability type deleted.")
-        });
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }  
     const handleSearch = (val) => {
         let search=!common.hasValue(val) || val===''?'All':val;
@@ -39,7 +44,10 @@ export default function CapabilityTypesTable({userRole }) {
             .then(res => {
                 setLoadingData(false);
                 setTableOptionTemplate({...tableOptionTemplate,['rowData']:res.data});
-            });
+            }).catch(err=>{
+                setLoadingData(false);
+                toast.error(common.toastMsg.error);
+              });
      }
     const [tableOptionTemplate, setTableOptionTemplate] = useState({
         headers: ['Capability Type Name'],

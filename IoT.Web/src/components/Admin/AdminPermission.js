@@ -19,7 +19,10 @@ export default function AdminPermission({userRole}) {
             //setUserRole(res[0].data);
             setAdminPermissions(res[1].data);
             setLoadingData(false)
-        });
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }, []);
     const handleChange = (e, index) => {
         let data = common.cloneObject(adminPermissions);
@@ -33,7 +36,10 @@ export default function AdminPermission({userRole}) {
             }
             else
                 toast.warn('Unable to updated permissions');
-        });
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }
     if(loadingData)
     return <Loader></Loader>

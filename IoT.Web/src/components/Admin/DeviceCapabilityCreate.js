@@ -49,17 +49,18 @@ export default function DeviceCapabilityCreate({ userRole }) {
             setLoadingData(false);
         }).catch(err=>{
             setLoadingData(false);
-        });
+            toast.error(common.toastMsg.error);
+          });
         async function getData() {
             setLoadingData(true);
             await Api.Get(apiUrlData.adminController.getDeviceCapability + '?devicecapabilityid=' + deviceCapabilityid).then(res => {
                 res.data.displayCategory = !common.hasValue(res.data.displayCategory) || res.data.displayCategory === '' ? 'LIGHT' : res.data.displayCategory;
                 setDeviceCapability(res.data);
                 setLoadingData(false);
-            }).catch(xx => {
-                toast.error('Something went wrong');
+            }).catch(err=>{
                 setLoadingData(false);
-            })
+                toast.error(common.toastMsg.error);
+              });
         }
         if (!loadingData) {
             if (deviceCapabilityid !== 0) {
@@ -112,9 +113,10 @@ export default function DeviceCapabilityCreate({ userRole }) {
         Api.Post(!isDeviceCapabilityUpdating ? apiUrlData.adminController.addDeviceCapability : apiUrlData.adminController.updateDeviceCapability, deviceCapability).then(res => {
             toast.success(!isDeviceCapabilityUpdating ? "Device capability is created" : "Device capability is updated");
             setIsDeviceCapabilityCreated(true);
-        }).catch(ee => {
-            toast.error("Something went wrong !");
-        });
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }
     if (loadingData)
         return <Loader></Loader>

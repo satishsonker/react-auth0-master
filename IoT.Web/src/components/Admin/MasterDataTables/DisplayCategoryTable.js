@@ -21,10 +21,12 @@ export default function DisplayCategoryTable({userRole }) {
                 setLoadingData(false);
                 setTableOptionTemplate({...tableOptionTemplate,['rowData']:res[0].data});
             }
-        });
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     },[]);
-    const handleDeleteCapType = (e) => {
-        var val = e.target.value ? e.target.value : e.target.dataset.deletekey;
+    const handleDeleteCapType = (val) => {
         setLoadingData(true);
         Api.Delete(apiUrlData.masterDataController.deleteDisplayCategory + '?displayCategoryId=' + val).then(res => {
             setLoadingData(false);
@@ -39,7 +41,10 @@ export default function DisplayCategoryTable({userRole }) {
             .then(res => {
                 setLoadingData(false);
                 setTableOptionTemplate({...tableOptionTemplate,['rowData']:res.data});
-            });
+            }).catch(err=>{
+                setLoadingData(false);
+                toast.error(common.toastMsg.error);
+              });
      }
     const [tableOptionTemplate, setTableOptionTemplate] = useState({
         headers: ['Display Category Value','Display Category Label'],

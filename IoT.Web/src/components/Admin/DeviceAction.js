@@ -21,7 +21,10 @@ export default function DeviceAction() {
             window.iotGlobal['userRole']=res[0].data;
             setDeviceActionData(res[1].data);
             setLoadingData(false)
-        });
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }, []);
     const handleDelete = (e) => {
         var val = e.target.value ? e.target.value : e.target.dataset.deletekey;
@@ -31,7 +34,10 @@ export default function DeviceAction() {
             setsearchTerm("All");
             handleSerach();
             toast.success("Device action deleted.")
-        })
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }
     const handleSerach = (e) => {
        setsearchTerm(common.hasValue(e)?e:searchTerm);
@@ -43,7 +49,10 @@ export default function DeviceAction() {
         Api.Get(apiUrlData.adminController.searchDeviceAction + '?searchterm=' + searchTerm).then(res => {
             setDeviceActionData(res.data);
             setLoadingData(false)
-        })
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }
     if (!userRole?.isAdmin && !loadingData) {
         return (<Unauthorized></Unauthorized>)

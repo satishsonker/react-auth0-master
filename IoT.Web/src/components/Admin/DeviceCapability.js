@@ -16,7 +16,10 @@ export default function DeviceCapability({userRole}) {
         Api.Get(apiUrlData.adminController.getAllDeviceCapability).then(res => {
             setDeviceCapabilityData(res.data);
             setLoadingData(false)
-        });
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }, []);
     const handleDelete = (e) => {
         var val = e.target.value ? e.target.value : e.target.dataset.deletekey;
@@ -26,7 +29,10 @@ export default function DeviceCapability({userRole}) {
             setsearchTerm("All");
             handleSerach();
             toast.success("Device type deleted.")
-        })
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }
     const handleSerach = (e) => {
        setsearchTerm(common.hasValue(e)?e:searchTerm);
@@ -38,7 +44,10 @@ export default function DeviceCapability({userRole}) {
         Api.Get(apiUrlData.adminController.searchDeviceCapability + '?searchterm=' + searchTerm).then(res => {
             setDeviceCapabilityData(res.data);
             setLoadingData(false)
-        })
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }
     if(loadingData)
     return <Loader></Loader>

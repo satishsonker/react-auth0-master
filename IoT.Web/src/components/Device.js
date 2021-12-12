@@ -2,24 +2,30 @@ import React, { useState, useEffect } from 'react'
 import { Link } from "react-router-dom";
 import { Api } from "../Configurations/Api";
 import { toast } from 'react-toastify';
+import Breadcrumb from '../components/Breadcrumb/Breadcrumb';
 import Loader from './Loader';
 import { common } from '../Configurations/common';
 import Unauthorized from '../components/CustomView/Unauthorized';
+import ConfirmationBox from './Controls/ConfirmationBox';
 
 export default function Device({userRole}) {
     const [deviceData, setDeviceData] = useState([]);
     const [loadingData, setLoadingData] = useState(true);
-    const [searchTerm, setsearchTerm] = useState("All");
-    const apiUrlData = require('../Configurations/apiUrl.json');
-    const handleDelete = (e) => {
-        var val = e.target.value ? e.target.value : e.target.dataset.devicekey;
+    const [searchTerm, setsearchTerm] = useState("All");    
+    const [deletingKey, setDeletingKey] = useState("");
+    const apiUrlData = require('../Configurations/apiUrl.json'); 
+    const breadcrumbOption = [{ name: 'Home', link: "/Dashboard", isActive: true }, { name: 'Devices', link: "", isActive: false }]
+    const handleDelete = (val) => {
         setLoadingData(true);
         Api.Delete(apiUrlData.deviceController.deleteDevice + '?devicekey=' + val).then(res => {
             setLoadingData(false);
             setsearchTerm("All");
             handleSerach();
             toast.success("Device Deleted.")
-        })
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }
     const handleSerach = (keyword) => {
         keyword=!common.hasValue(keyword)?searchTerm:keyword;
@@ -31,7 +37,10 @@ export default function Device({userRole}) {
         Api.Get(apiUrlData.deviceController.searchDevice + '?searchterm=' + keyword).then(res => {
             setDeviceData(res.data);
             setLoadingData(false);
-        });
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }
     useEffect(() => {
         let ApiCalls = [];
@@ -39,8 +48,14 @@ export default function Device({userRole}) {
         Api.MultiCall(ApiCalls).then(res => {
             setDeviceData(res[0].data);
             setLoadingData(false);
-        });
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }, []);
+    const handleSetDeleteKey = (key) => {
+        setDeletingKey(key);
+    }
     if(loadingData)
     return <Loader></Loader>
     if (!userRole?.canView) {
@@ -48,17 +63,13 @@ export default function Device({userRole}) {
     }
     return (
         <div className="page-container">
-            <nav aria-label="breadcrumb">
-                <ol className="breadcrumb">
-                    <li className="breadcrumb-item"><Link to="/Dashboard">Home</Link></li>
-                    <li className="breadcrumb-item active" aria-current="page">Device</li>
-                </ol>
-            </nav>
+        <ConfirmationBox options={{deleteHandler:handleDelete,data:deletingKey}}></ConfirmationBox>
+        <Breadcrumb option={breadcrumbOption}></Breadcrumb>
             <div className="d-flex justify-content-between bd-highlight mb-3">
                 <div className="p-2 bd-highlight">
                     <div className="btn-group" role="group" aria-label="Basic example">
                         {userRole?.canCreate && <Link to="/devicecreate" > <button type="button" className="btn btn-sm btn-outline-primary"><i className="fa fa-plus"></i> Add</button></Link>}
-                        <button type="button" onClick={e=>handleSerach()} className="btn btn-sm btn-outline-primary"><i className="fa fa-sync-alt"></i></button>
+                        <button type="button" onClick={e=>{handleSerach('All'); setsearchTerm('');}} className="btn btn-sm btn-outline-primary"><i className="fa fa-sync-alt"></i></button>
                     </div>
                 </div>
                 <div className="p-2 "><p className="h5">Devices</p></div>
@@ -112,7 +123,7 @@ export default function Device({userRole}) {
                                         <td className="text-center">
                                             <div className="btn-group" role="group" aria-label="Basic example">
                                                 {userRole?.canUpdate && <Link to={"/DeviceCreate?id=" + ele.deviceKey}><div className="btn btn-sm btn-outline-success"><i className="fas fa-pencil-alt" aria-hidden="true"></i></div></Link>}
-                                                {userRole?.canDelete && <button type="button" value={ele.deviceKey} onClick={e => handleDelete(e)} className="btn btn-sm btn-outline-danger"><i data-devicekey={ele.deviceKey} className="fa fa-trash"></i></button>}
+                                                {userRole?.canDelete && <button type="button" value={ele.deviceKey} data-bs-toggle="modal" data-bs-target="#confirmModelBox" onClick={e => handleSetDeleteKey(ele.deviceKey)} className="btn btn-sm btn-outline-danger"><i data-devicekey={ele.deviceKey} className="fa fa-trash"></i></button>}
                                             </div>
                                         </td>
                                     </tr>

@@ -17,9 +17,10 @@ export default function DeviceTypeCreate() {
             await Api.Get(apiUrlData.adminController.getDeviceType + '?devicetypeId=' + devicetypeid).then(res => {
                 setDeviceType(res.data);
                 setLoadingData(false)
-            }).catch(xx => {
-                toast.error('Something went wrong');
-            })
+            }).catch(err=>{
+                setLoadingData(false);
+                toast.error(common.toastMsg.error);
+              });
         }
         if (!loadingData) {
             if (devicetypeid !== 0) {
@@ -44,9 +45,10 @@ export default function DeviceTypeCreate() {
         Api.Post(!isDeviceTypeUpdating ? apiUrlData.adminController.addDeviceType : apiUrlData.adminController.updateDeviceType, deviceType).then(res => {
             toast.success(!isDeviceTypeUpdating ? "Device type is created" : "Device type is updated");
             setIsDeviceTypeCreated(true);
-        }).catch(ee => {
-            toast.error("Something went wrong !");
-        });
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }
     return (
         <div className="page-container">

@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { Link } from "react-router-dom";
 import { Api } from "../Configurations/Api";
 import {  } from "../Configurations/apiUrl.json";
+import Breadcrumb from '../components/Breadcrumb/Breadcrumb';
 import { toast } from 'react-toastify';
 import Loader from './Loader';
 import {  common} from "../Configurations/common";
 export default function Credentials() {
+    const breadcrumbOption = [{ name: 'Home', link: "/Dashboard", isActive: true }, { name: 'Credentials', link: "", isActive: false }]
     const [credData, setCredData] = useState({});
     const [loadingData, setLoadingData] = useState(true);
     const apiUrlData = require('../Configurations/apiUrl.json');
@@ -15,9 +17,10 @@ export default function Credentials() {
             setLoadingData(false); console.table(res.data);
             setCredData(res.data);
             toast.success("API Key Reset successfully.");
-        }).catch(xx => {
-            toast.error("Something went wrong.");
-        });
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }
     useEffect(() => {
         async function getData() {
@@ -25,9 +28,10 @@ export default function Credentials() {
                 setCredData(res.data);
 
                 setLoadingData(false)
-            }).catch(xx => {
-                toast.error('Something went wrong');
-            })
+            }).catch(err=>{
+                setLoadingData(false);
+                toast.error(common.toastMsg.error);
+              });
         }
         if (loadingData) {
             getData();
@@ -37,13 +41,8 @@ export default function Credentials() {
         <div className="page-container">
             {
                 loadingData && <Loader></Loader>
-            }
-            <nav aria-label="breadcrumb">
-                <ol className="breadcrumb">
-                    <li className="breadcrumb-item"><Link to="/Dashboard">Home</Link></li>
-                    <li className="breadcrumb-item active" aria-current="page">Credentials</li>
-                </ol>
-            </nav>
+            }            
+        <Breadcrumb option={breadcrumbOption}></Breadcrumb>
             <div className="d-flex justify-content-between bd-highlight mb-3">
                 <div className="p-2 bd-highlight">
                     <div className="btn-group" role="group" aria-label="Basic example">
@@ -53,7 +52,7 @@ export default function Credentials() {
                 <div className="p-2 "><p className="h4">Credentials</p></div>
                 <div className="p-2 bd-highlight">
                     <div className="input-group mb-3">
-                        <input type="text" className="form-control" placeholder="Search Devices" aria-label="Search Devices" aria-describedby="button-addon2" />
+                        <input type="text" className="form-control" placeholder="Search API Key" aria-label="Search API Key" aria-describedby="button-addon2" />
                         <button className="btn btn-outline-secondary" type="button" id="button-addon2"><i className="fa fa-search"></i></button>
                     </div>
                 </div>

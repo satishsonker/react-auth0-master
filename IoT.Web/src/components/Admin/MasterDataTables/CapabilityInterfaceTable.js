@@ -25,18 +25,22 @@ export default function CapabilityInterfaceTable({ userRole }) {
                     setFooterOption({ ...footerOption, ['totalRecord']: res[0].data.totalRecords });
                 }
                 setFooterOption({ ...footerOption, ['currPage']: pagingData.currPage });
-
             }
-        });
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }, [pagingData]);
-    const handleDeleteCapType = (e) => {
-        var val = e.target.value ? e.target.value : e.target.dataset.deletekey;
+    const handleDeleteCapType = (val) => {
         setLoadingData(true);
         Api.Delete(apiUrlData.masterDataController.deleteCapabilityInterface + '?capabilityInterfaceId=' + val).then(res => {
             setLoadingData(false);
             handleSearch("All", actionType.capType);
             toast.success("Capability version deleted.")
-        });
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
     }
     const handleSearch = (val) => {
         let search = !common.hasValue(val) || val === '' ? 'All' : val;
@@ -45,7 +49,10 @@ export default function CapabilityInterfaceTable({ userRole }) {
             .then(res => {
                 setLoadingData(false);
                 setTableOptionTemplate({ ...tableOptionTemplate, ['rowData']: res.data });
-            });
+            }).catch(err=>{
+                setLoadingData(false);
+                toast.error(common.toastMsg.error);
+              });
     }
     const [tableOptionTemplate, setTableOptionTemplate] = useState({
         headers: ['Capability Interface Name'],
