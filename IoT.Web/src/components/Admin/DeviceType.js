@@ -53,8 +53,8 @@ export default function DeviceType({ userRole }) {
             toast.error(common.toastMsg.error);
           });
     }, [userRole,pagingData]);
-    const handleDelete = (e) => {
-        var val = e.target.value ? e.target.value : e.target.dataset.deletekey;
+    const handleDelete = (val) => {
+        debugger;
         setLoadingData(true);
         Api.Delete(apiUrlData.adminController.deleteDeviceType + '?devicetypeid=' + val).then(res => {
             setLoadingData(false);

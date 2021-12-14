@@ -39,7 +39,12 @@ export default function Dashboard({ userRole, mqttPayload, setPubMsg }) {
                                     setConnectedDeviceId(_connectedDeviceId);
                                     setDashBoardStatus({ ...dashBoardStatus, ["connected"]: common.defaultIfEmpty(dashBoardStatus.connected, 0) + 1 });
                                 }
-                                roomEle["wifi"] = ele.wifi;
+                                roomEle["wifi"] = ele.wifi; 
+                                roomEle["ultraDistanceCm"] = ele.ultraDistanceCm; 
+                                roomEle["gasThreshold"] = common.defaultIfEmpty(ele.gasThreshold, 0);
+                                roomEle["gasMax"] = common.defaultIfEmpty(ele.gasMax, 1024);
+                                roomEle["gasCurrent"] = common.defaultIfEmpty(ele.gasCurrent, 0);
+                                roomEle.gasCurrent = roomEle.gasCurrent > roomEle.gasMax ? roomEle.gasMax : roomEle.gasCurrent;
                                 roomEle["ip"] = ele.ip;
                                 if (ele.status !== "" || !common.hasValue(roomEle["status"]))
                                     roomEle["status"] = ele.status;
@@ -100,24 +105,24 @@ export default function Dashboard({ userRole, mqttPayload, setPubMsg }) {
                 setDashboardData(_data);
                 setLoadingData(false);
                 sendPingRequest();
-            }).catch(err=>{
+            }).catch(err => {
                 setLoadingData(false);
                 toast.error(common.toastMsg.error);
-              });
+            });
         }
         if (loadingData) {
             getDashboardData();
         }
     }, [loadingData, apiUrlData.dashboardController.getDashboardData]);
-    const getDeviceListFromEachRoom=(deviceData)=>{
-        let deviceList=[];
-        deviceData.map(ele=>{
+    const getDeviceListFromEachRoom = (deviceData) => {
+        let deviceList = [];
+        deviceData.map(ele => {
             deviceList.push(ele.deviceKey);
         });
         return deviceList;
     }
-    const handleTurnOnOffDeviceRoom = (deviceList,isOn) => {
-        let pubMsgs=[];
+    const handleTurnOnOffDeviceRoom = (deviceList, isOn) => {
+        let pubMsgs = [];
         let value = isOn ? 'OFF' : 'ON';
         deviceList.map(ele => {
             pubMsgs.push({
@@ -130,7 +135,7 @@ export default function Dashboard({ userRole, mqttPayload, setPubMsg }) {
         setPubMsg(pubMsgs);
     }
     const handleTurnOnOffDeviceAll = (isOn) => {
-        let pubMsgs=[];
+        let pubMsgs = [];
         let value = isOn ? 'OFF' : 'ON';
         connectedDeviceId.map(ele => {
             pubMsgs.push({
@@ -175,7 +180,7 @@ export default function Dashboard({ userRole, mqttPayload, setPubMsg }) {
                         </div>
                         <div className="card-footer">
                             <button className="btn btn-success btn-sm" onClick={e => { sendPingRequest() }}>Refresh</button>
-                            </div>
+                        </div>
                     </div>
                 </div>
                 <div className="col mb-3">
@@ -217,8 +222,8 @@ export default function Dashboard({ userRole, mqttPayload, setPubMsg }) {
                                                 {
                                                     ele[0].roomName + " - " + ele.length + " Device(s) - " + OnDeviceCounter(ele).online + " Online - " + OnDeviceCounter(ele).on + " Turn On"
                                                 }
-                                                <div className="d-inline-flex p-2 bd-highlight"><button onClick={e=>{handleTurnOnOffDeviceRoom(getDeviceListFromEachRoom(ele),false)}} type="button" title="Turn All On" className="btn btn-success btn-sm" data-bs-toggle="modal"><i className="fas fa-power-off"></i></button></div>
-                                                <div className="d-inline-flex p-2 bd-highlight"><button onClick={e=>{handleTurnOnOffDeviceRoom(getDeviceListFromEachRoom(ele),true)}} type="button" title="Turn All Off" className="btn btn-danger btn-sm" data-bs-toggle="modal"><i className="fas fa-power-off"></i></button></div>
+                                                <div className="d-inline-flex p-2 bd-highlight"><button onClick={e => { handleTurnOnOffDeviceRoom(getDeviceListFromEachRoom(ele), false) }} type="button" title="Turn All On" className="btn btn-success btn-sm" data-bs-toggle="modal"><i className="fas fa-power-off"></i></button></div>
+                                                <div className="d-inline-flex p-2 bd-highlight"><button onClick={e => { handleTurnOnOffDeviceRoom(getDeviceListFromEachRoom(ele), true) }} type="button" title="Turn All Off" className="btn btn-danger btn-sm" data-bs-toggle="modal"><i className="fas fa-power-off"></i></button></div>
                                             </div>
                                         </h2>
                                         <div id={"collapse" + ind} className={"accordion-collapse collapse" + (ind === 0 ? 'show' : '')} aria-labelledby={"heading" + ind} data-bs-parent="#accordionExample">

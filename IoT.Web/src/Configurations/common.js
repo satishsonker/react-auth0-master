@@ -180,7 +180,17 @@ export const common = {
     toastMsg:{
         error:"Something went wrong. Please try later.",
         update:"`${msg} updated successfully`"
+    },
+    deviceType:{
+        gasSensor:"gas sensor",
+        ultrasonicSensor:"ultrasonic sensor",
+        light:"light",
+        switch:"switch",
+        doorbell:"doorbell",
+        motionSensor:"motion sensor",
+        lock:"lock"
     }
+
 
 }
 

@@ -91,6 +91,11 @@ export default function Device({userRole}) {
                             <th scope="col">Device Type</th>
                             <th scope="col">Power State</th>
                             <th scope="col">Room</th>
+                            <th scope="col">Model</th>
+                            <th scope="col">Serial Number</th>
+                            <th scope="col">Firmware Version</th>
+                            <th scope="col">Software Version</th>
+                            <th scope="col">Custom Identifier</th>
                             <th scope="col">API Key</th>
                             <th scope="col">Last Connected</th>
                             <th scope="col">No Of Times Connected</th>
@@ -117,6 +122,11 @@ export default function Device({userRole}) {
                                         </td>
                                         <td className="text-center">{ele?.status?.toLowerCase()==='on'?<div><i className="fas fa-bolt text-success"></i> ON</div>:<div><i className="fas fa-bolt text-danger"></i> OFF</div>}</td>
                                         <td className="text-center">{ele.roomName}</td>
+                                        <td className="text-center">{ele.model}</td>
+                                        <td className="text-center">{ele.serialNumber}</td>
+                                        <td className="text-center">{ele.firmwareVersion}</td>
+                                        <td className="text-center">{ele.softwareVersion}</td>
+                                        <td className="text-center">{ele.customIdentifier}</td>
                                         <td className="text-center">Default</td>
                                         <td className="text-center">{common.getDateTime(ele.lastConnected)}</td>
                                         <td className="text-center">{ele.connectionCount}</td>

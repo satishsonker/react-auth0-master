@@ -14,15 +14,21 @@ padding: 30px;
     font-size: 11px;
     color: gray;
 }
-.device-desc li{
-
-}
 .device-desc li span{
 padding-left: 8px;
+}
+.text-ecllips{
+    width: 66%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    display: inline-block;
+    margin-left: 10px;
 }
 .device-desc li i{
 color: indianred;
 width: 13px;
+display: inline-block;
 }
 .card-header,.card-title,.btn
 {

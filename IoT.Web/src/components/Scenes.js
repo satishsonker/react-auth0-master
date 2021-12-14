@@ -52,8 +52,7 @@ export default function Scenes({userRole}) {
             toast.error(common.toastMsg.error);
           });
     }
-    const handleDelete = (e) => {
-        var val = e.target.value ? e.target.value : e.target.dataset.scenekey;
+    const handleDelete = (val) => {
         setLoadingData(true);
         Api.Delete(apiUrlData.sceneController.deleteScene + '?scenekey=' + val).then(res => {
             setLoadingData(false);

@@ -78,7 +78,7 @@ export default function DeviceCreate({ userRole }) {
             toast.warn("Please select device type");
             return;
         }
-        if (device.roomKey === undefined || device.roomKey === "") {
+        if (device.roomId === undefined || device.roomId === "") {
             toast.warn("Please select room");
             return;
         }
@@ -114,13 +114,6 @@ export default function DeviceCreate({ userRole }) {
                             <form>
                                 <div class="container">
                                     <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2">
-                                        <div class="col">
-                                            <div className="mb-3">
-                                                <label htmlFor="txtDeviceName" className="form-label">Device Name<strong className="text-danger">*</strong></label>
-                                                <input type="text" name="deviceName" value={device.deviceName} onChange={e => inputHandler(e)} className="form-control" id="txtDeviceName" aria-describedby="txtDeviceNameHelp" />
-                                                <div id="txtDeviceNameHelp" className="form-text">Enter the device name</div>
-                                            </div>
-                                        </div>
                                         <div class="col">
                                             <div className="mb-3">
                                                 <label htmlFor="txtDeviceName" className="form-label">Device Name<strong className="text-danger">*</strong></label>
@@ -179,6 +172,41 @@ export default function DeviceCreate({ userRole }) {
                                                     }
                                                 </select>
                                                 <div id="ddlRoomKeyHelp" className="form-text">Select room name</div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div className="mb-3">
+                                                <label htmlFor="txtModel" className="form-label">Model</label>
+                                                <input type="text" name="model" value={device.model} onChange={e => inputHandler(e)} className="form-control" id="txtModel" aria-describedby="txtModelHelp" />
+                                                <div id="txtModelHelp" className="form-text">Enter the desire Device model Number</div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div className="mb-3">
+                                                <label htmlFor="txtSerialNumber" className="form-label">SerialNumber</label>
+                                                <input type="text" name="serialNumber" value={device.serialNumber} onChange={e => inputHandler(e)} className="form-control" id="txtSerialNumber" aria-describedby="txtSerialNumberHelp" />
+                                                <div id="txtSerialNumberHelp" className="form-text">Enter the desire Device Serial Number</div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div className="mb-3">
+                                                <label htmlFor="txtFirmwareVersion" className="form-label">Firmware Version</label>
+                                                <input type="text" name="firmwareVersion" value={device.firmwareVersion} onChange={e => inputHandler(e)} className="form-control" id="txtFirmwareVersion" aria-describedby="txtFirmwareVersionHelp" />
+                                                <div id="txtFirmwareVersionHelp" className="form-text">Enter the desire Device Firmware Version</div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div className="mb-3">
+                                                <label htmlFor="txtSoftwareVersion" className="form-label">Software Version</label>
+                                                <input type="text" name="softwareVersion" value={device.softwareVersion} onChange={e => inputHandler(e)} className="form-control" id="txtSoftwareVersion" aria-describedby="txtSoftwareVersionHelp" />
+                                                <div id="txtSoftwareVersionHelp" className="form-text">Enter the desire Device Software Version</div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div className="mb-3">
+                                                <label htmlFor="txtcustomIdentifier" className="form-label">Custom Identifier</label>
+                                                <input type="text" name="customIdentifier" value={device.customIdentifier} onChange={e => inputHandler(e)} className="form-control" id="txtCustomIdentifier" aria-describedby="txtCustomIdentifierHelp" />
+                                                <div id="txtCustomIdentifierHelp" className="form-text">Enter the desire Device Custom Identifier</div>
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-12 col-sm-12 col-xs-12">

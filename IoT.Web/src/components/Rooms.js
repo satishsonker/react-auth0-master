@@ -13,8 +13,7 @@ export default function Rooms({ userRole }) {
     const [loadingData, setLoadingData] = useState(true);
     const [searchTerm, setsearchTerm] = useState("All");
     const apiUrlData = require('../Configurations/apiUrl.json');
-    const handleDelete = (e) => {
-        var val = e.target.value ? e.target.value : e.target.dataset.deletekey;
+    const handleDelete = (val) => {
         setLoadingData(true);
         Api.Delete(apiUrlData.roomController.deleteRoom + '?roomkey=' + val).then(res => {
             setLoadingData(false);

@@ -27,7 +27,7 @@ export default function MasterData({ userRole }) {
     let showAcc = "accordion-collapse collapse show";
     let hideAcc = "accordion-collapse collapse";
     
-    const breadcrumbOption = [{ name: 'Home', link: "/Dashboard", isActive: false }, { name: 'Master Data', link: "", isActive: true }]
+    const breadcrumbOption = [{ name: 'Home', link: "/Dashboard", isActive: true }, { name: 'Master Data', link: "", isActive: false }]
     const actionType = {
         capType: "catyp",
         capVersion: "cvers",

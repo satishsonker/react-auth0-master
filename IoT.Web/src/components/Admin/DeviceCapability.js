@@ -14,6 +14,7 @@ export default function DeviceCapability({userRole}) {
     const apiUrlData = require('../../Configurations/apiUrl.json');
     useEffect(() => {
         Api.Get(apiUrlData.adminController.getAllDeviceCapability).then(res => {
+            debugger;
             setDeviceCapabilityData(res.data);
             setLoadingData(false)
         }).catch(err=>{
