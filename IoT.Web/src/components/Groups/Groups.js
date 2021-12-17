@@ -46,7 +46,6 @@ export default function Groups({ userRole, setPubMsg }) {
         });
     }, [userRole]);
     const getDeviceList = (ele) => {
-        debugger;
         let deviceList = [];
         ele.deviceGroupDetails.forEach(element => {
             deviceList.push(element.device.deviceKey);
@@ -68,13 +67,10 @@ export default function Groups({ userRole, setPubMsg }) {
     }
 
     const handleSetDelete = (groupKey) => {
-        debugger;
         setDeletingGroupKey(groupKey);
     }
 
     const handleDelete = (key) => {
-        alert(key);
-        debugger;
         if (deletingGroupKey.length > 0) {
             setLoadingData(true);
             Api.Delete(apiUrlData.deviceGroupController.deleteDeviceGroup + deletingGroupKey).then(res => {

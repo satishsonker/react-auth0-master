@@ -42,13 +42,12 @@ export default function TableView({ options,userRole }) {
                                         {options.rowNumber && <td >{ind + 1}</td>}
                                         {
                                             options.columns.map((eleCol) => {
-                                                return <td key={ele[eleCol]+Math.random()*1000} >{ele[eleCol]}</td>
+                                                return <td key={ele[eleCol]+Math.random()*1000} >{common.getValueFromObject(eleCol,ele)?.toString()}</td>
                                             })
                                         }
                                         <td>
                                             {options.action && (
                                                 <UpdateDeleteButton userRole={userRole} deleteHandler={options.deleteHandler} dataKey={ele[options.idName]} editUrl={options.editUrl}></UpdateDeleteButton>)}
-
                                         </td>
                                     </tr>
                                 )

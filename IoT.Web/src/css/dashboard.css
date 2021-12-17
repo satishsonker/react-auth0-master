@@ -5,6 +5,12 @@ padding: 30px;
 {
     font-size: 2em;
 }
+.assistant-logo
+{
+    width: 21px;
+    margin-left: 10px;
+    filter: none !important;
+}
 .device-desc
 {
     list-style: none;

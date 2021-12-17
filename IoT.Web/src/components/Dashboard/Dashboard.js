@@ -39,12 +39,28 @@ export default function Dashboard({ userRole, mqttPayload, setPubMsg }) {
                                     setConnectedDeviceId(_connectedDeviceId);
                                     setDashBoardStatus({ ...dashBoardStatus, ["connected"]: common.defaultIfEmpty(dashBoardStatus.connected, 0) + 1 });
                                 }
+                                roomEle["humidity"] = ele.humidity; 
+                                roomEle["moisture"] = ele.moisture; 
+                                roomEle["sound"] = ele.sound; 
+                                roomEle["water"] = ele.water; 
+                                roomEle["temperature"] = ele.temperature; 
                                 roomEle["wifi"] = ele.wifi; 
+                                roomEle["motion"] = ele.motion; 
                                 roomEle["ultraDistanceCm"] = ele.ultraDistanceCm; 
                                 roomEle["gasThreshold"] = common.defaultIfEmpty(ele.gasThreshold, 0);
                                 roomEle["gasMax"] = common.defaultIfEmpty(ele.gasMax, 1024);
                                 roomEle["gasCurrent"] = common.defaultIfEmpty(ele.gasCurrent, 0);
+                                roomEle["ldrThreshold"] = common.defaultIfEmpty(ele.ldrThreshold, 0);
+                                roomEle["moistureMax"] = common.defaultIfEmpty(ele.moistureMax, 100);
+                                roomEle["moistureThreshold"] = common.defaultIfEmpty(ele.moistureThreshold, 0);
+                                roomEle["soundMax"] = common.defaultIfEmpty(ele.soundMax, 100);
+                                roomEle["soundThreshold"] = common.defaultIfEmpty(ele.soundThreshold, 0);
+                                roomEle["ldrMax"] = common.defaultIfEmpty(ele.ldrMax, 1024);
+                                roomEle["ldrCurrent"] = common.defaultIfEmpty(ele.ldrCurrent, 0);
                                 roomEle.gasCurrent = roomEle.gasCurrent > roomEle.gasMax ? roomEle.gasMax : roomEle.gasCurrent;
+                                roomEle.ldrCurrent = roomEle.ldrCurrent > roomEle.ldrMax ? roomEle.ldrMax : roomEle.ldrCurrent;
+                                roomEle.moisture = roomEle.moisture > roomEle.moistureMax ? roomEle.moistureMax : roomEle.moisture;
+                                roomEle.sound = roomEle.sound > roomEle.soundMax ? roomEle.soundMax : roomEle.sound;
                                 roomEle["ip"] = ele.ip;
                                 if (ele.status !== "" || !common.hasValue(roomEle["status"]))
                                     roomEle["status"] = ele.status;
@@ -216,7 +232,7 @@ export default function Dashboard({ userRole, mqttPayload, setPubMsg }) {
                                 return <div key={ind + "2"}></div>
                             else {
                                 return <>
-                                    <div className="accordion-item" key={ind}>
+                                    <div className="accordion-item mb-2" key={ind}>
                                         <h2 className="accordion-header" id={"heading" + ind}>
                                             <div className="accordion-button bg-primary" type="button" data-bs-toggle="collapse" data-bs-target={"#collapse" + ind} aria-expanded="true" aria-controls={"collapse" + ind}>
                                                 {

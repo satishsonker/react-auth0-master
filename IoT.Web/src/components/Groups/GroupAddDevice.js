@@ -29,7 +29,6 @@ export default function GroupAddDevice({ userRole }) {
             let ApiCalls = [];
             ApiCalls.push(Api.Get(apiUrlData.deviceController.getAllDevice));
             ApiCalls.push(Api.Get(apiUrlData.deviceGroupController.getDeviceGroupDetail + queryParam.id));
-            debugger;
             Api.MultiCall(ApiCalls).then(res => {
                 setLoadingData(false);
                 setDeviceGroupData(res[1].data);
@@ -76,7 +75,6 @@ export default function GroupAddDevice({ userRole }) {
         return deviceInGroup.indexOf(deviceId) > -1 ? true : false;
     }
     const handleCheck = (e, deviceId) => {
-        debugger;
         let data = deviceGroupDataPost;
         let deviceIds = deviceInGroup;
         if (e.target.checked) {

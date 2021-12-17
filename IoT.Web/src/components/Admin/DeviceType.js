@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import Unauthorized from '../CustomView/Unauthorized';
-import { Link } from "react-router-dom";
 import { Api } from "../../Configurations/Api";
 import { toast } from 'react-toastify';
 import Loader from '../Loader';
@@ -11,7 +10,7 @@ import TableHeader from '../Tables/TableHeader';
 import TableFooter from '../Tables/TableFooter';
 export default function DeviceType({ userRole }) {
     
-    const breadcrumbOption = [{ name: 'Home', link: "/Dashboard", isActive: false }, { name: 'Device Type', link: "", isActive: true }]
+    const breadcrumbOption = [{ name: 'Home', link: "/Dashboard", isActive: true }, { name: 'Device Type', link: "", isActive: false }]
 
     const handleSerach = (e) => {
         if (e !== "All" && (e === "" || e.length < 3)) {
@@ -40,12 +39,13 @@ export default function DeviceType({ userRole }) {
     useEffect(() => {
         setLoadingData(true);
         let ApiCalls = [];
-        ApiCalls.push(Api.Get(`${apiUrlData.deviceController.getDeviceTypeDropdown}?pageno=${pagingData.pageNo}&pagesize=${pagingData.pageSize}`));
+        ApiCalls.push(Api.Get(`${apiUrlData.deviceController.getDeviceTypePaging}?pageno=${pagingData.pageNo}&pagesize=${pagingData.pageSize}`));
         Api.MultiCall(ApiCalls).then(res => {
             let tblOption = tableOptionTemplate;
-            tblOption.rowData = res[0].data;
+            tblOption.rowData = res[0].data.data;
             tblOption.deleteHandler = handleDelete;
             tblOption.userRole = userRole;
+            tblOption.totalRecord=res[0].data.totalRecord;
             setTableOption(tblOption);
             setLoadingData(false);
         }).catch(err=>{
@@ -54,7 +54,6 @@ export default function DeviceType({ userRole }) {
           });
     }, [userRole,pagingData]);
     const handleDelete = (val) => {
-        debugger;
         setLoadingData(true);
         Api.Delete(apiUrlData.adminController.deleteDeviceType + '?devicetypeid=' + val).then(res => {
             setLoadingData(false);
@@ -66,12 +65,13 @@ export default function DeviceType({ userRole }) {
           });
     }
     const tableOptionTemplate = {
-        headers: ['Device Type'],
+        headers: ['Device Type','Alexa Compatible','Google Compatible'],
         rowNumber: true,
         action: true,
-        columns: ['deviceTypeName'],
+        columns: ['deviceTypeName','isAlexaCompatible','isGoogleCompatible'],
         rowData: common.defaultIfEmpty(undefined, []),
         userRole: userRole,
+        totalRecord:0,
         idName: 'deviceTypeId',
         editUrl: "/admin/DeviceTypeCreate?devicetypeid=",
         deleteHandler:handleDelete
@@ -91,7 +91,7 @@ export default function DeviceType({ userRole }) {
                     <Breadcrumb option={breadcrumbOption}></Breadcrumb>
                     <TableHeader option={tableHeaderOption} userRole={userRole}></TableHeader>
                     <TableView options={tableOption} userRole={userRole}></TableView>
-                    <TableFooter option={{totalRecord:tableOption.rowData.length}} pagingData={setPagingData}></TableFooter>
+                    <TableFooter option={{totalRecord:tableOption.totalRecord}} pagingData={setPagingData}></TableFooter>
                 </>
             }
         </div>

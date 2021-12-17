@@ -27,6 +27,7 @@
         "deleteDevice": "/device/deleteDevice",
         "getDeviceDropdown": "/device/getDeviceDropdown",
         "getDeviceTypeDropdown": "/device/getDeviceTypeDropdown",
+        "getDeviceTypePaging": "/device/GetDeviceTypePaging",
         "getDeviceTypeAction": "/device/getDeviceTypeAction"
     },
     "sceneController": {

@@ -30,7 +30,6 @@ export default function GroupDetails({ userRole,setPubMsg }) {
         }
     }, [userRole]);
     const getDeviceList = (ele) => {
-        debugger;
         let deviceList = [];
         ele.forEach(element => {
             deviceList.push(element.device.deviceKey);

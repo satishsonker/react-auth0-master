@@ -1,7 +1,8 @@
 import React from 'react'
 import { common } from "../../Configurations/common";
 import GaugeChart from 'react-gauge-chart'
-export default function GasSensor({ deviceData, index }) {
+
+export default function LDRSensor({ deviceData, index }) {
     return (
         <ol className="device-desc">
             <li>
@@ -11,7 +12,7 @@ export default function GasSensor({ deviceData, index }) {
                             nrOfLevels={20}
                             arcsLength={[0.2, 0.2, 0.6]}
                             colors={['#5BE12C', '#F5CD19', '#EA4228']}
-                            percent={(common.defaultIfEmpty(deviceData.gasCurrent, 1) / common.defaultIfEmpty(deviceData.gasMax, 1024))}
+                            percent={(common.defaultIfEmpty(deviceData.ldrCurrent, 1) / common.defaultIfEmpty(deviceData.ldrMax, 1023))}
                             arcPadding={0.00} style={{ height: '70%' }} />
                     </div>
                     <div className="col">
@@ -26,21 +27,21 @@ export default function GasSensor({ deviceData, index }) {
                     </div>
                     <div className="col-12">
                         <div className="row row-cols-3">
-                            <div className="col p-0">
+                        <div className="col p-0">
                                 <span>Threshold</span>
-                                <span>{common.defaultIfEmpty(deviceData.gasThreshold, 0)}</span>
+                                <span>{common.defaultIfEmpty(deviceData.ldrThreshold, 0)}</span>
                             </div>
                             <div className="col p-0">
                                 <span>Current</span>
-                                <span>{common.defaultIfEmpty(deviceData.gasCurrent, 0)}</span>
+                                <span>{common.defaultIfEmpty(deviceData.ldrCurrent, 0)}</span>
                             </div>
                             <div className="col p-0">
                                 <span>Max</span>
-                                <span>{common.defaultIfEmpty(deviceData.gasMax, 1024)}</span>
+                                <span>{common.defaultIfEmpty(deviceData.ldrMax, 1023)}</span>
                             </div>
                             <div className="col p-0">
                                 <span>Percent %</span>
-                                <span>{((common.defaultIfEmpty(deviceData.gasCurrent, 0) / common.defaultIfEmpty(deviceData.gasMax, 1024)) * 100).toFixed(2)}</span>
+                                <span>{((common.defaultIfEmpty(deviceData.ldrCurrent, 0) / common.defaultIfEmpty(deviceData.ldrMax, 1023)) * 100).toFixed(2)}</span>
                             </div>
                         </div>
                     </div>

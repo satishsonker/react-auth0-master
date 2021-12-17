@@ -22,7 +22,7 @@ export default function TableFooter({ option, pagingData }) {
         setTotalPageCount(totalPages);
     }, [option.totalRecord, pageSize]);
     const handleChange = (e) => {
-        pagingData({ pageNo: pageNo, pageSize: parseInt(e.target.value),currPage:pageNo });
+        pagingData({ pageNo: 1, pageSize: parseInt(e.target.value),currPage:1 });
         setPageSize(parseInt(e.target.value));
     };
     const handleClick = (e,val) => {

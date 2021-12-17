@@ -188,7 +188,19 @@ export const common = {
         switch:"switch",
         doorbell:"doorbell",
         motionSensor:"motion sensor",
-        lock:"lock"
+        lock:"lock",
+        ldrSensor:'ldr sensor',
+        waterSensor:'water sensor',
+        soundSensor:'sound sensor',
+        temperatureSensor:'temperature sensor',
+        humiditySensor:'humidity sensor',
+        moistureSensor:'moisture sensor',
+        soundSensor:'sound sensor'
+    },
+    getValueFromObject:function(st, obj) {
+        return st.replace(/\[([^\]]+)]/g, '.$1').split('.').reduce(function(o, p) { 
+            return o[p];
+        }, obj);
     }
 
 

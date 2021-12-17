@@ -52,7 +52,6 @@ export default function DeviceCreate({ userRole }) {
         setDevice({ ...device, [e.target.name]: val });
     };
     const handleSubmit = () => {
-        debugger;
         if (!device)
             return;
         if (device.deviceName === undefined || device.deviceName.length < 1) {

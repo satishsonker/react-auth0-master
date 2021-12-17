@@ -1,7 +1,9 @@
 import React from 'react'
 import { common } from "../../Configurations/common";
 import GaugeChart from 'react-gauge-chart'
-export default function GasSensor({ deviceData, index }) {
+
+export default function TemperatureSensor({ deviceData, index }) {
+    let F=common.defaultIfEmpty(deviceData.temperature, 1)===0?0:((common.defaultIfEmpty(deviceData.temperature, 1)*1.80)+32).toFixed(2);
     return (
         <ol className="device-desc">
             <li>
@@ -9,9 +11,9 @@ export default function GasSensor({ deviceData, index }) {
                     <div className="col">
                         <GaugeChart id={"gauge-chart" + index}
                             nrOfLevels={20}
-                            arcsLength={[0.2, 0.2, 0.6]}
+                            arcsLength={[0.33, 0.22, 0.45]}
                             colors={['#5BE12C', '#F5CD19', '#EA4228']}
-                            percent={(common.defaultIfEmpty(deviceData.gasCurrent, 1) / common.defaultIfEmpty(deviceData.gasMax, 1024))}
+                            percent={common.defaultIfEmpty(deviceData.temperature, 1)/100}
                             arcPadding={0.00} style={{ height: '70%' }} />
                     </div>
                     <div className="col">
@@ -26,21 +28,21 @@ export default function GasSensor({ deviceData, index }) {
                     </div>
                     <div className="col-12">
                         <div className="row row-cols-3">
-                            <div className="col p-0">
-                                <span>Threshold</span>
-                                <span>{common.defaultIfEmpty(deviceData.gasThreshold, 0)}</span>
+                        <div className="col p-0">
+                                <span>Temp °C</span>
+                                <span>{common.defaultIfEmpty(deviceData.temperature, 0)}</span>
                             </div>
                             <div className="col p-0">
-                                <span>Current</span>
-                                <span>{common.defaultIfEmpty(deviceData.gasCurrent, 0)}</span>
+                                <span>Temp °F</span>
+                                <span>{F}</span>
                             </div>
                             <div className="col p-0">
                                 <span>Max</span>
-                                <span>{common.defaultIfEmpty(deviceData.gasMax, 1024)}</span>
+                                <span>{common.defaultIfEmpty(deviceData.temperatureMax, 100)}°C</span>
                             </div>
                             <div className="col p-0">
                                 <span>Percent %</span>
-                                <span>{((common.defaultIfEmpty(deviceData.gasCurrent, 0) / common.defaultIfEmpty(deviceData.gasMax, 1024)) * 100).toFixed(2)}</span>
+                                <span>{(common.defaultIfEmpty(deviceData.temperature, 0)).toFixed(2)}°C</span>
                             </div>
                         </div>
                     </div>

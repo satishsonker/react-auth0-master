@@ -40,7 +40,6 @@ export default function GroupCreate({ userRole }) {
           });
     }
     useEffect(() => {
-        debugger;
         let queryParam = common.queryParam(window.location.search);
         let obj = {};
         if (queryParam.name !== undefined && queryParam.id !== undefined) {
