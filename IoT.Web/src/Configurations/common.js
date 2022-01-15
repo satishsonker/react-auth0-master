@@ -2,6 +2,7 @@ import { Api } from "./Api";
 import { toast } from 'react-toastify';
 const mqttSubscribeServerStorageKey = process.env.REACT_APP_MQTT_SUBSCRIBE_SERVER_LOCAL_STORAGE_KEY;
 const mqttPublishStorageKey = process.env.REACT_APP_MQTT_PUBLISH_LOCAL_STORAGE_KEY;
+const tablePageSize=process.env.REACT_APP_TABLE_PAGE_SIZE===undefined?[10,20,30,40,50,100]:process.env.REACT_APP_TABLE_PAGE_SIZE;
 const apiUrlData = require('../Configurations/apiUrl.json');
 export const common = {
     getDateTime: (date) => {
@@ -201,9 +202,13 @@ export const common = {
         return st.replace(/\[([^\]]+)]/g, '.$1').split('.').reduce(function(o, p) { 
             return o[p];
         }, obj);
+    },
+    getTablePageSize:function()
+    {
+        if(typeof tablePageSize ==='string')
+        return JSON.parse(tablePageSize);
+        return tablePageSize;
     }
-
-
 }
 
 function formatAMPM(date) {

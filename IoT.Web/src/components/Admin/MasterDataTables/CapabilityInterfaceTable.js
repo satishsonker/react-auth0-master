@@ -80,9 +80,9 @@ export default function CapabilityInterfaceTable({ userRole }) {
         <div className="mb-5">
             <TableHeader option={tableHeaderOption} userRole={userRole}></TableHeader>
             {
-                userRole?.canView && <TableView options={tableOptionTemplate} userRole={userRole}></TableView>
+                userRole?.canView && <TableView currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} options={tableOptionTemplate} userRole={userRole}></TableView>
             }
-            <TableFooter option={footerOption} pagingData={setPagingData}></TableFooter>
+            <TableFooter currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} option={footerOption} pagingData={setPagingData}></TableFooter>
         </div>
     )
 }

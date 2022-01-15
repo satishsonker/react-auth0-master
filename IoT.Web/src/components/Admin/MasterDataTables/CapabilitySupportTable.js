@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { common } from '../../../Configurations/common';
 import TableHeader from '../../Tables/TableHeader';
 import TableView from '../../Tables/TableView';
@@ -7,22 +7,21 @@ import { toast } from 'react-toastify';
 import Loader from '../../Loader';
 import Unauthorized from '../../CustomView/Unauthorized';
 import TableFooter from '../../Tables/TableFooter';
-export default function DisplayCategoryTable({userRole }) {  
-    const [pagingData, setPagingData] = useState({pageNo:1,pageSize:10,currPage:1 });
-    const [footerOption, setFooterOption] = useState({ totalRecord: 0,currPage:1, });
+
+export default function CapabilitySupportTable({userRole}) {
+    const [pagingData, setPagingData] = useState({ pageNo: 1, pageSize: 10,currPage:1 });
     const apiUrlData = require('../../../Configurations/apiUrl.json');
-    const actionType="cdcat";    
-    const [loadingData, setLoadingData] = useState(common.getDefault(common.dataType.bool));
-    const [totalRecord, setTotalRecord] = useState(common.getDefault(common.dataType.int))
+    const actionType = "cspro";
+    const [loadingData, setLoadingData] = useState(false);
+    const [footerOption, setFooterOption] = useState({ totalRecord: 0,currPage:1 });
     useEffect(() => {
-       setLoadingData(true);
+        setLoadingData(true);
         let ApiCalls = [];
-        ApiCalls.push(Api.Get(apiUrlData.masterDataController.getDisplayCategory+`?pageNo=${pagingData.pageNo}&pagesize=${pagingData.pageSize}`));
+        ApiCalls.push(Api.Get(apiUrlData.masterDataController.getCapabilitySupportedProperty + `?pageNo=${pagingData.pageNo}&pagesize=${pagingData.pageSize}`));
         Api.MultiCall(ApiCalls).then(res => {
-            if (res.length>0) {
+            if (res.length > 0) {
                 setLoadingData(false);
-                setTableOptionTemplate({...tableOptionTemplate,['rowData']:res[0].data.data});
-                setTotalRecord(res[0].data.totalRecord);
+                setTableOptionTemplate({ ...tableOptionTemplate, ['rowData']: res[0].data.data });
                 if (footerOption.totalRecord !== res[0].data.totalRecords) {
                     setFooterOption({ ...footerOption, ['totalRecord']: res[0].data.totalRecords });
                 }
@@ -32,56 +31,59 @@ export default function DisplayCategoryTable({userRole }) {
             setLoadingData(false);
             toast.error(common.toastMsg.error);
           });
-    },[pagingData]);
+    }, [pagingData]);
     const handleDeleteCapType = (val) => {
         setLoadingData(true);
-        Api.Delete(apiUrlData.masterDataController.deleteDisplayCategory + '?displayCategoryId=' + val).then(res => {
+        Api.Delete(apiUrlData.masterDataController.deleteCapabilitySupportedProperty + '?capabilitySupportedPropertyId=' + val).then(res => {
             setLoadingData(false);
-            handleSearch("All",actionType.capType);
+            handleSearch("All", actionType.capType);
             toast.success("Capability version deleted.")
-        });
-    }  
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
+    }
     const handleSearch = (val) => {
-        let search=!common.hasValue(val) || val===''?'All':val;
+        let search = !common.hasValue(val) || val === '' ? 'All' : val;
         setLoadingData(true);
-        Api.Get(apiUrlData.masterDataController.searchDisplayCategory + "?searchTerm=" + search)
+        Api.Get(apiUrlData.masterDataController.searchCapabilitySupportedProperty + "?searchTerm=" + search)
             .then(res => {
                 setLoadingData(false);
-                setTableOptionTemplate({...tableOptionTemplate,['rowData']:res.data});
+                setTableOptionTemplate({ ...tableOptionTemplate, ['rowData']: res.data });
             }).catch(err=>{
                 setLoadingData(false);
                 toast.error(common.toastMsg.error);
               });
-     }
+    }
     const [tableOptionTemplate, setTableOptionTemplate] = useState({
-        headers: ['Display Category Value','Display Category Label'],
+        headers: ['Capability Interface Name'],
         rowNumber: true,
         action: true,
-        columns: ['displayCategoryValue','displayCategoryLabel'],
+        columns: ['capabilityInterfaceName'],
         rowData: common.defaultIfEmpty(undefined, []),
-        idName: 'displayCategoryId',
+        idName: 'capabilityInterfaceId',
         editUrl: `/admin/MasterDataCreate?type=${actionType}&id=`,
-        deleteHandler:handleDeleteCapType
+        deleteHandler: handleDeleteCapType
     });
     useEffect(() => {
         setTableOptionTemplate({ ...tableOptionTemplate, ['userRole']: userRole });
     }, [userRole])
     const tableHeaderOption = {
         searchHandler: handleSearch,
-        headerName: 'Display Category',
+        headerName: 'Capability Interface',
         addUrl: `/admin/MasterDataCreate?type=${actionType}`
     }
-    if(loadingData)
-    return <Loader></Loader>
+    if (loadingData)
+        return <Loader></Loader>
     if (!userRole.isAdmin)
-    return <Unauthorized></Unauthorized>
+        return <Unauthorized></Unauthorized>
     return (
         <div className="mb-5">
             <TableHeader option={tableHeaderOption} userRole={userRole}></TableHeader>
             {
-                userRole?.canView && <TableView  currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} options={tableOptionTemplate} currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} userRole={userRole}></TableView>
+                userRole?.canView && <TableView currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} options={tableOptionTemplate} userRole={userRole}></TableView>
             }
-                <TableFooter currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} option={footerOption} pagingData={setPagingData}></TableFooter>
+            <TableFooter currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} option={footerOption} pagingData={setPagingData}></TableFooter>
         </div>
     )
 }

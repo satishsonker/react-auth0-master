@@ -5,6 +5,7 @@ import { Api } from "../../Configurations/Api";
 import { toast } from 'react-toastify';
 import Loader from '../Loader';
 import { common } from "../../Configurations/common";
+import Breadcrumb from '../Breadcrumb/Breadcrumb';
 export default function MasterDataCreate({ userRole }) {
     const [loadingData, setLoadingData] = useState(common.getDefault(common.dataType.bool));
     const [isUpdating, setIsUpdating] = useState(common.getDefault(common.dataType.bool));
@@ -15,21 +16,26 @@ export default function MasterDataCreate({ userRole }) {
     const [displayCategories, setDisplayCategories] = useState(common.getDefault(common.dataType.object));
     const [capabilityVersions, setCapabilityVersions] = useState(common.getDefault(common.dataType.object));
     const apiUrlData = require('../../Configurations/apiUrl.json');
-    const [queryStringType, setQueryStringType] = useState();
+    const [queryStringType, setQueryStringType] = useState("catyp");
     const [queryStringId, setQueryStringId] = useState();
-
+    const [breadcrumbOption, setBreadcrumbOption] = useState(common.getDefault(common.dataType.arrayObject));
+    
     useEffect(() => {
-        if (common.hasValue(common.queryParam(window.location.search).id)) {
-            setQueryStringId(common.queryParam(window.location.search).id)
+        let queryData=common.queryParam(window.location.search);
+       if (common.hasValue(queryData.id)) {
+            setQueryStringId(queryData.id)
             setIsUpdating(true);
         }
-        if (common.hasValue(common.queryParam(window.location.search).type))
-            setQueryStringType(common.queryParam(window.location.search).type);
-        if (common.hasValue(common.queryParam(window.location.search).id)) {
-            switch (common.queryParam(window.location.search).type) {
+        if (common.hasValue(queryData.type))
+        {
+            setQueryStringType(common.hasValue(queryData.type));
+            setBreadcrumbOption( [{ name: 'Home', link: "/Dashboard", isActive: true }, { name: 'Master Date', link: "/admin/masterdata?type=" + queryData.type, isActive: true },{ name: (common.hasValue(queryData.id) ? 'Update ' : 'Create ') + 'Master Date', link: "", isActive: false }]);
+        }
+        if (common.hasValue(queryData.id) && common.hasValue(queryData.type)) {
+            switch (queryData.type) {
                 case 'catyp':
                     setLoadingData(true);
-                    Api.Get(apiUrlData.masterDataController.getCapabilityType + "?id=" + common.queryParam(window.location.search).id)
+                    Api.Get(apiUrlData.masterDataController.getCapabilityType + "?id=" + queryData.id)
                         .then(res => {
                             if (res.data.length > 0)
                                 setCapabilityType(res.data[0]);
@@ -41,7 +47,7 @@ export default function MasterDataCreate({ userRole }) {
                     break;
                 case 'cvers':
                     setLoadingData(true);
-                    Api.Get(apiUrlData.masterDataController.getCapabilityVersion + "?id=" + common.queryParam(window.location.search).id)
+                    Api.Get(apiUrlData.masterDataController.getCapabilityVersion + "?id=" + queryData.id)
                         .then(res => {
                             if (res.data.length > 0)
                                 setCapabilityVersions(res.data[0]);
@@ -53,7 +59,7 @@ export default function MasterDataCreate({ userRole }) {
                     break;
                 case 'cdcat':
                     setLoadingData(true);
-                    Api.Get(apiUrlData.masterDataController.getDisplayCategory + "?id=" + common.queryParam(window.location.search).id)
+                    Api.Get(apiUrlData.masterDataController.getDisplayCategory + "?id=" + queryData.id)
                         .then(res => {
                             if (res.data.length > 0)
                                 setDisplayCategories(res.data[0]);
@@ -65,7 +71,7 @@ export default function MasterDataCreate({ userRole }) {
                     break;
                 case 'cifa':
                     setLoadingData(true);
-                    Api.Get(apiUrlData.masterDataController.getCapabilityInterface + "?id=" + common.queryParam(window.location.search).id)
+                    Api.Get(apiUrlData.masterDataController.getCapabilityInterface + "?id=" + queryData.id)
                         .then(res => {
                             if (res.data.length > 0)
                                 setCapabilityInterfaces(res.data[0]);
@@ -77,7 +83,7 @@ export default function MasterDataCreate({ userRole }) {
                     break;
                 case 'cspro':
                     setLoadingData(true);
-                    Api.Get(apiUrlData.masterDataController.getCapabilitySupportedProperty + "?id=" + common.queryParam(window.location.search).id)
+                    Api.Get(apiUrlData.masterDataController.getCapabilitySupportedProperty + "?id=" + queryData.id)
                         .then(res => {
                             if (res.data.length > 0)
                                 setCapabilitySupportedProperties(res.data[0]);
@@ -94,7 +100,7 @@ export default function MasterDataCreate({ userRole }) {
             }
         }
 
-    }, [])
+    }, []);
 
     const inputHandler = (e, type) => {
         switch (type) {
@@ -200,13 +206,7 @@ export default function MasterDataCreate({ userRole }) {
         return <Unauthorized></Unauthorized>
     return (
         <div className="page-container">
-            <nav aria-label="breadcrumb">
-                <ol className="breadcrumb">
-                    <li className="breadcrumb-item"><Link to="/Dashboard">Home</Link></li>
-                    <li className="breadcrumb-item"><Link to={"/admin/masterdata?type=" + queryStringType}>Master Date</Link></li>
-                    <li className="breadcrumb-item active" aria-current="page">{isUpdating ? 'Update' : 'Create'} Master Data</li>
-                </ol>
-            </nav>
+            <Breadcrumb option={breadcrumbOption}></Breadcrumb>
             <div className="accordion" id="accordionExample">
                 <div className="accordion-item">
                     <h2 className="accordion-header" id="headingOne">

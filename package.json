@@ -9,6 +9,7 @@
     "author": "Satish Kumar Sonkar",
     "license": "ISC",
     "dependencies": {
+        "jest": "^27.4.7",
         "mqtt": "^4.2.8",
         "react-toastify": "^7.0.4"
     }

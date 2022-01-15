@@ -173,10 +173,9 @@ export default function MasterData({ userRole }) {
     }   
     if (!userRole.isAdmin)
         return <Unauthorized></Unauthorized> 
-    if (loadingData)
-        return <Loader></Loader>
     return (
         <div className="page-container">
+            {loadingData && <Loader></Loader>}
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>            
             <div className="accordion m-2" id="accordionExample">
                 <div className="accordion-item">
@@ -199,7 +198,7 @@ export default function MasterData({ userRole }) {
                     </h2>
                     <div id="collapseTwo" className={tabType === 'cvers' ? showAcc : hideAcc} aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
                         <div className="accordion-body">
-                           <CapabilityVersionTable userRole={userRole}></CapabilityVersionTable>
+                           {/* <CapabilityVersionTable userRole={userRole}></CapabilityVersionTable> */}
                         </div>
                     </div>
                 </div>
@@ -211,7 +210,7 @@ export default function MasterData({ userRole }) {
                     </h2>
                     <div id="collapseThree" className={tabType === 'cdcat' ? showAcc : hideAcc} aria-labelledby="headingThree" data-bs-parent="#accordionExample">
                         <div className="accordion-body">
-                           <DisplayCategoryTable userRole={userRole}></DisplayCategoryTable>
+                           {/* <DisplayCategoryTable userRole={userRole}></DisplayCategoryTable> */}
                         </div>
                     </div>
                 </div>
@@ -223,7 +222,7 @@ export default function MasterData({ userRole }) {
                     </h2>
                     <div id="collapseFour" className={tabType === 'cifa' ? showAcc : hideAcc} aria-labelledby="headingFour" data-bs-parent="#accordionExample">
                         <div className="accordion-body">
-                           <CapabilityInterfaceTable userRole={userRole}></CapabilityInterfaceTable>
+                           {/* <CapabilityInterfaceTable userRole={userRole}></CapabilityInterfaceTable> */}
                         </div>
                     </div>
                 </div>

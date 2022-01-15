@@ -2,7 +2,7 @@ import React from 'react'
 import { common } from '../../Configurations/common'
 
 import UpdateDeleteButton from '../Buttons/UpdateDeleteButton';
-export default function TableView({ options,userRole }) {
+export default function TableView({ options,userRole,currPageNo,currPageSize }) {
     options.headers = common.defaultIfEmpty(options.headers, []);
     options.columns = common.defaultIfEmpty(options.columns, []);
     options.rowData = common.defaultIfEmpty(options.rowData, []);
@@ -13,6 +13,9 @@ export default function TableView({ options,userRole }) {
     options.userRole = common.defaultIfEmpty(options.userRole, {});
     options.NoRecordMsg = common.defaultIfEmpty(options.NoRecordMsg, 'No Data Found');
     options.deleteHandler = common.defaultIfEmpty(options.deleteHandler, () => { });
+   currPageNo = common.defaultIfEmpty(currPageNo, 1);  
+    currPageSize = common.defaultIfEmpty(currPageSize,10);
+
     return (
         <div>
             <div className="table-responsive px-3">
@@ -39,7 +42,7 @@ export default function TableView({ options,userRole }) {
                             options.rowData && (options.rowData.map((ele, ind) => {
                                 return (
                                     <tr key={ind}>
-                                        {options.rowNumber && <td >{ind + 1}</td>}
+                                        {options.rowNumber && <td >{((currPageNo-1)*currPageSize) + 1+ind}</td>}
                                         {
                                             options.columns.map((eleCol) => {
                                                 return <td key={ele[eleCol]+Math.random()*1000} >{common.getValueFromObject(eleCol,ele)?.toString()}</td>

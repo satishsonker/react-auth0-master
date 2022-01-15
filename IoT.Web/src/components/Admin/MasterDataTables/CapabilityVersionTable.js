@@ -9,6 +9,7 @@ import Unauthorized from '../../CustomView/Unauthorized';
 import TableFooter from '../../Tables/TableFooter';
 export default function CapabilityVersionTable({userRole }) {  
     const [pagingData, setPagingData] = useState({pageNo:1,pageSize:10});
+    const [footerOption, setFooterOption] = useState({ totalRecord: 0,currPage:1 });
     const apiUrlData = require('../../../Configurations/apiUrl.json');
     const actionType="cvers";    
     const [loadingData, setLoadingData] = useState(false);
@@ -20,6 +21,10 @@ export default function CapabilityVersionTable({userRole }) {
             if (res.length>0) {
                 setLoadingData(false);
                 setTableOptionTemplate({...tableOptionTemplate,['rowData']:res[0].data});
+                if (footerOption.totalRecord !== res[0].data.totalRecords) {
+                    setFooterOption({ ...footerOption, ['totalRecord']: res[0].data.totalRecords });
+                }
+                setFooterOption({ ...footerOption, ['currPage']: pagingData.currPage });
             }
         }).catch(err=>{
             setLoadingData(false);
@@ -75,9 +80,9 @@ export default function CapabilityVersionTable({userRole }) {
         <div className="mb-5">
             <TableHeader option={tableHeaderOption} userRole={userRole}></TableHeader>
             {
-                userRole?.canView && <TableView options={tableOptionTemplate}  userRole={userRole}></TableView>
+                userRole?.canView && <TableView currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} options={tableOptionTemplate}  userRole={userRole}></TableView>
             }
-            <TableFooter option={{totalRecord:tableOptionTemplate.rowData.length}} pagingData={setPagingData}></TableFooter>
+            <TableFooter currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} option={footerOption} pagingData={setPagingData}></TableFooter>
         </div>
     )
 }

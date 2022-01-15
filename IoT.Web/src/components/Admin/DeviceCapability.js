@@ -14,12 +14,11 @@ export default function DeviceCapability({userRole}) {
     const [pagingData, setPagingData] = useState({pageNo:1,pageSize:10});
     const [totalRecord, setTotalRecord] = useState(0);
     const breadcrumbOption = [{ name: 'Home', link: "/Dashboard", isActive: true }, { name: 'Device Capabilities', link: "", isActive: false }]
-     const [loadingData, setLoadingData] = useState(true);
+    const [loadingData, setLoadingData] = useState(true);
     const apiUrlData = require('../../Configurations/apiUrl.json');
     useEffect(() => {
         Api.Get(apiUrlData.adminController.getAllDeviceCapability+`?pageNo=${pagingData.pageNo}&pagesize=${pagingData.pageSize}`).then(res => {
-          debugger;
-            setTableOptionTemplate({...tableOptionTemplate,['rowData']:res.data.data});
+         setTableOptionTemplate({...tableOptionTemplate,['rowData']:res.data.data});
             setTotalRecord(res.data.totalRecord);
             setLoadingData(false)
         }).catch(err=>{
@@ -73,8 +72,8 @@ export default function DeviceCapability({userRole}) {
         <div className="page-container">
               <Breadcrumb option={breadcrumbOption}></Breadcrumb>
               <TableHeader option={tableHeaderOption} userRole={userRole}></TableHeader>
-              <TableView options={tableOptionTemplate} userRole={userRole}></TableView>              
-            <TableFooter option={{totalRecord:totalRecord}} pagingData={setPagingData}></TableFooter>
+              <TableView currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} options={tableOptionTemplate} userRole={userRole}></TableView>              
+            <TableFooter option={{totalRecord:totalRecord}} currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} pagingData={setPagingData}></TableFooter>
         
         </div>
     )

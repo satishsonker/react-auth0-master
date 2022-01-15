@@ -8,24 +8,30 @@ import Loader from '../../Loader';
 import Unauthorized from '../../CustomView/Unauthorized';
 import TableFooter from '../../Tables/TableFooter';
 export default function CapabilityTypesTable({userRole }) {  
-    const [pagingData, setPagingData] = useState({pageNo:1,pageSize:10});
+    const [pagingData, setPagingData] = useState({pageNo:1,pageSize:10,currPage:1});
     const apiUrlData = require('../../../Configurations/apiUrl.json');
     const actionType="catyp";    
     const [loadingData, setLoadingData] = useState(false);
+    const [footerOption, setFooterOption] = useState({ totalRecord: 0,currPage:1 });
     useEffect(() => {
         setLoadingData(true);
         let ApiCalls = [];
         ApiCalls.push(Api.Get(apiUrlData.masterDataController.getCapabilityType+`?pageNo=${pagingData.pageNo}&pagesize=${pagingData.pageSize}`));
         Api.MultiCall(ApiCalls).then(res => {
             if (res.length>0) {
+                debugger;
                 setLoadingData(false);
-                setTableOptionTemplate({...tableOptionTemplate,['rowData']:res[0].data});
+                setTableOptionTemplate({...tableOptionTemplate,['rowData']:res[0].data.data});
+                if (footerOption.totalRecord !== res[0].data.totalRecord) {
+                    setFooterOption({ ...footerOption, ['totalRecord']: res[0].data.totalRecord });
+                }
+                setFooterOption({ ...footerOption, ['currPage']: pagingData.currPage });
             }
         }).catch(err=>{
             setLoadingData(false);
             toast.error(common.toastMsg.error);
           });
-    },[pagingData]);
+    },[pagingData.pageSize,pagingData.pageNo]);
     const handleDeleteCapType = (val) => {
         setLoadingData(true);
         Api.Delete(apiUrlData.masterDataController.deleteCapabilityType + '?capabilityTypeId=' + val).then(res => {
@@ -75,9 +81,9 @@ export default function CapabilityTypesTable({userRole }) {
         <div className="mb-5">
             <TableHeader option={tableHeaderOption} userRole={userRole}></TableHeader>
             {
-                userRole?.canView && <TableView options={tableOptionTemplate}  userRole={userRole}></TableView>
+                userRole?.canView && <TableView currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} options={tableOptionTemplate}  userRole={userRole}></TableView>
             }
-            <TableFooter option={{totalRecord:tableOptionTemplate.rowData.length}} pagingData={setPagingData}></TableFooter>
+                <TableFooter currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} option={footerOption} pagingData={setPagingData}></TableFooter>
         </div>
     )
 }
