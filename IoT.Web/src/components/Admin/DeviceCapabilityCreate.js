@@ -4,9 +4,10 @@ import { common } from "../../Configurations/common";
 import { Api } from "../../Configurations/Api";
 import { toast } from 'react-toastify';
 import Loader from "../Loader";
-
+import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import Unauthorized from '../CustomView/Unauthorized';
 import DropdownMultiselect from "react-multiselect-dropdown-bootstrap";
+import AddUpdateButton from '../Buttons/AddUpdateButton';
 export default function DeviceCapabilityCreate({ userRole }) {
     const apiUrlData = require('../../Configurations/apiUrl.json');
     const [isDeviceCapabilityUpdating, setIsDeviceCapabilityUpdating] = useState(common.getDefault(common.dataType.bool));
@@ -118,19 +119,26 @@ export default function DeviceCapabilityCreate({ userRole }) {
             toast.error(common.toastMsg.error);
           });
     }
+    const breadcrumbOption = [
+        { name: 'Home', link: "/Dashboard" },
+        { name: 'Device Capability', link: "/admin/deviceCapability", isActive: true },
+        { name: 'Device Capability',  isActive: false }
+    ]
+    const buttonOption={
+        buttonText:"Device Capability",
+        handler:handleSubmit,
+        changeButtonTextOnAction:true,
+        buttonColor:'btn-primary',
+        icon:'',
+        onlyIcon:false
+    }
     if (loadingData)
         return <Loader></Loader>
     if (!userRole?.isAdmin)
         return <Unauthorized></Unauthorized>
     return (
         <div className="page-container">
-            <nav aria-label="breadcrumb">
-                <ol className="breadcrumb">
-                    <li className="breadcrumb-item"><Link to="/Dashboard">Home</Link></li>
-                    <li className="breadcrumb-item"><Link to="/admin/deviceCapability">Device Capability</Link></li>
-                    <li className="breadcrumb-item active" aria-current="page">{!isDeviceCapabilityUpdating ? 'Add ' : 'Update '} deviceCapability</li>
-                </ol>
-            </nav>
+            <Breadcrumb option={breadcrumbOption}></Breadcrumb>
             <div className="row">
                 <div className="col mb-3">
                     <div className="card text-black">
@@ -214,8 +222,8 @@ export default function DeviceCapabilityCreate({ userRole }) {
                                         <label className="form-check-label" htmlFor="flexSwitchCheckCheckedDisabled">Retrievable</label>
                                     </div>
                                 </div>
-                                <button type="button" onClick={e => handleSubmit(e)} className="btn btn-primary">{!isDeviceCapabilityUpdating ? 'Add ' : 'Update '} Device Capability</button>
-                                {isDeviceCapabilityCreated && (
+                                <AddUpdateButton userRole={userRole} option={buttonOption} isUpdateAction={isDeviceCapabilityUpdating}></AddUpdateButton>
+                               {isDeviceCapabilityCreated && (
                                     <Redirect to="/admin/deviceCapability"></Redirect>
                                 )}
                             </form>

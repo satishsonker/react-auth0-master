@@ -25,7 +25,7 @@ export default function DeviceCapability({userRole}) {
             setLoadingData(false);
             toast.error(common.toastMsg.error);
           });
-    }, [pagingData]);
+    }, [pagingData.pageNo,pagingData.pageSize]);
     const handleDelete = (val) => {
         setLoadingData(true);
         Api.Delete(apiUrlData.adminController.deleteDeviceType + '?devicetypeid=' + val).then(res => {
@@ -72,7 +72,7 @@ export default function DeviceCapability({userRole}) {
         <div className="page-container">
               <Breadcrumb option={breadcrumbOption}></Breadcrumb>
               <TableHeader option={tableHeaderOption} userRole={userRole}></TableHeader>
-              <TableView currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} options={tableOptionTemplate} userRole={userRole}></TableView>              
+              <TableView  currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} options={tableOptionTemplate} userRole={userRole}></TableView>              
             <TableFooter option={{totalRecord:totalRecord}} currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} pagingData={setPagingData}></TableFooter>
         
         </div>

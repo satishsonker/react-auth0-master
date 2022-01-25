@@ -56,6 +56,9 @@
 .left-menu .item:hover{
     background: rgb(57, 108, 247);
 }
+.selected{
+     background: rgb(57, 108, 247) !important;
+}
 .toggle-button-small{
     width: 54px !important;      
     transition: width .7s;

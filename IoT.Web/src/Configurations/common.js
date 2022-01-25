@@ -6,7 +6,7 @@ const tablePageSize=process.env.REACT_APP_TABLE_PAGE_SIZE===undefined?[10,20,30,
 const apiUrlData = require('../Configurations/apiUrl.json');
 export const common = {
     getDateTime: (date) => {
-        let dateObj;
+       let dateObj;
         if (date === undefined || date === null)
             return '';
         else if (typeof (date) === "object")
@@ -17,7 +17,7 @@ export const common = {
             dateObj = new Date()
 
         let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-        return dateObj.getDay() + "-" + months[dateObj.getMonth()] + "-" + dateObj.getFullYear() + " " + formatAMPM(dateObj);
+        return dateObj.getDate() + "-" + months[dateObj.getMonth()] + "-" + dateObj.getFullYear() + " " + formatAMPM(dateObj);
     },
     hasValue: (input) => {
         return input === undefined || input === null ? false : true;
@@ -199,6 +199,8 @@ export const common = {
         soundSensor:'sound sensor'
     },
     getValueFromObject:function(st, obj) {
+        if(typeof(st)!=='string')
+        return '';
         return st.replace(/\[([^\]]+)]/g, '.$1').split('.').reduce(function(o, p) { 
             return o[p];
         }, obj);
@@ -208,6 +210,12 @@ export const common = {
         if(typeof tablePageSize ==='string')
         return JSON.parse(tablePageSize);
         return tablePageSize;
+    },
+    customCellType:{
+        cell:'cell',
+        button:'button',
+        text:'text',
+        image:'image'
     }
 }
 

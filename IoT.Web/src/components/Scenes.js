@@ -5,12 +5,21 @@ import { toast } from 'react-toastify';
 import Loader from './Loader';
 import { common } from '../Configurations/common';
 import Unauthorized from './CustomView/Unauthorized';
+import Breadcrumb from './Breadcrumb/Breadcrumb';
+import TableHeader from './Tables/TableHeader';
+import TableView from './Tables/TableView';
+import TableFooter from './Tables/TableFooter';
 
-export default function Scenes({userRole}) {
+export default function Scenes({ userRole }) {
     const [sceneData, setSceneData] = useState([]);
     const [loadingData, setLoadingData] = useState(true);
-    const [searchTerm, setsearchTerm] = useState("All");
+    const [pagingData, setPagingData] = useState({pageNo:1,pageSize:10,currPage:1});      
+    const [recordCount, setRecordCount] = useState(0);
+    const [footerOption, setFooterOption] = useState({ totalRecord: 0,currPage:1 });
     const apiUrlData = require('../Configurations/apiUrl.json');
+    const breadcrumbOption = [
+        { name: 'Home', link: "/Dashboard" },
+        { name: 'Scenes', isActive: false }];
     const handleTestScene = (sceneKey) => {
         Api.Get(apiUrlData.sceneController.getScene + "?scenekey=" + sceneKey).then(res => {
             let data = res.data;
@@ -47,24 +56,23 @@ export default function Scenes({userRole}) {
                 });
                 common.setStorePubData(pubData);
             }
-        }).catch(err=>{
+        }).catch(err => {
             setLoadingData(false);
             toast.error(common.toastMsg.error);
-          });
+        });
     }
     const handleDelete = (val) => {
         setLoadingData(true);
         Api.Delete(apiUrlData.sceneController.deleteScene + '?scenekey=' + val).then(res => {
             setLoadingData(false);
-            setsearchTerm("All");
-            handleSerach();
+            handleSearch();
             toast.success("Scene Deleted.")
-        }).catch(err=>{
+        }).catch(err => {
             setLoadingData(false);
             toast.error(common.toastMsg.error);
-          });
+        });
     }
-    const handleSerach = (e) => {
+    const handleSearch = (searchTerm) => {
         if (searchTerm !== "All" && (searchTerm === "" || searchTerm.length < 3)) {
             toast.warn("Please enter 3 char to search.");
             return;
@@ -73,88 +81,58 @@ export default function Scenes({userRole}) {
         Api.Get(apiUrlData.sceneController.searchScene + '?searchterm=' + searchTerm).then(res => {
             setSceneData(res.data);
             setLoadingData(false)
-        }).catch(err=>{
+        }).catch(err => {
             setLoadingData(false);
             toast.error(common.toastMsg.error);
-          });
+        });
     }
     useEffect(() => {
-        Api.Get(apiUrlData.sceneController.getAllScene).then(res => {
-                setSceneData(res.data);
-                setLoadingData(false);
-            }).catch(err=>{
-                setLoadingData(false);
-                toast.error(common.toastMsg.error);
-              });
-        }, [loadingData, apiUrlData.sceneController.getAllScene]);
-        if (loadingData)
-            return <Loader></Loader>
-        if (!userRole?.canView)
-            return <Unauthorized></Unauthorized>
-        return (
-            <div className="page-container">
-                <nav aria-label="breadcrumb">
-                    <ol className="breadcrumb">
-                        <li className="breadcrumb-item"><Link to="/Dashboard">Home</Link></li>
-                        <li className="breadcrumb-item active" aria-current="page">Scenes</li>
-                    </ol>
-                </nav>
-
-                <div className="d-flex justify-content-between bd-highlight mb-3">
-                    <div className="p-2 bd-highlight">
-                        <div className="btn-group" role="group" aria-label="Basic example">
-                        {userRole?.canCreate &&    <Link to="/SceneCreate"><div className="btn btn-sm btn-outline-primary"><i className="fa fa-plus"></i> Add</div></Link>}
-                            <button type="button" className="btn btn-sm btn-outline-primary"><i className="fa fa-sync-alt"></i></button>
-                        </div>
-                    </div>
-                    <div className="p-2 "><p className="h5">Scenes</p></div>
-                    <div className="p-2 bd-highlight">
-                        <div className="input-group mb-3">
-                            <input type="text" value={searchTerm} onChange={e => setsearchTerm(e.target.value)} className="form-control form-control-sm" placeholder="Search Room" aria-label="Search Devices" aria-describedby="button-addon2" />
-                            <button className="btn btn-outline-secondary" type="button" id="button-addon2" onClick={handleSerach}><i className="fa fa-search"></i></button>
-                        </div>
-                    </div>
-                </div>
-                <div className="table-responsive">
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">Scene</th>
-                                <th scope="col">Description</th>
-                                <th scope="col">Test Scene</th>
-                                <th scope="col">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {sceneData && sceneData.length === 0 && (
-                                <tr>
-                                    <td className="text-center" colSpan="5">No Data Found</td>
-                                </tr>
-                            )
-                            }
-                            {
-                                sceneData && (sceneData.map((ele, ind) => {
-                                    return (
-                                        <tr key={ele.sceneId}>
-                                            <td >{ind + 1}</td>
-                                            <td>{ele.sceneName}</td>
-                                            <td>{ele.sceneDesc}</td>
-                                            <td> <button type="button" onClick={e => handleTestScene(ele.sceneKey)} className="btn btn-sm btn-outline-primary"><i data-scenekey={ele.sceneKey} className="fa fa-check"></i> Test Scene</button></td>
-                                            <td>
-                                                <div className="btn-group" role="group" aria-label="Basic example">
-                                                 {userRole?.canUpdate &&   <Link to={"/SceneCreate?scenekey=" + ele.sceneKey}><div className="btn btn-sm btn-outline-success"><i className="fas fa-pencil-alt" aria-hidden="true"></i></div></Link>}
-                                                 {userRole?.canDelete &&<button type="button" value={ele.sceneKey} onClick={e => handleDelete(e)} className="btn btn-sm btn-outline-danger"><i data-scenekey={ele.sceneKey} className="fa fa-trash"></i></button>}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    )
-                                }))
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-        )
+        Api.Get(apiUrlData.sceneController.getAllScene+`?pageNo=${pagingData.pageNo}&pageSize=${pagingData.pageSize}`).then(res => {
+            setLoadingData(false);
+                setTableOptionTemplate({...tableOptionTemplate,['rowData']:res.data.data});
+                setRecordCount(res.data.totalRecord);
+                if (footerOption.totalRecord !== res.data.totalRecord) {
+                    setFooterOption({ ...footerOption, ['totalRecord']: res.data.totalRecord });
+                }
+                setFooterOption({ ...footerOption, ['currPage']: pagingData.currPage });
+        }).catch(err => {
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+        });
+    }, [loadingData, apiUrlData.sceneController.getAllScene]);
+    const tableHeaderOption = {
+        searchHandler: handleSearch,
+        headerName: 'Scenes',
+        addUrl: `/SceneCreate`
     }
+    const [tableOptionTemplate, setTableOptionTemplate] = useState({
+        headers: ['Scene','Description','Test Scene'],
+        rowNumber: true,
+        action: true,
+        columns: ['sceneName','sceneDesc'],
+        rowData: common.defaultIfEmpty(undefined, []),
+        idName: 'sceneKey',
+        editUrl: `/SceneCreate?scenekey=`,
+        customCell:[{
+            cellNo:2,
+            type:common.customCellType.button,
+            handler:handleTestScene,
+            handlerParam:['sceneKey'],
+            buttonText:'Test Scene',
+        }],
+        deleteHandler:handleDelete
+    });
+    if (loadingData)
+        return <Loader></Loader>
+    if (!userRole?.canView)
+        return <Unauthorized></Unauthorized>
+    return (
+        <div className="page-container">
+            <Breadcrumb option={breadcrumbOption}></Breadcrumb>
+            <TableHeader option={tableHeaderOption} userRole={userRole}></TableHeader>
+            <TableView  options={tableOptionTemplate} currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} userRole={userRole}></TableView>
+      <TableFooter option={footerOption} currPageSize={pagingData.pageSize} currPageNo={pagingData.pageNo} pagingData={setPagingData} totalRecords={recordCount}></TableFooter>
+       </div>
+
+    )
+}

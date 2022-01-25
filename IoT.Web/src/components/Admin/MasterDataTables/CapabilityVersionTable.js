@@ -11,7 +11,8 @@ export default function CapabilityVersionTable({userRole }) {
     const [pagingData, setPagingData] = useState({pageNo:1,pageSize:10});
     const [footerOption, setFooterOption] = useState({ totalRecord: 0,currPage:1 });
     const apiUrlData = require('../../../Configurations/apiUrl.json');
-    const actionType="cvers";    
+    const actionType="cvers";       
+    const [recordCount, setRecordCount] = useState(0)
     const [loadingData, setLoadingData] = useState(false);
     useEffect(() => {
         setLoadingData(true);
@@ -20,9 +21,10 @@ export default function CapabilityVersionTable({userRole }) {
         Api.MultiCall(ApiCalls).then(res => {
             if (res.length>0) {
                 setLoadingData(false);
-                setTableOptionTemplate({...tableOptionTemplate,['rowData']:res[0].data});
-                if (footerOption.totalRecord !== res[0].data.totalRecords) {
-                    setFooterOption({ ...footerOption, ['totalRecord']: res[0].data.totalRecords });
+                setTableOptionTemplate({...tableOptionTemplate,['rowData']:res[0].data.data});                
+                setRecordCount(res[0].data.totalRecord);
+                if (footerOption.totalRecord !== res[0].data.totalRecord) {
+                    setFooterOption({ ...footerOption, ['totalRecord']: res[0].data.totalRecord });
                 }
                 setFooterOption({ ...footerOption, ['currPage']: pagingData.currPage });
             }
@@ -82,7 +84,7 @@ export default function CapabilityVersionTable({userRole }) {
             {
                 userRole?.canView && <TableView currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} options={tableOptionTemplate}  userRole={userRole}></TableView>
             }
-            <TableFooter currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} option={footerOption} pagingData={setPagingData}></TableFooter>
+            <TableFooter totalRecords={recordCount} currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} option={footerOption} pagingData={setPagingData}></TableFooter>
         </div>
     )
 }

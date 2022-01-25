@@ -6,6 +6,7 @@ import Breadcrumb from '../components/Breadcrumb/Breadcrumb';
 import { toast } from 'react-toastify';
 import Loader from './Loader';
 import {  common} from "../Configurations/common";
+import ConfirmationBox from './Controls/ConfirmationBox';
 export default function Credentials() {
     const breadcrumbOption = [{ name: 'Home', link: "/Dashboard", isActive: true }, { name: 'Credentials', link: "", isActive: false }]
     const [credData, setCredData] = useState({});
@@ -37,16 +38,24 @@ export default function Credentials() {
             getData();
         }
     }, [loadingData, apiUrlData.userController.getApiKey]);
+    let conBoxOption = {
+        modelBoxId: "exampleModalResetAPIKey",
+        deleteHandler: handleResetApiKey,
+        title:"Reset Confirmation",
+        actionButtonText:'Reset Key',
+        msg:"After Resetting the API key your all connect device(s) will stop working! Are you sure?"
+    }
     return (
         <div className="page-container">
             {
                 loadingData && <Loader></Loader>
             }            
         <Breadcrumb option={breadcrumbOption}></Breadcrumb>
+        <ConfirmationBox options={conBoxOption}></ConfirmationBox>
             <div className="d-flex justify-content-between bd-highlight mb-3">
                 <div className="p-2 bd-highlight">
                     <div className="btn-group" role="group" aria-label="Basic example">
-                        <button type="button" className="btn btn-primary" onClick={e => handleResetApiKey()}><i className="fa fa-plus"></i>  New API Key</button>
+                        <button type="button" data-bs-toggle="modal" data-bs-target={"#exampleModalResetAPIKey"} className="btn btn-primary"><i className="fa fa-plus"></i>  New API Key</button>
                     </div>
                 </div>
                 <div className="p-2 "><p className="h4">Credentials</p></div>

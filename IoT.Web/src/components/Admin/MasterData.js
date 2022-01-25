@@ -1,181 +1,25 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import Unauthorized from '../CustomView/Unauthorized';
-import { Link } from "react-router-dom";
-import { Api } from "../../Configurations/Api";
-import { toast } from 'react-toastify';
-import Loader from '../Loader';
 import { common } from "../../Configurations/common";
-import UpdateDeleteButton from '../Buttons/UpdateDeleteButton';
 import '../../css/MasterData.css'
 import Breadcrumb from '../Breadcrumb/Breadcrumb';
 import CapabilityTypesTable from './MasterDataTables/CapabilityTypesTable';
 import CapabilityVersionTable from './MasterDataTables/CapabilityVersionTable';
 import DisplayCategoryTable from './MasterDataTables/DisplayCategoryTable';
 import CapabilityInterfaceTable from './MasterDataTables/CapabilityInterfaceTable';
+import CapabilitySupportTable from './MasterDataTables/CapabilitySupportTable';
 export default function MasterData({ userRole }) {
-    const [loadingData, setLoadingData] = useState(true);
-    const [capabilityType, setCapabilityType] = useState([])
-    const [capabilitySupportedProperties, setCapabilitySupportedProperties] = useState([])
-    const [capabilityInterfaces, setCapabilityInterfaces] = useState([])
-    const [displayCategories, setDisplayCategories] = useState([])
-    const [capabilityVersions, setCapabilityVersions] = useState([])
-    const [searchTerm, setsearchTerm] = useState("All");
-    const apiUrlData = require('../../Configurations/apiUrl.json');
-    const editUrl = "/admin/MasterDataCreate?type=";
     let tabType = common.queryParam(window.location.search).type;
     tabType = !common.hasValue(tabType) ? 'catyp' : tabType;
     let showAcc = "accordion-collapse collapse show";
     let hideAcc = "accordion-collapse collapse";
     
     const breadcrumbOption = [{ name: 'Home', link: "/Dashboard", isActive: true }, { name: 'Master Data', link: "", isActive: false }]
-    const actionType = {
-        capType: "catyp",
-        capVersion: "cvers",
-        disCat: "cdcat",
-        capInt: "cifa",
-        capSupp: "cspro"
-    }
-    useEffect(() => {
-        let ApiCalls = [];
-        ApiCalls.push(Api.Get(apiUrlData.masterDataController.getCapabilitySupportedProperty));
-        Api.MultiCall(ApiCalls).then(res => {
-            if (res.length>0) {
-                setCapabilitySupportedProperties(res[0].data);
-            }
-            setLoadingData(false)
-        }).catch(err=>{
-            setLoadingData(false);
-            toast.error(common.toastMsg.error);
-          });
-    }, []);
-    const handleDeleteCapType = (e) => {
-        var val = e.target.value ? e.target.value : e.target.dataset.deletekey;
-        setLoadingData(true);
-        Api.Delete(apiUrlData.masterDataController.deleteCapabilityType + '?capabilityTypeId=' + val).then(res => {
-            setLoadingData(false);
-            handleSearch("All",actionType.capType);
-            toast.success("Capability type deleted.")
-        }).catch(err=>{
-            setLoadingData(false);
-            toast.error(common.toastMsg.error);
-          });
-    }
-    const handleDeleteCapInt = (e) => {
-        var val = e.target.value ? e.target.value : e.target.dataset.deletekey;
-        setLoadingData(true);
-        Api.Delete(apiUrlData.masterDataController.deleteCapabilityInterface + '?capabilityInterfaceId=' + val).then(res => {
-            setLoadingData(false);
-            handleSearch("All",actionType.capInt);
-            toast.success("Capability interface type deleted.")
-        }).catch(err=>{
-            setLoadingData(false);
-            toast.error(common.toastMsg.error);
-          });
-    }
-    const handleDeleteCapVer= (e) => {
-        var val = e.target.value ? e.target.value : e.target.dataset.deletekey;
-        setLoadingData(true);
-        Api.Delete(apiUrlData.masterDataController.deleteCapabilityVersion + '?capabilityVersionId=' + val).then(res => {
-            setLoadingData(false);
-            handleSearch("All",actionType.capVersion);
-            toast.success("Capability version type deleted.")
-        }).catch(err=>{
-            setLoadingData(false);
-            toast.error(common.toastMsg.error);
-          });
-    }
-    const handleDeleteDisCat = (e) => {
-        var val = e.target.value ? e.target.value : e.target.dataset.deletekey;
-        setLoadingData(true);
-        Api.Delete(apiUrlData.masterDataController.deleteDisplayCategory + '?displayCategoryId=' + val).then(res => {
-            setLoadingData(false);
-            handleSearch("All",actionType.disCat);
-            toast.success("Display categoty type deleted.")
-        }).catch(err=>{
-            setLoadingData(false);
-            toast.error(common.toastMsg.error);
-          });
-    }
-    const handleDeleteSupp= (e) => {
-        var val = e.target.value ? e.target.value : e.target.dataset.deletekey;
-        setLoadingData(true);
-        Api.Delete(apiUrlData.masterDataController.deleteCapabilitySupportedProperty + '?capabilitySupportedPropertyId=' + val).then(res => {
-            setLoadingData(false);
-            handleSearch("All",actionType.capSupp);
-            toast.success("Supported property type deleted.")
-        }).catch(err=>{
-            setLoadingData(false);
-            toast.error(common.toastMsg.error);
-          });
-    }
-    const handleSearch = (val, type) => {
-       let search=!common.hasValue(val) || val===''?'All':val;
-        switch (type) {
-            case actionType.capType:
-                setLoadingData(true);
-                Api.Get(apiUrlData.masterDataController.searchCapabilityType + "?searchTerm=" + search)
-                    .then(res => {
-                        setLoadingData(false);
-                        setCapabilityType(res.data);
-                    }).catch(err=>{
-                        setLoadingData(false);
-                        toast.error(common.toastMsg.error);
-                      });
-                break;
-                case actionType.capVersion:
-                setLoadingData(true);
-                Api.Get(apiUrlData.masterDataController.searchCapabilityVersion + "?searchTerm=" + search)
-                    .then(res => {                        
-                        setLoadingData(false);
-                        setCapabilityVersions(res.data);
-                    }).catch(err=>{
-                        setLoadingData(false);
-                        toast.error(common.toastMsg.error);
-                      });
-                break;
-                case actionType.disCat:
-                setLoadingData(true);
-                Api.Get(apiUrlData.masterDataController.searchDisplayCategory + "?searchTerm=" + search)
-                    .then(res => {                        
-                        setLoadingData(false);
-                        setDisplayCategories(res.data);
-                    }).catch(err=>{
-                        setLoadingData(false);
-                        toast.error(common.toastMsg.error);
-                      });
-                break;
-                case actionType.capInt:
-                    setLoadingData(true);
-                    Api.Get(apiUrlData.masterDataController.searchCapabilityInterface + "?searchTerm=" + search)
-                        .then(res => {                        
-                            setLoadingData(false);
-                            setCapabilityInterfaces(res.data);
-                        }).catch(err=>{
-                            setLoadingData(false);
-                            toast.error(common.toastMsg.error);
-                          });
-                    break;
-                    case actionType.capSupp:
-                    setLoadingData(true);
-                    Api.Get(apiUrlData.masterDataController.searchCapabilitySupportedProperty + "?searchTerm=" + search)
-                        .then(res => {                        
-                            setLoadingData(false);
-                            setCapabilitySupportedProperties(res.data);
-                        }).catch(err=>{
-                            setLoadingData(false);
-                            toast.error(common.toastMsg.error);
-                          });
-                    break;
-
-            default:
-                break;
-        }
-    }   
+  
     if (!userRole.isAdmin)
         return <Unauthorized></Unauthorized> 
     return (
         <div className="page-container">
-            {loadingData && <Loader></Loader>}
             <Breadcrumb option={breadcrumbOption}></Breadcrumb>            
             <div className="accordion m-2" id="accordionExample">
                 <div className="accordion-item">
@@ -198,7 +42,7 @@ export default function MasterData({ userRole }) {
                     </h2>
                     <div id="collapseTwo" className={tabType === 'cvers' ? showAcc : hideAcc} aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
                         <div className="accordion-body">
-                           {/* <CapabilityVersionTable userRole={userRole}></CapabilityVersionTable> */}
+                           <CapabilityVersionTable userRole={userRole}></CapabilityVersionTable>
                         </div>
                     </div>
                 </div>
@@ -210,7 +54,7 @@ export default function MasterData({ userRole }) {
                     </h2>
                     <div id="collapseThree" className={tabType === 'cdcat' ? showAcc : hideAcc} aria-labelledby="headingThree" data-bs-parent="#accordionExample">
                         <div className="accordion-body">
-                           {/* <DisplayCategoryTable userRole={userRole}></DisplayCategoryTable> */}
+                           <DisplayCategoryTable userRole={userRole}></DisplayCategoryTable>
                         </div>
                     </div>
                 </div>
@@ -222,7 +66,7 @@ export default function MasterData({ userRole }) {
                     </h2>
                     <div id="collapseFour" className={tabType === 'cifa' ? showAcc : hideAcc} aria-labelledby="headingFour" data-bs-parent="#accordionExample">
                         <div className="accordion-body">
-                           {/* <CapabilityInterfaceTable userRole={userRole}></CapabilityInterfaceTable> */}
+                           <CapabilityInterfaceTable userRole={userRole}></CapabilityInterfaceTable>
                         </div>
                     </div>
                 </div>
@@ -234,7 +78,8 @@ export default function MasterData({ userRole }) {
                     </h2>
                     <div id="collapseFive" className={tabType === 'cspro' ? showAcc : hideAcc} aria-labelledby="headingFive" data-bs-parent="#accordionExample">
                         <div className="accordion-body">
-                            <div className="d-flex justify-content-between bd-highlight mb-3">
+                            <CapabilitySupportTable userRole={userRole}></CapabilitySupportTable>
+                            {/* <div className="d-flex justify-content-between bd-highlight mb-3">
                                 <div className="p-2 bd-highlight">
                                     <div className="btn-group" role="group" aria-label="Basic example">
                                         {userRole.canCreate && <Link to="/admin/masterdatacreate?type=cspro"><div className="btn btn-sm btn-outline-primary"><i className="fa fa-plus"></i> Add</div></Link>}
@@ -281,7 +126,7 @@ export default function MasterData({ userRole }) {
                                         </tbody>
                                     </table>
                                 </div>
-                            }
+                            } */}
                         </div>
                     </div>
                 </div>

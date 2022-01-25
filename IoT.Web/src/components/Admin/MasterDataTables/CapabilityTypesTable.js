@@ -11,7 +11,8 @@ export default function CapabilityTypesTable({userRole }) {
     const [pagingData, setPagingData] = useState({pageNo:1,pageSize:10,currPage:1});
     const apiUrlData = require('../../../Configurations/apiUrl.json');
     const actionType="catyp";    
-    const [loadingData, setLoadingData] = useState(false);
+    const [loadingData, setLoadingData] = useState(false);    
+    const [recordCount, setRecordCount] = useState(0);
     const [footerOption, setFooterOption] = useState({ totalRecord: 0,currPage:1 });
     useEffect(() => {
         setLoadingData(true);
@@ -19,9 +20,9 @@ export default function CapabilityTypesTable({userRole }) {
         ApiCalls.push(Api.Get(apiUrlData.masterDataController.getCapabilityType+`?pageNo=${pagingData.pageNo}&pagesize=${pagingData.pageSize}`));
         Api.MultiCall(ApiCalls).then(res => {
             if (res.length>0) {
-                debugger;
                 setLoadingData(false);
                 setTableOptionTemplate({...tableOptionTemplate,['rowData']:res[0].data.data});
+                setRecordCount(res[0].data.totalRecord);
                 if (footerOption.totalRecord !== res[0].data.totalRecord) {
                     setFooterOption({ ...footerOption, ['totalRecord']: res[0].data.totalRecord });
                 }
@@ -83,7 +84,7 @@ export default function CapabilityTypesTable({userRole }) {
             {
                 userRole?.canView && <TableView currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} options={tableOptionTemplate}  userRole={userRole}></TableView>
             }
-                <TableFooter currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} option={footerOption} pagingData={setPagingData}></TableFooter>
+                <TableFooter totalRecords={recordCount} currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} option={footerOption} pagingData={setPagingData}></TableFooter>
         </div>
     )
 }

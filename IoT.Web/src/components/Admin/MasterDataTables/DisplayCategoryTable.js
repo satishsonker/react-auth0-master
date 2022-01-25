@@ -23,8 +23,8 @@ export default function DisplayCategoryTable({userRole }) {
                 setLoadingData(false);
                 setTableOptionTemplate({...tableOptionTemplate,['rowData']:res[0].data.data});
                 setTotalRecord(res[0].data.totalRecord);
-                if (footerOption.totalRecord !== res[0].data.totalRecords) {
-                    setFooterOption({ ...footerOption, ['totalRecord']: res[0].data.totalRecords });
+                if (footerOption.totalRecord !== res[0].data.totalRecord) {
+                    setFooterOption({ ...footerOption, ['totalRecord']: res[0].data.totalRecord });
                 }
                 setFooterOption({ ...footerOption, ['currPage']: pagingData.currPage });
             }
@@ -81,7 +81,7 @@ export default function DisplayCategoryTable({userRole }) {
             {
                 userRole?.canView && <TableView  currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} options={tableOptionTemplate} currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} userRole={userRole}></TableView>
             }
-                <TableFooter currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} option={footerOption} pagingData={setPagingData}></TableFooter>
+                <TableFooter totalRecords={totalRecord} currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} option={footerOption} pagingData={setPagingData}></TableFooter>
         </div>
     )
 }

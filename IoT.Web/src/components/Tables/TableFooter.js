@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { common } from '../../Configurations/common'
 
-export default function TableFooter({ option, currPageNo, currPageSize, pagingData }) {
+export default function TableFooter({ option, currPageNo, currPageSize, pagingData, totalRecords }) {
     option = common.defaultIfEmpty(option, {});
     option.totalRecord = common.defaultIfEmpty(option.totalRecord, 0);
     option.currPage = common.defaultIfEmpty(option.currPage, 1);
@@ -9,9 +9,10 @@ export default function TableFooter({ option, currPageNo, currPageSize, pagingDa
     const [totalPageCount, setTotalPageCount] = useState([1]);
     const [pageSize, setPageSize] = useState(common.defaultIfEmpty(currPageSize, 10));
     const [pageNo, setPageNo] = useState(common.defaultIfEmpty(currPageNo, 1));
+    const [recordRange, setrecordRange] = useState("");
     useEffect(() => {
-        debugger;
-        let totalPage = option.totalRecord / pageSize;
+        totalRecords = common.defaultIfEmpty(totalRecords, 0);
+        let totalPage = ((option.totalRecord === 0 ? totalRecords : option.totalRecord) / pageSize);
         let totalPages = [];
         if (totalPage > parseInt(totalPage)) {
             totalPage += 1;
@@ -20,36 +21,50 @@ export default function TableFooter({ option, currPageNo, currPageSize, pagingDa
             totalPages.push(index);
         }
         setTotalPageCount(totalPages);
-    }, [option.totalRecord, pageSize]);
+        setrecordRange(getRecordRange(pageNo,pageSize));
+    }, [option.totalRecord, pageSize, totalRecords]);
     const handleChange = (e) => {
-        let data = { pageNo: 1, pageSize: parseInt(e.target.value), currPage: 1 }
-        pagingData(data);
-        setPageSize(parseInt(e.target.value));
+        let psize=parseInt(e.target.value);
+        let data = { pageNo: 1, pageSize: psize, currPage: 1 }
+        pagingData({ ...data });
+        setPageSize(psize);
+        setrecordRange(getRecordRange(1,psize));
     };
     const handleClick = (e, val) => {
-        let data = { pageNo: parseInt(val), pageSize: pageSize, currPage: parseInt(val) };
-        pagingData(data);
-        setPageNo(parseInt(val));
         e.preventDefault();
+        let pno=parseInt(val);
+        let data = { pageNo:pno , pageSize: pageSize, currPage: pno };
+        pagingData({ ...data });
+        setPageNo(pno);
+        setrecordRange(getRecordRange(pno,pageSize));
     };
     const handlePagingPre = () => {
         if (pageNo > 1) {
             pagingData({ pageNo: pageNo - 1, pageSize: pageSize });
             setPageNo(pageNo - 1);
+            setrecordRange(getRecordRange(pageNo-1,pageSize));
         }
     }
     const handlePagingNext = () => {
         if (pageNo < totalPageCount.length) {
             pagingData({ pageNo: pageNo + 1, pageSize: pageSize });
             setPageNo(pageNo + 1);
+            setrecordRange(getRecordRange(pageNo + 1,pageSize));
         }
+    }
+    const getRecordRange = (pno,psize) => {
+        let allRecords=(option.totalRecord === 0 ? totalRecords : option.totalRecord);
+        let recordStart = ((pno - 1) * psize) + 1;
+        let recordEnd = recordStart - 1 + (psize>allRecords?allRecords:psize);
+        recordEnd = recordEnd > allRecords ? allRecords : recordEnd;
+        return `${recordStart}-${recordEnd}`;
     }
     return (
         <>
             <div className="row">
-                <div className="col-md-12 col-12">
-                    <div className="position-relative px-3">
-                        <div className="position-absolute top-0 start-0">
+                <div className="col-md-12 col-12">{ (option.totalRecord === 0 ? totalRecords : option.totalRecord)>0 &&(
+                    <div class="d-flex justify-content-between">
+                        <div class="p-2 bd-highlight">
                             <nav aria-label="Page navigation example">
                                 <ul className="pagination  pagination-sm">
                                     <li onClick={() => handlePagingPre()} className={pageNo == 1 ? "page-item disabled" : "page-item"}>
@@ -64,9 +79,11 @@ export default function TableFooter({ option, currPageNo, currPageSize, pagingDa
                                         <a className="page-link" href="#">Next</a>
                                     </li>
                                 </ul>
-                            </nav>
+                            </nav></div>
+                        <div class="p-2 bd-highlight">
+                            {recordRange}/{(option.totalRecord === 0 ? totalRecords : option.totalRecord)}
                         </div>
-                        <div className="position-absolute top-0 end-0">
+                        <div class="p-2 bd-highlight">
                             <select className="form-control" onChange={(e) => handleChange(e)}>
                                 {
                                     option.pageSize.map((ele) => {
@@ -78,7 +95,7 @@ export default function TableFooter({ option, currPageNo, currPageSize, pagingDa
                             </select>
                         </div>
                     </div>
-                </div>
+                )}</div>
             </div>
         </>
     )

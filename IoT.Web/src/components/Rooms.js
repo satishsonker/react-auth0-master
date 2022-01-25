@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from "react-router-dom";
 import { Api } from "../Configurations/Api";
 import { toast } from 'react-toastify';
 import Loader from './Loader';
@@ -7,9 +6,13 @@ import Breadcrumb from '../components/Breadcrumb/Breadcrumb';
 import { common } from "../Configurations/common";
 import Unauthorized from './CustomView/Unauthorized';
 import TableView from './Tables/TableView';
+import TableHeader from './Tables/TableHeader';
+import TableFooter from './Tables/TableFooter';
 export default function Rooms({ userRole }) {
     const breadcrumbOption = [{ name: 'Home', link: "/Dashboard", isActive: true }, { name: 'Rooms', link: "", isActive: false }]
-    const [roomData, setRoomData] = useState(common.getDefault(common.dataType.array));
+    const [roomData, setRoomData] = useState(common.getDefault(common.dataType.array));    
+    const [pagingData, setPagingData] = useState({ pageNo: 1, pageSize: 10,currPage:1 });
+    const [footerOption, setFooterOption] = useState({ totalRecord: 0,currPage:1 });
     const [loadingData, setLoadingData] = useState(true);
     const [searchTerm, setsearchTerm] = useState("All");
     const apiUrlData = require('../Configurations/apiUrl.json');
@@ -18,13 +21,13 @@ export default function Rooms({ userRole }) {
         Api.Delete(apiUrlData.roomController.deleteRoom + '?roomkey=' + val).then(res => {
             setLoadingData(false);
             setsearchTerm("All");
-            handleSerach();
+            handleSearch();
             toast.success("Room Deleted.")
         }).catch(err => {
             setLoadingData(false);
             toast.error(common.toastMsg.error);
         });
-    }
+    }    
     let tableOption = {
         headers: ['Room', 'Description'],
         columns: ['roomName', 'roomDesc'],
@@ -37,7 +40,7 @@ export default function Rooms({ userRole }) {
         NoRecordMsg: 'No Data Found',
         deleteHandler: handleDelete
     }
-    const handleSerach = (val) => {
+    const handleSearch = (val) => {
         val = val === undefined || typeof val==='object'? searchTerm : val;
         if (val !== "All" && (val === "" || val.length < 3)) {
             toast.warn("Please enter 3 char to search.");
@@ -52,15 +55,27 @@ export default function Rooms({ userRole }) {
             toast.error(common.toastMsg.error);
         });
     }
+    const tableHeaderOption = {
+        searchHandler: handleSearch,
+        headerName: 'Rooms',
+        addUrl: "/RoomCreate"
+    }
     useEffect(() => {
-        Api.Get(apiUrlData.roomController.getAllRoom).then(res => {
-            setRoomData(res.data);
+        setLoadingData(true);
+        Api.Get(apiUrlData.roomController.getAllRoom+'?pageNo='+pagingData.pageNo+'&PageSize='+pagingData.pageSize).then(res => {
+           setRoomData(res.data.data);
+            if (footerOption.totalRecord !== res.data.totalRecord) {
+                var data={totalRecord: res.data.totalRecord,currPage: pagingData.currPage }
+                setFooterOption({ ...data});
+            }
+            else
+            setFooterOption({ ...footerOption, ['currPage']: pagingData.currPage });
             setLoadingData(false)
         }).catch(err => {
             setLoadingData(false);
             toast.error(common.toastMsg.error);
         });
-    }, []);
+    }, [pagingData.pageSize,pagingData.pageNo]);
     if (!userRole.canView)
         return <Unauthorized></Unauthorized>
     return (
@@ -68,23 +83,10 @@ export default function Rooms({ userRole }) {
             {
                 loadingData && <Loader></Loader>
             }
-            <Breadcrumb option={breadcrumbOption}></Breadcrumb>
-            <div className="d-flex justify-content-between bd-highlight mb-3">
-                <div className="p-2 bd-highlight">
-                    <div className="btn-group" role="group" aria-label="Basic example">
-                        {userRole.canCreate && <Link to="/RoomCreate"><div className="btn btn-sm btn-outline-primary"><i className="fa fa-plus"></i> Add</div></Link>}
-                        {userRole.canView && <button type="button" onClick={e => handleSerach('All')} className="btn btn-sm btn-outline-primary"><i className="fa fa-sync-alt"></i></button>}
-                    </div>
-                </div>
-                <div className="p-2 "><p className="h5">Rooms</p></div>
-                <div className="p-2 bd-highlight">
-                    <div className="input-group mb-3">
-                        {userRole.canView && (<input type="text" value={searchTerm} onChange={e => setsearchTerm(e.target.value)} className="form-control form-control-sm" placeholder="Search Room" aria-label="Search Rooms" aria-describedby="button-addon2" />)}
-                        {userRole.canView && (<button className="btn btn-outline-secondary" type="button" id="button-addon2" onClick={handleSerach}><i className="fa fa-search"></i></button>)}
-                    </div>
-                </div>
-            </div>
-            <TableView options={tableOption} userRole={userRole}></TableView>
+            <Breadcrumb option={breadcrumbOption}></Breadcrumb>           
+            <TableHeader option={tableHeaderOption} userRole={userRole}></TableHeader>
+            <TableView options={tableOption} setPagingData={setPagingData} currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} userRole={userRole}></TableView>
+            <TableFooter currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} option={footerOption} pagingData={setPagingData}></TableFooter>
         </div>
     )
 }

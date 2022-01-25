@@ -2,10 +2,17 @@ import React from 'react'
 import { common } from '../../Configurations/common'
 
 import UpdateDeleteButton from '../Buttons/UpdateDeleteButton';
-export default function TableView({ options,userRole,currPageNo,currPageSize }) {
+export default function TableView({ options, userRole, currPageNo, currPageSize }) {
     options.headers = common.defaultIfEmpty(options.headers, []);
     options.columns = common.defaultIfEmpty(options.columns, []);
     options.rowData = common.defaultIfEmpty(options.rowData, []);
+    options.customCell = common.defaultIfEmpty(options.customCell, [{
+        cellNo: -1,
+        type: common.customCellType.cell,
+        handler: () => { },
+        buttonText: '',
+        handlerParam: []
+    }]);
     options.idName = common.defaultIfEmpty(options.idName, '');
     options.editUrl = common.defaultIfEmpty(options.editUrl, '');
     options.rowNumber = common.defaultIfEmpty(options.rowNumber, true);
@@ -13,11 +20,18 @@ export default function TableView({ options,userRole,currPageNo,currPageSize }) 
     options.userRole = common.defaultIfEmpty(options.userRole, {});
     options.NoRecordMsg = common.defaultIfEmpty(options.NoRecordMsg, 'No Data Found');
     options.deleteHandler = common.defaultIfEmpty(options.deleteHandler, () => { });
-   currPageNo = common.defaultIfEmpty(currPageNo, 1);  
-    currPageSize = common.defaultIfEmpty(currPageSize,10);
-
+    currPageNo = common.defaultIfEmpty(currPageNo, 1);
+    currPageSize = common.defaultIfEmpty(currPageSize, 10);
+    if (options.customCell.length > 0) {
+        options.customCell.map((ele,ind) => {
+            debugger;
+            if (options.columns[ele.cellNo] !== ele.cellNo) {
+                options.columns.splice(ele.cellNo, 0, ele.cellNo);
+            }
+        });
+    }
     return (
-        <div>
+        <div style={{ overflowY: 'auto', maxHeight: '58vh' }}>
             <div className="table-responsive px-3">
                 <table className="table">
                     <thead>
@@ -40,12 +54,23 @@ export default function TableView({ options,userRole,currPageNo,currPageSize }) 
                         }
                         {
                             options.rowData && (options.rowData.map((ele, ind) => {
+                                var customCellIndex = 0;
                                 return (
                                     <tr key={ind}>
-                                        {options.rowNumber && <td >{((currPageNo-1)*currPageSize) + 1+ind}</td>}
+                                        {options.rowNumber && <td >{((currPageNo - 1) * currPageSize) + 1 + ind}</td>}
                                         {
-                                            options.columns.map((eleCol) => {
-                                                return <td key={ele[eleCol]+Math.random()*1000} >{common.getValueFromObject(eleCol,ele)?.toString()}</td>
+                                            options.columns.map((eleCol, eleColInd) => {
+                                                debugger;
+                                                if (typeof(eleCol)==='number' && options.customCell[customCellIndex].cellNo === eleColInd) {
+                                                    if (options.customCell[customCellIndex].type === common.customCellType.button) {
+                                                        var index=customCellIndex;
+                                                        if(options.customCell.length-1<customCellIndex)
+                                                        customCellIndex++;
+                                                        return <td key={ele[eleCol] + Math.random() * 1000} ><button className="btn btn-primary" onClick={e => options.customCell[index].handler(ele[options.customCell[index].handlerParam[0]])}>{options.customCell[index].buttonText}</button> </td>
+                                                    }
+                                                }
+                                                else
+                                                return <td key={ele[eleCol] + Math.random() * 1000} >{common.getValueFromObject(eleCol, ele)?.toString()}</td>
                                             })
                                         }
                                         <td>

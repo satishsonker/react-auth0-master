@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useEffect,useState} from 'react'
 import { common } from '../../../Configurations/common';
 import TableHeader from '../../Tables/TableHeader';
 import TableView from '../../Tables/TableView';
@@ -13,6 +13,7 @@ export default function CapabilitySupportTable({userRole}) {
     const apiUrlData = require('../../../Configurations/apiUrl.json');
     const actionType = "cspro";
     const [loadingData, setLoadingData] = useState(false);
+    const [recordCount, setRecordCount] = useState(0)
     const [footerOption, setFooterOption] = useState({ totalRecord: 0,currPage:1 });
     useEffect(() => {
         setLoadingData(true);
@@ -22,8 +23,9 @@ export default function CapabilitySupportTable({userRole}) {
             if (res.length > 0) {
                 setLoadingData(false);
                 setTableOptionTemplate({ ...tableOptionTemplate, ['rowData']: res[0].data.data });
-                if (footerOption.totalRecord !== res[0].data.totalRecords) {
-                    setFooterOption({ ...footerOption, ['totalRecord']: res[0].data.totalRecords });
+                setRecordCount(res[0].data.totalRecord);
+                if (footerOption.totalRecord !== res[0].data.totalRecord) {
+                    setFooterOption({ ...footerOption, ['totalRecord']: res[0].data.totalRecord });
                 }
                 setFooterOption({ ...footerOption, ['currPage']: pagingData.currPage });
             }
@@ -83,7 +85,7 @@ export default function CapabilitySupportTable({userRole}) {
             {
                 userRole?.canView && <TableView currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} options={tableOptionTemplate} userRole={userRole}></TableView>
             }
-            <TableFooter currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} option={footerOption} pagingData={setPagingData}></TableFooter>
+            <TableFooter totalRecords={recordCount} currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} option={footerOption} pagingData={setPagingData}></TableFooter>
         </div>
     )
 }

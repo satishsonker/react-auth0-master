@@ -7,8 +7,12 @@ import Loader from './Loader';
 import { common } from '../Configurations/common';
 import Unauthorized from '../components/CustomView/Unauthorized';
 import ConfirmationBox from './Controls/ConfirmationBox';
+import TableFooter from './Tables/TableFooter';
 
-export default function Device({userRole}) {
+export default function Device({userRole}) {    
+    const [recordCount, setRecordCount] = useState(0);
+    const [footerOption, setFooterOption] = useState({ totalRecord: 0,currPage:1 });    
+    const [pagingData, setPagingData] = useState({pageNo:1,pageSize:10,currPage:1});
     const [deviceData, setDeviceData] = useState([]);
     const [loadingData, setLoadingData] = useState(true);
     const [searchTerm, setsearchTerm] = useState("All");    
@@ -44,15 +48,20 @@ export default function Device({userRole}) {
     }
     useEffect(() => {
         let ApiCalls = [];
-        ApiCalls.push(Api.Get(apiUrlData.deviceController.getAllDevice));
+        ApiCalls.push(Api.Get(apiUrlData.deviceController.getAllDevice+`?pageNo=${pagingData.pageNo}&pageSize=${pagingData.pageSize}`));
         Api.MultiCall(ApiCalls).then(res => {
-            setDeviceData(res[0].data);
+            setDeviceData(res[0].data.data);
+            setRecordCount(res[0].data.totalRecord); 
+            if (footerOption.totalRecord !== res[0].data.totalRecord) {
+                setFooterOption({ ...footerOption, ['totalRecord']: res[0].data.totalRecord });
+            }
+            setFooterOption({ ...footerOption, ['currPage']: pagingData.currPage });
             setLoadingData(false);
         }).catch(err=>{
             setLoadingData(false);
             toast.error(common.toastMsg.error);
           });
-    }, []);
+    }, [pagingData.pageNo,pagingData.pageSize]);
     const handleSetDeleteKey = (key) => {
         setDeletingKey(key);
     }
@@ -113,9 +122,9 @@ export default function Device({userRole}) {
                             deviceData && (deviceData.map((ele, ind) => {
                                 return (
                                     <tr key={ele.deviceId}>
-                                        <td className="text-center">{ind + 1}</td>
+                                        <td className="text-center">{((pagingData.pageNo-1)*pagingData.pageSize) + 1+ind}</td>
                                         <td className="text-center">{ele.deviceName}
-                                            <div className="copy-key">{ele.deviceKey?.substring(0, ele.deviceKey.length - 6) + ele.deviceKey?.substring(ele.deviceKey.length - 6, ele.deviceKey.length).replace(/[a-z\d]/gi, "#")} <i className="fas fa-copy text-primary" title="Copy device Id" onClick={e => common.copyToClipboard(ele.deviceKey)}></i></div></td>
+                                            <div className="copy-key">{ele.deviceKey?.substring(0, ele.deviceKey.length - 10) + ele.deviceKey?.substring(ele.deviceKey.length - 6, ele.deviceKey.length).replace(/[a-z\d]/gi, "#")} <i className="fas fa-copy text-primary" title="Copy device Id" onClick={e => common.copyToClipboard(ele.deviceKey)}></i></div></td>
                                         <td className="text-center">{ele.friendlyName}</td>
                                         <td className="text-center">{ele.deviceDesc}</td>
                                         <td className="text-center"><img alt="Device Type" className="img-icon" src={"/assets/images/" + ele.deviceTypeName + '.png'} /> {' ' + ele.deviceTypeName}
@@ -143,6 +152,7 @@ export default function Device({userRole}) {
                     </tbody>
                 </table>
             </div>
+        <TableFooter totalRecords={recordCount} currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} pagingData={setPagingData} option={footerOption} userRole={userRole}></TableFooter>
         </div>
     )
 }

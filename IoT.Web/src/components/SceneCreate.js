@@ -14,8 +14,10 @@ export default function SceneCreate({ userRole }) {
         sceneActions: [{
             deviceId: 0,
             action: '',
-            value: ''
-        }]
+            value: '',
+            SceneId: 0
+        }],
+        SceneId: 0
     };
     const apiUrlData = require('../Configurations/apiUrl.json');
     const [isSceneUpdating, setIsSceneUpdating] = useState(common.getDefault(common.dataType.bool));
@@ -32,45 +34,39 @@ export default function SceneCreate({ userRole }) {
     useEffect(() => {
         let sceneKey = common.queryParam(window.location.search)?.scenekey;
         sceneKey = !common.hasValue(sceneKey) ? '' : sceneKey;
-        async function getDeviceDropdown() {
-            let promises = [];
-            promises.push(Api.Get(apiUrlData.deviceController.getDeviceDropdown));
-            promises.push(Api.Get(apiUrlData.deviceController.getDeviceTypeAction));
-            Api.MultiCall(promises).then(res => {
-                setLoadingData(false);
-                if (res.length > 0) {
-                    setDeviceData(res[0].data);
-                    let filteredDeviceData = {};
-                    res[1].data.filter((ele) => {
-                        filteredDeviceData[ele.deviceTypeName] = [];
-                        ele.deviceActions.filter((eleInner) => {
-                            filteredDeviceData[ele.deviceTypeName].push({
-                                deviceActionName: eleInner.deviceActionName,
-                                deviceActionNameBackEnd: eleInner.deviceActionNameBackEnd,
-                                deviceActionValue: eleInner.deviceActionValue
-                            });
-                        });
-                    })
-                    setDeviceTypeActionData(filteredDeviceData);
-                    setLoadingData(false)
-                }
-            }).catch(err=>{
-                setLoadingData(false);
-                toast.error(common.toastMsg.error);
-              });;
-        } if (sceneKey !== "") {
-            setIsSceneUpdating(true);
-            setLoadingData(true);
-            Api.Get(apiUrlData.sceneController.getScene + '?scenekey=' + sceneKey).then(res => {
-                setScene(res.data);
-                setLoadingData(false);
-            }).catch(err=>{
-                setLoadingData(false);
-                toast.error(common.toastMsg.error);
-              });
+        let promises = [];
+        promises.push(Api.Get(apiUrlData.deviceController.getDeviceDropdown));
+        promises.push(Api.Get(apiUrlData.deviceController.getDeviceTypeAction));
+        if (sceneKey !== "") {
+            promises.push(Api.Get(apiUrlData.sceneController.getScene + '?scenekey=' + sceneKey));
         }
-        getDeviceDropdown();
-    }, [loadingData, apiUrlData.sceneController.getScene]);
+        Api.MultiCall(promises).then(res => {
+            setLoadingData(false);
+            if (res.length > 1) {
+                setDeviceData(res[0].data);
+                let filteredDeviceData = {};
+                res[1].data.data.filter((ele) => {
+                    filteredDeviceData[ele.deviceTypeName] = [];
+                    ele.deviceActions.filter((eleInner) => {
+                        filteredDeviceData[ele.deviceTypeName].push({
+                            deviceActionName: eleInner.deviceActionName,
+                            deviceActionNameBackEnd: eleInner.deviceActionNameBackEnd,
+                            deviceActionValue: eleInner.deviceActionValue
+                        });
+                    });
+                })
+                setDeviceTypeActionData(filteredDeviceData);
+                setLoadingData(false);
+                if (res.length > 2) {
+                    setIsSceneUpdating(true);
+                    setScene({...res[2].data});
+                }
+            }
+        }).catch(err => {
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+        });
+    }, []);
 
     const inputHandler = (e) => {
         setScene({ ...scene, [e.target.name]: e.target.value });
@@ -99,19 +95,21 @@ export default function SceneCreate({ userRole }) {
             if (!isValid)
                 return;
         }
+        debugger;
         Api.Post(!isSceneUpdating ? apiUrlData.sceneController.addScene : apiUrlData.sceneController.updateScene, scene).then(res => {
             toast.success(!isSceneUpdating ? "Scene is created" : "Scene is updated");
             setIsSceneCreated(true);
-        }).catch(err=>{
+        }).catch(err => {
             setLoadingData(false);
             toast.error(common.toastMsg.error);
-          });
+        });
     }
     const handleAdd = (e) => {
         scene.sceneActions.push({
             deviceId: '',
             action: '',
-            value: ''
+            value: '',
+            SceneId: 0
         });
         setScene({ ...scene });
     }

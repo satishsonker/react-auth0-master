@@ -7,7 +7,7 @@ export default function MotionSensor({ deviceData, index }) {
             <li>
                 <div className="row row-cols-2">
                     <div className="col">
-                        <p class="fs-6 text-center mb-0">{common.defaultIfEmpty(deviceData.motion, 0)===1?"Detected":"Not Detected"}</p>
+                        <p className="fs-6 text-center mb-0">{common.defaultIfEmpty(deviceData.motion, 0)===1?"Detected":"Not Detected"}</p>
                     </div>
                     <div className="col">
                         <ol className="device-desc">
