@@ -7,7 +7,7 @@ export default function WaterSensor({ deviceData, index }) {
             <li>
                 <div className="row row-cols-2">
                     <div className="col">
-                        <p class="fs-6 text-center mb-0">{common.defaultIfEmpty(deviceData.water, 0)===1?"Water Detected":"Water Not Detected"}</p>
+                        <p className="fs-6 text-center mb-0">{common.defaultIfEmpty(deviceData.water, 0)===1?"Water Detected":"Water Not Detected"}</p>
                     </div>
                     <div className="col">
                         <ol className="device-desc">

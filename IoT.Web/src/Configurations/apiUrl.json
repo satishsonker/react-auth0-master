@@ -28,7 +28,9 @@
         "getDeviceDropdown": "/device/getDeviceDropdown",
         "getDeviceTypeDropdown": "/device/getDeviceTypeDropdown",
         "getDeviceTypePaging": "/device/GetDeviceTypePaging",
-        "getDeviceTypeAction": "/device/getDeviceTypeAction"
+        "getDeviceTypeAction": "/device/getDeviceTypeAction",
+        "updatefavourite":"/device/UpdateFavourite/{deviceKey}/{isFavourite}",
+        "getFavourite":"/device/GetFavourite"
     },
     "sceneController": {
         "addScene": "/scene/addScene",
@@ -43,7 +45,8 @@
     },
     "activityLogController": {
         "add": "/activityLog/add",
-        "getAll": "/activityLog/getAll"
+        "getAll": "/activityLog/getAll",
+        "SearchLog": "/activityLog/SearchLog"
     },
     "adminController": {
         "addDeviceType": "/admin/addDeviceType",

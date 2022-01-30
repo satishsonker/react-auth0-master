@@ -1,0 +1,16 @@
+.device-logo{
+    filter:blur(0.5px) !important;
+    width: 64px;
+    height: 64px;
+}
+.mw-200
+{
+    min-width: 200px;
+}
+.device-desc
+{
+    text-overflow: ellipsis;
+    width: 143px;
+    overflow: hidden;
+    white-space: nowrap;
+}

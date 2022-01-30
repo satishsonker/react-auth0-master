@@ -63,8 +63,8 @@ export default function TableFooter({ option, currPageNo, currPageSize, pagingDa
         <>
             <div className="row">
                 <div className="col-md-12 col-12">{ (option.totalRecord === 0 ? totalRecords : option.totalRecord)>0 &&(
-                    <div class="d-flex justify-content-between">
-                        <div class="p-2 bd-highlight">
+                    <div className="d-flex justify-content-between">
+                        <div className="p-2 bd-highlight">
                             <nav aria-label="Page navigation example">
                                 <ul className="pagination  pagination-sm">
                                     <li onClick={() => handlePagingPre()} className={pageNo == 1 ? "page-item disabled" : "page-item"}>
@@ -80,10 +80,10 @@ export default function TableFooter({ option, currPageNo, currPageSize, pagingDa
                                     </li>
                                 </ul>
                             </nav></div>
-                        <div class="p-2 bd-highlight">
+                        <div className="p-2 bd-highlight">
                             {recordRange}/{(option.totalRecord === 0 ? totalRecords : option.totalRecord)}
                         </div>
-                        <div class="p-2 bd-highlight">
+                        <div className="p-2 bd-highlight">
                             <select className="form-control" onChange={(e) => handleChange(e)}>
                                 {
                                     option.pageSize.map((ele) => {

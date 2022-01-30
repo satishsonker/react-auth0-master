@@ -1,80 +1,78 @@
 import React, { useState, useEffect } from 'react'
 import Loader from "../components/Loader";
-import { Link } from "react-router-dom";
 import { Api } from "../Configurations/Api";
 import { common } from "../Configurations/common";
 import { toast } from 'react-toastify';
-export default function ActivityLog() {
-    const [activityData, setActivityData] = useState([]);
-    const [loadingData, setLoadingData] = useState(true);
-    const apiUrlData = require('../Configurations/apiUrl.json');
+import TableHeader from './Tables/TableHeader';
+import Breadcrumb from './Breadcrumb/Breadcrumb';
+import TableFooter from './Tables/TableFooter';
+import TableView from './Tables/TableView';
+export default function ActivityLog({userRole}) {
+    const [loadingData, setLoadingData] = useState(false);
+    const apiUrlData = require('../Configurations/apiUrl.json');     
+    const [recordCount, setRecordCount] = useState(0);
+    const [pagingData, setPagingData] = useState({pageNo:1,pageSize:10,currPage:1});   
+    const [footerOption, setFooterOption] = useState({ totalRecord: 0,currPage:1 });
+    const breadcrumbOption = [
+        { name: 'Home', link: "/Dashboard" },
+        { name: 'Activity Log', isActive: false }];
     useEffect(() => {
-        async function getData() {
-            await Api.Get(apiUrlData.activityLogController.getAll).then(res => {
-                setActivityData(res.data);
-                setLoadingData(false)
-            }).catch(err=>{
-                setLoadingData(false);
-                toast.error(common.toastMsg.error);
-              });
+        setLoadingData(true);
+        Api.Get(apiUrlData.activityLogController.getAll+`?pageSize=${pagingData.pageSize}&pageNo=${pagingData.pageNo}`).then(res => {
+            setTableOptionTemplate({...tableOptionTemplate,['rowData']:res.data.data});
+            setRecordCount(res.data.totalRecord);
+            if (footerOption.totalRecord !== res.data.totalRecord) {
+                setFooterOption({ ...footerOption, ['totalRecord']: res.data.totalRecord });
+            }
+            setFooterOption({ ...footerOption, ['currPage']: pagingData.currPage });
+            setLoadingData(false)
+        }).catch(err=>{
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+          });
+    }, [pagingData.pageSize,pagingData.pageNo]);
+    const handleSearch = (searchTerm) => {
+        if (searchTerm !== "All" && (searchTerm === "" || searchTerm.length < 3)) {
+            toast.warn("Please enter 3 char to search.");
+            return;
         }
-        if (loadingData) {
-            getData();
-        }
-    }, [loadingData, apiUrlData.roomController.getAllRoom]);
-
+        setLoadingData(true);
+        Api.Get(apiUrlData.activityLogController.searchLog +`?pageSize=${pagingData.pageSize}&pageNo=${pagingData.pageNo}&searchterm=${searchTerm}`).then(res => {
+            setTableOptionTemplate({...tableOptionTemplate,['rowData']:res.data.data});
+            setRecordCount(res.data.totalRecord);
+            if (footerOption.totalRecord !== res.data.totalRecord) {
+                setFooterOption({ ...footerOption, ['totalRecord']: res.data.totalRecord });
+            }
+            setFooterOption({ ...footerOption, ['currPage']: pagingData.currPage });
+            setLoadingData(false)
+        }).catch(err => {
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+        });
+    }
+    const tableHeaderOption = {
+        headerName: 'Activity Log',
+        searchHandler: handleSearch,
+    }
+    const [tableOptionTemplate, setTableOptionTemplate] = useState({
+        headers: ['IPAddress','Location','AppName','Activity','Date'],
+        rowNumber: true,
+        action: false,
+        columns: ['ipAddress','location','appName','activity','createdDate'],
+        rowData: common.defaultIfEmpty(undefined, []),
+        idName: 'activityLogId',
+        editUrl: ``
+    });
     return (
         <div className="page-container">
             {
                 loadingData && <Loader></Loader>
             }
-            <nav aria-label="breadcrumb">
-                <ol className="breadcrumb">
-                    <li className="breadcrumb-item"><Link to="/Dashboard">Home</Link></li>
-                    <li className="breadcrumb-item active" aria-current="page">Activity Log</li>
-                </ol>
-            </nav>
-            <div style={{margin:20+'px'}}>
-                <div className="d-flex justify-content-between bd-highlight mb-3 text-center">
-                    <div className="p-2 "><p className="h5">Activity Log</p></div>
-                </div>
-                <div className="table-responsive">
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">IP Address</th>
-                                <th scope="col">Location</th>
-                                <th scope="col">APP Name</th>
-                                <th scope="col">Activity</th>
-                                <th scope="col">Time Stamp</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {activityData && activityData.length === 0 && (
-                                <tr>
-                                    <td className="text-center" colSpan="6">No Data Found</td>
-                                </tr>
-                            )
-                            }
-                            {
-                                activityData && (activityData.map((ele, ind) => {
-                                    return (
-                                        <tr key={ele?.activityId}>
-                                            <td >{ind + 1}</td>
-                                            <td>{ele?.ipAddress}</td>
-                                            <td>{ele?.locaton}</td>
-                                            <td>{ele?.appName}</td>
-                                            <td>{ele?.activity}</td>
-                                            <td>{ele?.createdDate}</td>
-                                        </tr>
-                                    )
-                                }))
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+           <Breadcrumb option={breadcrumbOption}></Breadcrumb>
+            <TableHeader option={tableHeaderOption} userRole={userRole}></TableHeader>
+            <TableView options={tableOptionTemplate} currPageNo={pagingData.pageNo} currPageSize={pagingData.pageSize} userRole={userRole}></TableView>
+            <TableFooter option={footerOption} currPageSize={pagingData.pageSize} currPageNo={pagingData.pageNo} pagingData={setPagingData} totalRecords={recordCount}></TableFooter>
+          
         </div>
     )
 }

@@ -7,9 +7,9 @@ export default function UltrasonicSensor({ deviceData, index }) {
             <li>
                 <div className="row row-cols-2">
                     <div className="col">
-                        <p class="fs-6 text-center mb-0">Distance</p>
-                        <p class="fs-1 text-center mb-0">{common.defaultIfEmpty(deviceData.ultraDistanceCm, 0).toFixed(2)}<small>CM</small> </p>
-                        <p class="fs-6 text-center mb-0">{(common.defaultIfEmpty(deviceData.ultraDistanceCm, 0)/2.5).toFixed(2)} Inch</p>
+                        <p className="fs-6 text-center mb-0">Distance</p>
+                        <p className="fs-1 text-center mb-0">{common.defaultIfEmpty(deviceData.ultraDistanceCm, 0).toFixed(2)}<small>CM</small> </p>
+                        <p className="fs-6 text-center mb-0">{(common.defaultIfEmpty(deviceData.ultraDistanceCm, 0)/2.5).toFixed(2)} Inch</p>
                     </div>
                     <div className="col">
                         <ol className="device-desc">

@@ -2,9 +2,14 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>React App with Auth0</title>
+  <meta charset="UTF-8">
+  <meta name="description"
+    content="Simple way to control your IOT development boards like RaspberryPi, ESP8226, ESP32 or Arduino with Amazon Alexa, Google Home or SmartThings">
+  <meta name="keywords"
+    content="Iot,home automation,ESP8266,ESP32,Alexa,Smart Home Skill,Wifi Controlled Sensor, Google Assistance">
+  <meta name="author" content="Satish Kumar Sonkar">
+  <title>Areana IoT Home Automation</title>
   <!-- CSS only -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
@@ -18,8 +23,17 @@
 
 <body>
   <noscript>You need to enable JavaScript to run this app.</noscript>
+  <script >
+    (function(){
+      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+    });
+   
+  </script>
   <div id="root"></div>
- 
+
 </body>
 
 </html>

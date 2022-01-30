@@ -8,13 +8,20 @@ export const common = {
     getDateTime: (date) => {
        let dateObj;
         if (date === undefined || date === null)
+        {
             return '';
-        else if (typeof (date) === "object")
+        }
+        if (typeof(date) === "object")
+        {
             dateObj = date;
-        else if (typeof (data) === "string")
+        }
+        if (typeof(date) === "string"){
             dateObj = new Date(date);
+        }
         else
-            dateObj = new Date()
+        {
+            dateObj = new Date();
+        }
 
         let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
         return dateObj.getDate() + "-" + months[dateObj.getMonth()] + "-" + dateObj.getFullYear() + " " + formatAMPM(dateObj);

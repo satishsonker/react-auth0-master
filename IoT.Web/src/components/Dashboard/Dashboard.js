@@ -10,6 +10,7 @@ import DeviceCard from './DeviceCard';
 
 export default function Dashboard({ userRole, mqttPayload, setPubMsg }) {
     //const mqttSubscribeStorageKey = process.env.REACT_APP_MQTT_SUBSCRIBE_LOCAL_STORAGE_KEY;
+    const [refresh, setRefresh] = useState(false);
     const { isAuthenticated } = useAuth0();
     const apiUrlData = require('../../Configurations/apiUrl.json');
     const [dashboardData, setDashboardData] = useState();
@@ -102,34 +103,30 @@ export default function Dashboard({ userRole, mqttPayload, setPubMsg }) {
     function updateDeviceHistory(dkey) {
         Api.Post(apiUrlData.deviceController.updateDeviceHistory + "?deviceKey=" + dkey + "&isconnected=true", {});
     }
-    const [loadingData, setLoadingData] = useState(true);
+    const [loadingData, setLoadingData] = useState(false);
 
     useEffect(() => {
         let _data = {};
-        async function getDashboardData() {
-            await Api.Get(apiUrlData.dashboardController.getDashboardData).then(res => {
-                let resData = res.data;
-                _data['devices'] = resData.devices;
-                _data["rooms"] = [];
-                resData.rooms.forEach(element => {
-                    return _data.rooms.push(resData.devices.filter(ele => {
-                        if (ele.roomKey === element.roomKey)
-                            return ele;
-                    }));
-                });
-                setDashBoardStatus({ ...dashBoardStatus, ["totalDevice"]: resData.devices.length });
-                setDashboardData(_data);
-                setLoadingData(false);
-                sendPingRequest();
-            }).catch(err => {
-                setLoadingData(false);
-                toast.error(common.toastMsg.error);
+        setLoadingData(true);
+        Api.Get(apiUrlData.dashboardController.getDashboardData).then(res => {
+            let resData = res.data;
+            _data['devices'] = resData.devices;
+            _data["rooms"] = [];
+            resData.rooms.forEach(element => {
+                return _data.rooms.push(resData.devices.filter(ele => {
+                    if (ele.roomKey === element.roomKey)
+                        return ele;
+                }));
             });
-        }
-        if (loadingData) {
-            getDashboardData();
-        }
-    }, [loadingData, apiUrlData.dashboardController.getDashboardData]);
+            setDashBoardStatus({ ...dashBoardStatus, ["totalDevice"]: resData.devices.length });
+            setDashboardData(_data);
+            setLoadingData(false);
+            sendPingRequest();
+        }).catch(err => {
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+        });
+    }, [refresh]);
     const getDeviceListFromEachRoom = (deviceData) => {
         let deviceList = [];
         deviceData.map(ele => {
@@ -247,7 +244,7 @@ export default function Dashboard({ userRole, mqttPayload, setPubMsg }) {
                                                 <div className="row">
                                                     {
                                                         ele.map((device, index) => {
-                                                            return <DeviceCard key={index} deviceData={device} index={index} setPubMessage={setPubMsg} devicePowerHandler={handleTurnOnOffDevice}></DeviceCard>
+                                                            return <DeviceCard setRefresh={setRefresh} key={index} deviceData={device} index={index} setPubMessage={setPubMsg} devicePowerHandler={handleTurnOnOffDevice}></DeviceCard>
                                                         })
                                                     }
                                                 </div>

@@ -39,6 +39,7 @@ import Groups from './components/Groups/Groups';
 import GroupCreate from './components/Groups/GroupCreate';
 import GroupAddDevice from './components/Groups/GroupAddDevice';
 import GroupDetails from './components/Groups/GroupDetails';
+import FavouriteDevice from './components/FavouriteDevice';
 toast.configure();
 function App() {
   const apiUrlData = require('../src/Configurations/apiUrl.json');
@@ -230,6 +231,12 @@ function App() {
               <Route exact path="/Groups" render={() => {
                 return (
                   <div><Groups userRole={userRole} setPubMsg={setPubMsg}></Groups></div>
+                );
+              }}>
+              </Route>
+              <Route exact path="/FavouriteDevice" render={() => {
+                return (
+                  <div><FavouriteDevice userRole={userRole} setPubMsg={setPubMsg} mqttPayload={mqttPayload}></FavouriteDevice></div>
                 );
               }}>
               </Route>

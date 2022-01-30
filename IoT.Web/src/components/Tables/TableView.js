@@ -24,8 +24,7 @@ export default function TableView({ options, userRole, currPageNo, currPageSize 
     currPageSize = common.defaultIfEmpty(currPageSize, 10);
     if (options.customCell.length > 0) {
         options.customCell.map((ele,ind) => {
-            debugger;
-            if (options.columns[ele.cellNo] !== ele.cellNo) {
+            if (ele.cellNo!==-1 && options.columns[ele.cellNo] !== ele.cellNo) {
                 options.columns.splice(ele.cellNo, 0, ele.cellNo);
             }
         });
@@ -48,7 +47,7 @@ export default function TableView({ options, userRole, currPageNo, currPageSize 
                     <tbody>
                         {options.rowData && options.rowData.length === 0 && (
                             <tr>
-                                <td className="text-center" colSpan="4">{options.NoRecordMsg}</td>
+                                <td className="text-center" colSpan={options.headers.length+1}>{options.NoRecordMsg}</td>
                             </tr>
                         )
                         }
@@ -60,7 +59,6 @@ export default function TableView({ options, userRole, currPageNo, currPageSize 
                                         {options.rowNumber && <td >{((currPageNo - 1) * currPageSize) + 1 + ind}</td>}
                                         {
                                             options.columns.map((eleCol, eleColInd) => {
-                                                debugger;
                                                 if (typeof(eleCol)==='number' && options.customCell[customCellIndex].cellNo === eleColInd) {
                                                     if (options.customCell[customCellIndex].type === common.customCellType.button) {
                                                         var index=customCellIndex;
@@ -68,6 +66,10 @@ export default function TableView({ options, userRole, currPageNo, currPageSize 
                                                         customCellIndex++;
                                                         return <td key={ele[eleCol] + Math.random() * 1000} ><button className="btn btn-primary" onClick={e => options.customCell[index].handler(ele[options.customCell[index].handlerParam[0]])}>{options.customCell[index].buttonText}</button> </td>
                                                     }
+                                                }
+                                                if(options.headers[eleColInd]?.toLowerCase().indexOf('date')>-1)
+                                                {
+                                                    return <td key={ele[eleCol] + Math.random() * 1000} >{common.getDateTime(common.getValueFromObject(eleCol, ele)?.toString())}</td>
                                                 }
                                                 else
                                                 return <td key={ele[eleCol] + Math.random() * 1000} >{common.getValueFromObject(eleCol, ele)?.toString()}</td>

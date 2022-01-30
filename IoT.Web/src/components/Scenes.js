@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from "react-router-dom";
 import { Api } from "../Configurations/Api";
 import { toast } from 'react-toastify';
 import Loader from './Loader';
@@ -99,7 +98,7 @@ export default function Scenes({ userRole }) {
             setLoadingData(false);
             toast.error(common.toastMsg.error);
         });
-    }, [loadingData, apiUrlData.sceneController.getAllScene]);
+    }, [pagingData.pageSize,pagingData.pageNo]);
     const tableHeaderOption = {
         searchHandler: handleSearch,
         headerName: 'Scenes',
