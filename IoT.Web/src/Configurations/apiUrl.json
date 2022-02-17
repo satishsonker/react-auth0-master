@@ -29,8 +29,8 @@
         "getDeviceTypeDropdown": "/device/getDeviceTypeDropdown",
         "getDeviceTypePaging": "/device/GetDeviceTypePaging",
         "getDeviceTypeAction": "/device/getDeviceTypeAction",
-        "updatefavourite":"/device/UpdateFavourite/{deviceKey}/{isFavourite}",
-        "getFavourite":"/device/GetFavourite"
+        "updatefavourite": "/device/UpdateFavourite/{deviceKey}/{isFavourite}",
+        "getFavourite": "/device/GetFavourite"
     },
     "sceneController": {
         "addScene": "/scene/addScene",
@@ -110,5 +110,18 @@
         "getDeviceGroup": "/DeviceGroup/GetGroup/",
         "getDeviceGroups": "/DeviceGroup/GetGroups",
         "searchDeviceGroup": "/DeviceGroup/Search/"
+    },
+    "emailTemplate": {
+        "addEmailTemplate": "/emailTemplate/addEmailTemplate",
+        "getEmailTemplates": "/emailTemplate/getEmailTemplate/{pageNo}/{pageSize}",
+        "getEmailTemplate": "/emailTemplate/getEmailTemplate",
+        "updateEmailTemplate": "/emailTemplate/UpdateEmailTemplate",
+        "deleteEmailTemplate": "/emailTemplate/deleteEmailTemplate/{templateId}",
+        "searchEmailTemplate": "/emailTemplate/searchEmailTemplate/{searchTerm}/{pageNo}/{pageSize}"
+    },
+    "emailSetting": {
+        "getEmailSetting": "/emailSetting/getEmailSetting",
+        "updateEmailSetting": "/emailSetting/updateEmailSetting",
+        "deleteEmailSetting": "/emailSetting/deleteEmailSetting/{settingId}"
     }
 }

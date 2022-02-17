@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import Loader from "../components/Loader";
 import { common } from "../Configurations/common";
 import Unauthorized from './CustomView/Unauthorized';
+import Breadcrumb from './Breadcrumb/Breadcrumb';
 export default function DeviceCreate({ userRole }) {
     toast.configure();
     const { user } = useAuth0();
@@ -19,6 +20,10 @@ export default function DeviceCreate({ userRole }) {
     const [device, setDevice] = useState({
         "manufacturerName": process.env.REACT_APP_MANUFACTURER_NAME
     });
+    const breadcrumbOption = [
+        { name: 'Home', link: "/Dashboard" },
+        { name: 'Device', link: "/Deivce" },
+        { name: 'Add Device', isActive: false }];
     useEffect(() => {
         let deviceKey = common.queryParam(window.location.search)?.id;
         deviceKey = deviceKey === undefined || deviceKey === null ? '' : deviceKey;
@@ -96,13 +101,7 @@ export default function DeviceCreate({ userRole }) {
         return <Unauthorized></Unauthorized>
     return (
         <div className="page-container">
-            <nav aria-label="breadcrumb">
-                <ol className="breadcrumb">
-                    <li className="breadcrumb-item"><Link to="/Dashboard">Home</Link></li>
-                    <li className="breadcrumb-item"><Link to="/Device">Device</Link></li>
-                    <li className="breadcrumb-item active" aria-current="page">{!isDeviceUpdate ? 'Add ' : 'Update '} Device</li>
-                </ol>
-            </nav>
+           <Breadcrumb option={breadcrumbOption}></Breadcrumb>
             <div className="row">
                 <div className="col mb-3">
                     <div className="card text-black">

@@ -40,6 +40,9 @@ import GroupCreate from './components/Groups/GroupCreate';
 import GroupAddDevice from './components/Groups/GroupAddDevice';
 import GroupDetails from './components/Groups/GroupDetails';
 import FavouriteDevice from './components/FavouriteDevice';
+import EmailTemplateCreate from './components/Admin/EmailTemplateCreate';
+import EmailTemplate from './components/Admin/EmailTemplate';
+import EmailSetting from './components/Admin/EmailSetting';
 toast.configure();
 function App() {
   const apiUrlData = require('../src/Configurations/apiUrl.json');
@@ -225,6 +228,24 @@ function App() {
               <Route exact path="/admin/MasterDataCreate" render={() => {
                 return (
                   <div><MasterDataCreate userRole={userRole}></MasterDataCreate></div>
+                );
+              }}>
+              </Route>
+              <Route exact path="/admin/EmailTemplate" render={() => {
+                return (
+                  <div><EmailTemplate userRole={userRole}></EmailTemplate></div>
+                );
+              }}>
+              </Route>
+              <Route exact path="/admin/EmailTemplateCreate" render={() => {
+                return (
+                  <div><EmailTemplateCreate userRole={userRole}></EmailTemplateCreate></div>
+                );
+              }}>
+              </Route>
+              <Route exact path="/admin/EmailSettings" render={() => {
+                return (                  
+                  <div><EmailSetting userRole={userRole}></EmailSetting></div>
                 );
               }}>
               </Route>

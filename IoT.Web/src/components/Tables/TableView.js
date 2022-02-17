@@ -9,7 +9,7 @@ export default function TableView({ options, userRole, currPageNo, currPageSize 
     options.customCell = common.defaultIfEmpty(options.customCell, [{
         cellNo: -1,
         type: common.customCellType.cell,
-        handler: () => { },
+        handler: (param,data,index) => { },
         buttonText: '',
         handlerParam: []
     }]);
@@ -47,7 +47,7 @@ export default function TableView({ options, userRole, currPageNo, currPageSize 
                     <tbody>
                         {options.rowData && options.rowData.length === 0 && (
                             <tr>
-                                <td className="text-center" colSpan={options.headers.length+1}>{options.NoRecordMsg}</td>
+                                <td className="text-center" colSpan={options.headers.length+2}>{options.NoRecordMsg}</td>
                             </tr>
                         )
                         }
@@ -64,7 +64,7 @@ export default function TableView({ options, userRole, currPageNo, currPageSize 
                                                         var index=customCellIndex;
                                                         if(options.customCell.length-1<customCellIndex)
                                                         customCellIndex++;
-                                                        return <td key={ele[eleCol] + Math.random() * 1000} ><button className="btn btn-primary" onClick={e => options.customCell[index].handler(ele[options.customCell[index].handlerParam[0]])}>{options.customCell[index].buttonText}</button> </td>
+                                                        return <td key={ele[eleCol] + Math.random() * 1000} ><button className="btn btn-primary" onClick={e => options.customCell[index].handler(ele[options.customCell[index].handlerParam[0]],ele[eleCol],index)}>{options.customCell[index].buttonText}</button> </td>
                                                     }
                                                 }
                                                 if(options.headers[eleColInd]?.toLowerCase().indexOf('date')>-1)

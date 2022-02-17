@@ -11,7 +11,6 @@ export default function AddUpdateButton({ userRole, option,isUpdateAction }) {
     option.icon=common.defaultIfEmpty(option.icon,'');
     option.onlyIcon=common.defaultIfEmpty(option.onlyIcon,false);
     useEffect(() => {
-        debugger;
        setRole({...userRole});
     }, [userRole?.canCreate,userRole?.canUpdate])
     if(option.onlyIcon && option.icon!=='')

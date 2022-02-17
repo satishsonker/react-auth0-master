@@ -5,24 +5,24 @@ import { Api } from "../../Configurations/Api";
 import { toast } from 'react-toastify';
 import Loader from "../Loader";
 import Unauthorized from "../CustomView/Unauthorized";
+import Breadcrumb from '../Breadcrumb/Breadcrumb';
+import TableHeader from '../Tables/TableHeader';
 
-export default function AdminPermission({userRole}) {
+export default function AdminPermission({ userRole }) {
     const apiUrlData = require('../../Configurations/apiUrl.json');
     //const [userRole, setUserRole] = useState(common.getDefault(common.dataType.object));
     const [adminPermissions, setAdminPermissions] = useState(common.getDefault(common.dataType.arrayObject));
     const [loadingData, setLoadingData] = useState(true);
     useEffect(() => {
         let ApiCalls = common.getDefault(common.dataType.array);
-        ApiCalls.push(Api.Get(apiUrlData.userController.getUserPermission));
         ApiCalls.push(Api.Get(apiUrlData.userController.getAllUserPermissions));
         Api.MultiCall(ApiCalls).then(res => {
-            //setUserRole(res[0].data);
-            setAdminPermissions(res[1].data);
+            setAdminPermissions(res[0].data);
             setLoadingData(false)
-        }).catch(err=>{
+        }).catch(err => {
             setLoadingData(false);
             toast.error(common.toastMsg.error);
-          });
+        });
     }, []);
     const handleChange = (e, index) => {
         let data = common.cloneObject(adminPermissions);
@@ -36,24 +36,30 @@ export default function AdminPermission({userRole}) {
             }
             else
                 toast.warn('Unable to updated permissions');
-        }).catch(err=>{
+        }).catch(err => {
             setLoadingData(false);
             toast.error(common.toastMsg.error);
-          });
+        });
     }
-    if(loadingData)
-    return <Loader></Loader>
+    const handleSearch = () => {
+    }
+    const breadcrumbOption = [
+        { name: 'Home', link: "/Dashboard" },
+        { name: 'Admin Permission', isActive: false }];
+    const tableHeaderOption = {
+        searchHandler: handleSearch,
+        headerName: 'Admin Permission',
+        showAddButton:false
+    }
+    if (loadingData)
+        return <Loader></Loader>
     if (!userRole?.isAdmin) {
         return <Unauthorized></Unauthorized>
     }
     return (
         <div className="page-container">
-            <nav aria-label="breadcrumb">
-                <ol className="breadcrumb">
-                    <li className="breadcrumb-item"><Link to="/Dashboard">Home</Link></li>
-                    <li className="breadcrumb-item active" aria-current="page">Admin Permission</li>
-                </ol>
-            </nav>
+            <Breadcrumb option={breadcrumbOption}></Breadcrumb>
+            <TableHeader option={tableHeaderOption} userRole={userRole}></TableHeader>
             <div className="row">
                 <div className="col mb-3">
                     <div className="card text-black">

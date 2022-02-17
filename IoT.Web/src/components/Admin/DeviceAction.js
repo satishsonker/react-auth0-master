@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import Unauthorized from '../CustomView/Unauthorized';
-import { Link } from "react-router-dom";
 import { Api } from "../../Configurations/Api";
 import { toast } from 'react-toastify';
 import Loader from '../Loader';
 import { common } from "../../Configurations/common";
-import UpdateDeleteButton from '../Buttons/UpdateDeleteButton';
 import Breadcrumb from '../Breadcrumb/Breadcrumb';
 import TableHeader from '../Tables/TableHeader';
 import TableView from '../Tables/TableView';
