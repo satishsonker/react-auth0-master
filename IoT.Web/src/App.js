@@ -43,6 +43,8 @@ import FavouriteDevice from './components/FavouriteDevice';
 import EmailTemplateCreate from './components/Admin/EmailTemplateCreate';
 import EmailTemplate from './components/Admin/EmailTemplate';
 import EmailSetting from './components/Admin/EmailSetting';
+import DropdownMasterCreate from './components/Admin/DropdownMasterCreate';
+import DropdownMaster from './components/Admin/DropdownMaster';
 toast.configure();
 function App() {
   const apiUrlData = require('../src/Configurations/apiUrl.json');
@@ -82,20 +84,20 @@ function App() {
       }).catch(err=>{
         toast.error(common.toastMsg.error);
       });
-      if (window?.iotGlobal?.userKey !== undefined) {
-        Api.Get(apiUrlData.userLocation, false).then(res => {
-          var locData = res.data;
-          Api.Post(apiUrlData.activityLogController.add, {
-            ipAddress: locData.IPv4,
-            location: locData?.city + '-' + locData.country_name + "(" + locData.country_code + ")",
-            appName: common.getAppName(),
-            activity: 'Login',
-            userKey: window?.iotGlobal?.userKey
-          });
-        }).catch(err=>{
-          toast.error(common.toastMsg.error);
-        });;
-      }
+      // if (window?.iotGlobal?.userKey !== undefined) {
+      //   Api.Get(apiUrlData.userLocation, false).then(res => {
+      //     var locData = res.data;
+      //     Api.Post(apiUrlData.activityLogController.add, {
+      //       ipAddress: locData.IPv4,
+      //       location: locData?.city + '-' + locData.country_name + "(" + locData.country_code + ")",
+      //       appName: common.getAppName(),
+      //       activity: 'Login',
+      //       userKey: window?.iotGlobal?.userKey
+      //     });
+      //   }).catch(err=>{
+      //     toast.error(common.toastMsg.error);
+      //   });;
+      // }
       Api.Post(apiUrlData.userController.addUser, UserData).then(res => {
         console.table(res.data);
       }).catch(err=>{
@@ -246,6 +248,18 @@ function App() {
               <Route exact path="/admin/EmailSettings" render={() => {
                 return (                  
                   <div><EmailSetting userRole={userRole}></EmailSetting></div>
+                );
+              }}>
+              </Route>
+              <Route exact path="/admin/dropdownMasterCreate" render={() => {
+                return (  
+                  <div><DropdownMasterCreate userRole={userRole}></DropdownMasterCreate></div>
+                );
+              }}>
+              </Route>
+              <Route exact path="/admin/dropdownMaster" render={() => {
+                return (  
+                  <div><DropdownMaster userRole={userRole}></DropdownMaster></div>
                 );
               }}>
               </Route>

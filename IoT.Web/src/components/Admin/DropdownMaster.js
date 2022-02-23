@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { toast } from 'react-toastify';
 import { common } from '../../Configurations/common';
 import Breadcrumb from '../Breadcrumb/Breadcrumb';
+import AddUpdateButton from '../Buttons/AddUpdateButton';
 import { Api } from "../../Configurations/Api";
 import Unauthorized from '../CustomView/Unauthorized';
 import Loader from '../Loader';
@@ -9,49 +10,20 @@ import TableView from '../Tables/TableView';
 import TableHeader from '../Tables/TableHeader';
 import TableFooter from '../Tables/TableFooter';
 
-export default function EmailTemplate({ userRole }) {
-    const apiUrlData = require('../../Configurations/apiUrl.json');
-    const breadcrumbOption = [
-        { name: 'Home', link: "/Dashboard" },
-        { name: 'Email Template', isActive: false }];
-    const handleSerach = (e) => {
-        if (e !== "All" && (e === "" || e.length < 3)) {
-            toast.warn("Please enter 3 char to search.");
-            return;
-        }
-        setLoadingData(true);
-        Api.Get(apiUrlData.emailTemplate.searchEmailTemplate.replace('{pageSize}',pagingData.pageSize).replace('{pageNo}',pagingData.pageNo).replace('{searchTerm}',e)).then(res => {
-            let tblOption = tableOptionTemplate;
-            tblOption.rowData = res.data.data;
-            setTableOption(tblOption);
-            SetTotalRecord(res.data.totalRecord);
-            setLoadingData(false)
-        }).catch(err => {
-            setLoadingData(false);
-            toast.error(common.toastMsg.error);
-        });
-    };
-    const tableHeaderOption = {
-        searchHandler: handleSerach,
-        headerName: 'Email Template',
-        addUrl: "/admin/EmailTemplateCreate",
-        buttons:[
-            {
-                text:"Email Setting",
-                url:"/admin/EmailSettings",
-                type:'link',
-                icon:'fas fa-cog',
-                onlyIcon:true
-            }
-        ]
-    }
+
+export default function DropdownMaster({ userRole }) {
     const [pagingData, setPagingData] = useState({ pageNo: 1, pageSize: 10 });
     const [loadingData, setLoadingData] = useState(false);
     const [totalRecord, SetTotalRecord] = useState(0);
+    const breadcrumbOption = [
+        { name: 'Home', link: "/Dashboard" },
+        { name: 'Dropdown Master Data', link: "/admin/dropdownmaster", isActive: false }];
+        
+    const apiUrlData = require('../../Configurations/apiUrl.json');
     useEffect(() => {
         setLoadingData(true);
         let ApiCalls = [];
-        ApiCalls.push(Api.Get(apiUrlData.emailTemplate.getEmailTemplates.replace('{pageNo}',pagingData.pageNo).replace('{pageSize}',pagingData.pageSize)));
+        ApiCalls.push(Api.Get(apiUrlData.dropdownMasterController.getDropdownMasters.replace('{pageNo}',pagingData.pageNo).replace('{pageSize}',pagingData.pageSize)));
         Api.MultiCall(ApiCalls).then(res => {
             let tblOption = tableOptionTemplate;
             tblOption.rowData = res[0].data.data;
@@ -68,28 +40,47 @@ export default function EmailTemplate({ userRole }) {
     }, [userRole, pagingData]);
     const handleDelete = (val) => {
         setLoadingData(true);
-        Api.Delete(apiUrlData.emailTemplate.deleteEmailTemplate.replace('{templateId}',val)).then(res => {
+        Api.Delete(apiUrlData.dropdownMasterController.deleteDropdownMaster.replace('{dropdownDataId}',val)).then(res => {
             setLoadingData(false);
-            handleSerach('all');
-            toast.success("Email Template deleted.")
+            handleSearch('All');
+            toast.success("Dropdown data deleted.")
         }).catch(err => {
             setLoadingData(false);
             toast.error(common.toastMsg.error);
         });
     }
-    const handlePreview=(param,data)=>{
-
+    const handleSearch = (e) => {
+        if (e !== "All" && (e === "" || e.length < 3)) {
+            toast.warn("Please enter 3 char to search.");
+            return;
+        }
+        setLoadingData(true);
+        Api.Get(apiUrlData.dropdownMasterController.searchDropdownMaster.replace('{pageSize}', pagingData.pageSize).replace('{pageNo}', pagingData.pageNo).replace('{searchTerm}', e)).then(res => {
+            let tblOption = tableOptionTemplate;
+            tblOption.rowData = res.data.data;
+            setTableOption(tblOption);
+            SetTotalRecord(res.data.totalRecord);
+            setLoadingData(false)
+        }).catch(err => {
+            setLoadingData(false);
+            toast.error(common.toastMsg.error);
+        });
+    };
+    const tableHeaderOption = {
+        searchHandler: handleSearch,
+        headerName: 'Dropdown Master',
+        addUrl: "/admin/DropdownMasterCreate"
     }
     const tableOptionTemplate = {
-        headers: ['Template Name', 'Body', 'Subject','Is HTML','Keyword','Has Attachment', 'Attchment Path'],
+        headers: ['Data Type', 'Data Text', 'Data Value'],
         rowNumber: true,
         action: true,
-        columns: ['templateName', 'body', 'subject','isHTML','keywords','hasAttachment', 'attchmentPath'],
+        columns: ['dataType', 'dataText', 'dataValue'],
         rowData: common.defaultIfEmpty(undefined, []),
         userRole: userRole,
         totalRecord: 0,
-        idName: 'templateId',
-        editUrl: "/admin/emailTemplateCreate?templateId=",
+        idName: 'dropdownDataId',
+        editUrl: "/admin/dropdownMasterCreate?dropdowndataId=",
         deleteHandler: handleDelete,
         // customCell:[{
         //     cellNo: 1,
@@ -112,6 +103,5 @@ export default function EmailTemplate({ userRole }) {
             <TableHeader option={tableHeaderOption} userRole={userRole}></TableHeader>
             <TableView options={tableOption} userRole={userRole}></TableView>
             <TableFooter option={{ totalRecord: totalRecord }} pagingData={setPagingData}></TableFooter>
-        </>
-    )
+        </>);
 }

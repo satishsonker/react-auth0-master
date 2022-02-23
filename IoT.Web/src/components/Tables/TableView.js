@@ -52,10 +52,10 @@ export default function TableView({ options, userRole, currPageNo, currPageSize 
                         )
                         }
                         {
-                            options.rowData && (options.rowData.map((ele, ind) => {
+                            options?.rowData && (options.rowData.map((ele, ind) => {
                                 var customCellIndex = 0;
                                 return (
-                                    <tr key={ind}>
+                                    <tr key={common.getRandomKey()}>
                                         {options.rowNumber && <td >{((currPageNo - 1) * currPageSize) + 1 + ind}</td>}
                                         {
                                             options.columns.map((eleCol, eleColInd) => {
@@ -64,15 +64,15 @@ export default function TableView({ options, userRole, currPageNo, currPageSize 
                                                         var index=customCellIndex;
                                                         if(options.customCell.length-1<customCellIndex)
                                                         customCellIndex++;
-                                                        return <td key={ele[eleCol] + Math.random() * 1000} ><button className="btn btn-primary" onClick={e => options.customCell[index].handler(ele[options.customCell[index].handlerParam[0]],ele[eleCol],index)}>{options.customCell[index].buttonText}</button> </td>
+                                                        return <td key={common.getRandomKey()} ><button className="btn btn-primary" onClick={e => options.customCell[index].handler(ele[options.customCell[index].handlerParam[0]],ele[eleCol],index)}>{options.customCell[index].buttonText}</button> </td>
                                                     }
                                                 }
                                                 if(options.headers[eleColInd]?.toLowerCase().indexOf('date')>-1)
                                                 {
-                                                    return <td key={ele[eleCol] + Math.random() * 1000} >{common.getDateTime(common.getValueFromObject(eleCol, ele)?.toString())}</td>
+                                                    return <td key={common.getRandomKey()} >{common.getDateTime(common.getValueFromObject(eleCol, ele)?.toString())}</td>
                                                 }
                                                 else
-                                                return <td key={ele[eleCol] + Math.random() * 1000} >{common.getValueFromObject(eleCol, ele)?.toString()}</td>
+                                                return <td key={common.getRandomKey()} >{common.getValueFromObject(eleCol, ele)?.toString()}</td>
                                             })
                                         }
                                         <td>

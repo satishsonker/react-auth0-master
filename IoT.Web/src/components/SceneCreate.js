@@ -95,7 +95,6 @@ export default function SceneCreate({ userRole }) {
             if (!isValid)
                 return;
         }
-        debugger;
         Api.Post(!isSceneUpdating ? apiUrlData.sceneController.addScene : apiUrlData.sceneController.updateScene, scene).then(res => {
             toast.success(!isSceneUpdating ? "Scene is created" : "Scene is updated");
             setIsSceneCreated(true);

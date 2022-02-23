@@ -19,8 +19,7 @@ export default function DeviceAction({userRole}) {
         setLoadingData(true);
         let ApiCalls = [];
         ApiCalls.push(Api.Get(apiUrlData.adminController.getAllDeviceAction+`?pageNo=${pagingData.pageNo}&pageSize=${pagingData.pageSize}`));
-        Api.MultiCall(ApiCalls).then(res => {   
-            debugger;        
+        Api.MultiCall(ApiCalls).then(res => { 
             setTableOptionTemplate({...tableOptionTemplate,['rowData']:res[0].data.data});
             setRecordCount(res[0].data.totalRecord);
             if (footerOption.totalRecord !== res[0].data.totalRecord) {
@@ -54,7 +53,6 @@ export default function DeviceAction({userRole}) {
         }
         setLoadingData(true);
         Api.Get(apiUrlData.adminController.searchDeviceAction + '?searchterm=' + searchTerm).then(res => {
-            debugger;
             setTableOptionTemplate({...tableOptionTemplate,['rowData']:res.data});
             setLoadingData(false)
         }).catch(err=>{

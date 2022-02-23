@@ -10,7 +10,7 @@ export default function TableHeader({ option, userRole }) {
     option.searchHandler = common.defaultIfEmpty(option.searchHandler, (val) => { });
     option.headerName = common.defaultIfEmpty(option.headerName, 'No Header Name');
     option.addUrl = common.defaultIfEmpty(option.addUrl, '#');
-    option.addButtonName = common.defaultIfEmpty(option.addButtonName, "Add");
+    option.addButtonName = common.defaultIfEmpty(option.addButtonName, "");
     option.searchPlaceHolder = common.defaultIfEmpty(option.searchPlaceHolder, "Search");
     const [searchTerm, setSearchTerm] = useState('');
     const searchHandler = (val) => {
@@ -26,9 +26,9 @@ export default function TableHeader({ option, userRole }) {
                     {
                         option.buttons.map((ele) => {
                             if (ele.type === 'link')
-                                return <Link to={ele.url}><div className="btn btn-sm btn-outline-primary"><i className={ele.icon}></i> {ele.text}</div></Link>
+                                return <Link key={ele.url} to={ele.url}><div className="btn btn-sm btn-outline-primary"><i className={ele?.icon}></i>{common.defaultIfEmpty(ele.onlyIcon,false)?'': ele?.text}</div></Link>
                             else
-                                return <button type="button" onClick={e => ele.handler(e)} className="btn btn-sm btn-outline-primary">{ele.text}<i className={ele.icon}></i></button>
+                                return <button type="button" onClick={e => ele.handler(e)} className="btn btn-sm btn-outline-primary">{common.defaultIfEmpty(ele.onlyIcon,false)?'': ele?.text}<i className={ele?.icon}></i></button>
                         })
                     }
                 </div>

@@ -114,7 +114,7 @@ export default function Device({userRole}) {
                     <tbody>
                         {deviceData && deviceData.length === 0 && (
                             <tr>
-                                <td className="text-center" colSpan="10">No Data Found</td>
+                                <td className="text-center" colSpan="16">No Data Found</td>
                             </tr>
                         )
                         }

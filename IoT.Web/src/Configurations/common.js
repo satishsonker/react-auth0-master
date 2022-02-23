@@ -223,6 +223,9 @@ export const common = {
         button:'button',
         text:'text',
         image:'image'
+    },
+    getRandomKey:()=>{
+return 'key_'+(Math.random()*10000000000).toString()+(Math.random()*10000000000).toString();
     }
 }
 

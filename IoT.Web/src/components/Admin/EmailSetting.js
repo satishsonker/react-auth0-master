@@ -15,7 +15,6 @@ export default function EmailSetting({ userRole }) {
         { name: 'Email Setting', isActive: false }];
     const [emailSetting, setEmailSetting] = useState(common.getDefault(common.dataType.object));
     const inputHandler = (e, dataType) => {
-        debugger;
         if (e.target.type === "checkbox") {
             setEmailSetting({ ...emailSetting, [e.target.name]: e.target.checked });
         }
@@ -37,6 +36,9 @@ export default function EmailSetting({ userRole }) {
         else if (!common.hasValue(emailSetting.password)) {
             toast.warn("Please enter email password");
         }
+        else if (!common.hasValue(emailSetting.senderName)) {
+            toast.warn("Please enter email sender name");
+        }
         else {
             setLoadingData(true);
             Api.Post(apiUrlData.emailSetting.updateEmailSetting, emailSetting).then(res => {
@@ -55,7 +57,10 @@ export default function EmailSetting({ userRole }) {
     }
     const buttonOption = {
         buttonText: "Email Setting",
-        handler: handleSubmit
+        handler: handleSubmit,
+        backButtonLink:'/admin/emailTemplate',
+        resetModel:emailSetting,
+        modelSetter:setEmailSetting
     };
     useEffect(() => {
         setLoadingData(true);
@@ -109,6 +114,13 @@ export default function EmailSetting({ userRole }) {
                                         <label htmlFor="txtPassword" className="form-label">Password<strong className="text-danger">*</strong></label>
                                         <input type="password" name="password" value={emailSetting.password} onChange={e => inputHandler(e)} className="form-control" id="txtPassword" aria-describedby="txtPasswordHelp" />
                                         <div id="txtPasswordHelp" className="form-text">Enter the email Password</div>
+                                    </div>
+                                </div>
+                                <div className="col">
+                                    <div className="mb-3">
+                                        <label htmlFor="txtSenderName" className="form-label">SenderName<strong className="text-danger">*</strong></label>
+                                        <input type="text" name="senderName" value={emailSetting.senderName} onChange={e => inputHandler(e)} className="form-control" id="txtSenderName" aria-describedby="txtSenderNameHelp" />
+                                        <div id="txtSenderNameHelp" className="form-text">Enter the email Sender Name</div>
                                     </div>
                                 </div>
                             </div>

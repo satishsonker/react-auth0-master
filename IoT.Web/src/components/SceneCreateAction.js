@@ -4,7 +4,6 @@ export default function SceneCreateAction({ deviceData, sceneData, rowIndex, set
     const [isDisable, setIsDisable] = useState([]);
     const [filterActionData, setFilterActionData] = useState([]);
     useEffect(() => {
-        debugger;
         let disableArray = isDisable;
         if(sceneData.sceneActions[rowIndex].device && sceneData.sceneActions.length>0)
         {

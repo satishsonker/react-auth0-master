@@ -61,7 +61,7 @@ export default function TableFooter({ option, currPageNo, currPageSize, pagingDa
     }
     return (
         <>
-            <div className="row">
+            <div className="row mx-0">
                 <div className="col-md-12 col-12">{ (option.totalRecord === 0 ? totalRecords : option.totalRecord)>0 &&(
                     <div className="d-flex justify-content-between">
                         <div className="p-2 bd-highlight">

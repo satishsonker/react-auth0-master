@@ -21,18 +21,19 @@ export default function GroupAddDevice({ userRole }) {
     const [isGroupUpdated, setIsGroupUpdated] = useState(common.getDefault(common.dataType.bool));
     const [deviceInGroup, setDeviceInGroup] = useState([])
     useEffect(() => {
+        debugger;
         let queryParam = common.queryParam(window.location.search);
         if (queryParam.name !== undefined && queryParam.id !== undefined) {
             setGroupName(queryParam.name);
             setGroupId(queryParam.id);
             setLoadingData(true);
             let ApiCalls = [];
-            ApiCalls.push(Api.Get(apiUrlData.deviceController.getAllDevice));
+            ApiCalls.push(Api.Get(apiUrlData.deviceController.getAllDevice+`?pageNo=${1}&pageSize=${1000}`));
             ApiCalls.push(Api.Get(apiUrlData.deviceGroupController.getDeviceGroupDetail + queryParam.id));
             Api.MultiCall(ApiCalls).then(res => {
                 setLoadingData(false);
-                setDeviceGroupData(res[1].data);
-                setDeviceData(res[0].data);
+                setDeviceGroupData(res[1].data.data);
+                setDeviceData(res[0].data.data);
                 let deviceIds = [];
                 let data = [];
                 res[1].data.forEach(ele => {

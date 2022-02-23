@@ -17,7 +17,6 @@ export default function DeviceCard({ deviceData, index, devicePowerHandler, setP
     const apiUrlData = require('../../Configurations/apiUrl.json');
     const handleUpdateFavourite = (isFavourite) => {
         let url = apiUrlData.deviceController.updatefavourite.replace('{deviceKey}', deviceData.deviceKey).replace("{isFavourite}", isFavourite);
-        debugger;
         Api.Post(url,{}).then(res=>{
             if(res.data){
                 if(isFavourite)

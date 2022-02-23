@@ -17,9 +17,8 @@ export default function Account() {
         "timezone": ''
     });
     useEffect(() => {
-        async function getRoomData() {
             setLoadingData(true);
-            await Api.Get(apiUrlData.userController.getUser).then(res => {
+            Api.Get(apiUrlData.userController.getUser).then(res => {
                 res.data['name'] = res.data.firstName + ' ' + res.data.lastName;
                 setAccountData(res.data);
                 setLoadingData(false);
@@ -27,11 +26,7 @@ export default function Account() {
                 setLoadingData(false);
                 toast.error(common.toastMsg.error);
             });
-        }
-        if (loadingData) {
-            getRoomData();
-        }
-    }, [loadingData, apiUrlData.userController.getUser]);
+    }, []);
 
     const inputHandler = (e, dataType) => {
         var val = dataType !== undefined && dataType.toLowerCase() === "int" ? Number(e.target.value) : e.target.value;

@@ -10,7 +10,7 @@ import ConfirmationBox from './Controls/ConfirmationBox';
 export default function Credentials() {
     const breadcrumbOption = [{ name: 'Home', link: "/Dashboard", isActive: true }, { name: 'Credentials', link: "", isActive: false }]
     const [credData, setCredData] = useState({});
-    const [loadingData, setLoadingData] = useState(true);
+    const [loadingData, setLoadingData] = useState(common.getDefault(common.dataType.bool));
     const apiUrlData = require('../Configurations/apiUrl.json');
     const handleResetApiKey = (e) => {
         setLoadingData(true);
@@ -24,20 +24,16 @@ export default function Credentials() {
           });
     }
     useEffect(() => {
-        async function getData() {
-            await Api.Get(apiUrlData.userController.getApiKey).then(res => {
-                setCredData(res.data);
-
-                setLoadingData(false)
-            }).catch(err=>{
-                setLoadingData(false);
-                toast.error(common.toastMsg.error);
-              });
-        }
-        if (loadingData) {
-            getData();
-        }
-    }, [loadingData, apiUrlData.userController.getApiKey]);
+        setLoadingData(true);
+        Api.Get(apiUrlData.userController.getApiKey).then(res => {
+            debugger;
+        setCredData(res.data);
+        setLoadingData(false)
+    }).catch(err=>{
+        setLoadingData(false);
+        toast.error(common.toastMsg.error);
+      });
+    }, []);
     let conBoxOption = {
         modelBoxId: "exampleModalResetAPIKey",
         deleteHandler: handleResetApiKey,

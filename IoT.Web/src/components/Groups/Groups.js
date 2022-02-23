@@ -120,6 +120,9 @@ export default function Groups({ userRole, setPubMsg }) {
                                                 <Link to={"/group/groupdetails?name=" + ele.groupName + "&id=" + ele.groupKey}>
                                                     <p className="card-text">{ele.deviceGroupDetails.length}</p>
                                                 </Link>
+                                                <Link to={"/group/addDevice?name=" + ele.groupName + "&id=" + ele.groupKey}>
+                                                    <p className="card-text">{ele.deviceGroupDetails.length}</p>
+                                                </Link>
                                             </div>
                                         </div>
                                     </div>

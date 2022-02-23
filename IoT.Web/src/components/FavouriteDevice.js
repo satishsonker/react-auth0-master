@@ -35,8 +35,7 @@ export default function FavouriteDevice({ userRole, setPubMsg, mqttPayload }) {
         let data = deviceData;
         
         data.map((ele, ind) => {
-            if (ele.hasOwnProperty('deviceKey') && ele.deviceKey === mqttMessage[0]?.devices[0]) {                
-            debugger;
+            if (ele.hasOwnProperty('deviceKey') && ele.deviceKey === mqttMessage[0]?.devices[0]) {  
                 data[ind]["wifi"] = mqttMessage[0]["wifi"];
                 data[ind]["ip"]=mqttMessage[0]["ip"];
                 data[ind]["status"]=mqttMessage[0]["status"];                

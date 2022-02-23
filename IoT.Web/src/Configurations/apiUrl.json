@@ -6,6 +6,8 @@
         "resetApiKey": "/user/resetAPIKey",
         "getUser": "/user/getUser",
         "updateUser": "/user/updateUser",
+        "searchUser": "/user/searchUser",
+        "searchPermissions": "/user/SearchPermissions",
         "getUserPermission": "/user/getUserPermission",
         "getAllUserPermissions": "/user/getAllUserPermissions"
     },
@@ -110,6 +112,16 @@
         "getDeviceGroup": "/DeviceGroup/GetGroup/",
         "getDeviceGroups": "/DeviceGroup/GetGroups",
         "searchDeviceGroup": "/DeviceGroup/Search/"
+    },
+    "dropdownMasterController":{
+        "addDropdownMaster": "/dropdownMaster/addDropdownMaster",
+        "getDropdownMasters": "/dropdownMaster/getAllDropdownMaster/{pageNo}/{pageSize}",
+        "getDropdownMaster": "/dropdownMaster/getDropdownMaster",
+        "getDropdownDataType": "/dropdownMaster/getDropdownDataType",
+        "addDropdownDataType": "/dropdownMaster/addDropdownDataType",
+        "updateDropdownMaster": "/dropdownMaster/updateDropdownMaster",
+        "deleteDropdownMaster": "/dropdownMaster/deleteDropdownMaster/{dropdownDataId}",
+        "searchDropdownMaster": "/dropdownMaster/searchDropdownMaster/{searchTerm}/{pageNo}/{pageSize}"
     },
     "emailTemplate": {
         "addEmailTemplate": "/emailTemplate/addEmailTemplate",
