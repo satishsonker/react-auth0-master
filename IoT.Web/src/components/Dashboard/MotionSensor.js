@@ -3,7 +3,7 @@ import { common } from '../../Configurations/common'
 
 export default function MotionSensor({ deviceData, index }) {
     return (
-        <ol className="device-desc">
+        <ol style={{fontSize:'10px',padding:'5px',listStyle:'none'}}>
             <li>
                 <div className="row row-cols-2">
                     <div className="col">

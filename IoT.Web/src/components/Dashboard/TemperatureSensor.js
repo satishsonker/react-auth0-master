@@ -5,7 +5,7 @@ import GaugeChart from 'react-gauge-chart'
 export default function TemperatureSensor({ deviceData, index }) {
     let F=common.defaultIfEmpty(deviceData.temperature, 1)===0?0:((common.defaultIfEmpty(deviceData.temperature, 1)*1.80)+32).toFixed(2);
     return (
-        <ol className="device-desc">
+        <ol style={{fontSize:'10px',padding:'5px',listStyle:'none'}}>
             <li>
                 <div className="row row-cols-2">
                     <div className="col">
