@@ -1,0 +1,74 @@
+.device-list-container{
+/* width: 100%;
+overflow-x: auto;
+overflow-y: hidden;
+height: 150px; */
+}
+.device-list
+{
+    border: 1px solid #e7e7e7;
+    min-height: 150px;
+    max-height: 150px;
+    margin-bottom: 15px;
+    border-radius: 3px;
+    padding: 10px;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: .5s;
+}
+
+.device-list:hover
+{
+    overflow-x: auto;
+    transition: 0.5s;
+}
+
+.device-list .device-list-item
+{
+    padding: 5px;
+    border: 2px solid #e7e7e7;
+    height: 130px;
+    width: 130px;
+    display: inline-block;
+    margin: 0 10px;
+    border-radius: 3px;
+    background: linear-gradient(1deg, black, #00000054);
+}
+
+.device-name
+{
+    font-size: 10px;
+    text-align: center;
+    background: #e9e2e22b;
+    border-radius: 4px;
+    padding: 2px;
+    width: 100%;
+    white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: white;
+}
+.fav-device-control
+{
+    height: 77px;
+    display: flex;
+    justify-content: space-evenly;
+    align-content: space-around;
+    flex-wrap: wrap;
+}
+.fav-device-control-light
+{
+    border: 1px solid #464343;
+    height: 100%;
+    border-radius: 50%;
+    height: 60px;
+    width: 60px;
+    box-shadow: inset 6px 2px 15px 5px #464343;
+    display: flex;
+    align-content: stretch;
+    text-align: center;
+    flex-wrap: wrap;
+    flex-direction: column-reverse;
+    justify-content: space-evenly;
+    font-size: 31px;
+}

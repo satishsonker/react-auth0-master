@@ -7,6 +7,7 @@ import { Api } from "../../Configurations/Api";
 import { common } from "../../Configurations/common";
 import { useAuth0 } from "@auth0/auth0-react";
 import DeviceCard from './DeviceCard';
+import FavouriteDeviceList from '../FavouriteDeviceList';
 
 export default function Dashboard({ userRole, mqttPayload, setPubMsg }) {
     //const mqttSubscribeStorageKey = process.env.REACT_APP_MQTT_SUBSCRIBE_LOCAL_STORAGE_KEY;
@@ -218,8 +219,8 @@ export default function Dashboard({ userRole, mqttPayload, setPubMsg }) {
                         }
                     </div>
                 </div>
-
             </div>
+                    <FavouriteDeviceList></FavouriteDeviceList>
             <div className="row">
 
                 <div className="accordion" id="accordionExample">

@@ -21,68 +21,77 @@ export default function TableFooter({ option, currPageNo, currPageSize, pagingDa
             totalPages.push(index);
         }
         setTotalPageCount(totalPages);
-        setrecordRange(getRecordRange(pageNo,pageSize));
+        setrecordRange(getRecordRange(pageNo, pageSize));
     }, [option.totalRecord, pageSize, totalRecords]);
     const handleChange = (e) => {
-        let psize=parseInt(e.target.value);
+        let psize = parseInt(e.target.value);
         let data = { pageNo: 1, pageSize: psize, currPage: 1 }
         pagingData({ ...data });
         setPageSize(psize);
-        setrecordRange(getRecordRange(1,psize));
+        setrecordRange(getRecordRange(1, psize));
     };
     const handleClick = (e, val) => {
         e.preventDefault();
-        let pno=parseInt(val);
-        let data = { pageNo:pno , pageSize: pageSize, currPage: pno };
+        let pno = parseInt(val);
+        let data = { pageNo: pno, pageSize: pageSize, currPage: pno };
         pagingData({ ...data });
         setPageNo(pno);
-        setrecordRange(getRecordRange(pno,pageSize));
+        setrecordRange(getRecordRange(pno, pageSize));
     };
     const handlePagingPre = () => {
         if (pageNo > 1) {
             pagingData({ pageNo: pageNo - 1, pageSize: pageSize });
             setPageNo(pageNo - 1);
-            setrecordRange(getRecordRange(pageNo-1,pageSize));
+            setrecordRange(getRecordRange(pageNo - 1, pageSize));
         }
     }
     const handlePagingNext = () => {
         if (pageNo < totalPageCount.length) {
             pagingData({ pageNo: pageNo + 1, pageSize: pageSize });
             setPageNo(pageNo + 1);
-            setrecordRange(getRecordRange(pageNo + 1,pageSize));
+            setrecordRange(getRecordRange(pageNo + 1, pageSize));
         }
     }
-    const getRecordRange = (pno,psize) => {
-        let allRecords=(option.totalRecord === 0 ? totalRecords : option.totalRecord);
+    const getRecordRange = (pno, psize) => {
+        let allRecords = (option.totalRecord === 0 ? totalRecords : option.totalRecord);
         let recordStart = ((pno - 1) * psize) + 1;
-        let recordEnd = recordStart - 1 + (psize>allRecords?allRecords:psize);
+        let recordEnd = recordStart - 1 + (psize > allRecords ? allRecords : psize);
         recordEnd = recordEnd > allRecords ? allRecords : recordEnd;
         return `${recordStart}-${recordEnd}`;
     }
     return (
         <>
+
             <div className="row mx-0">
-                <div className="col-md-12 col-12">{ (option.totalRecord === 0 ? totalRecords : option.totalRecord)>0 &&(
+                <div className="col-md-12 col-12" style={{borderTop:"1px solid #e7e7e7"}}>{(option.totalRecord === 0 ? totalRecords : option.totalRecord) > 0 && (
                     <div className="d-flex justify-content-between">
+
                         <div className="p-2 bd-highlight">
-                            <nav aria-label="Page navigation example">
-                                <ul className="pagination  pagination-sm">
-                                    <li onClick={() => handlePagingPre()} className={pageNo == 1 ? "page-item disabled" : "page-item"}>
-                                        <a className="page-link" href="#" tabIndex="-1" aria-disabled="true">Previous</a>
-                                    </li>
-                                    {
-                                        totalPageCount.map((ele) => {
-                                            return <li key={ele} onClick={(e) => { handleClick(e, ele) }} className={pageNo == ele ? "page-item active" : "page-item"}><a className="page-link" href="#">{ele}</a></li>
-                                        })
-                                    }
-                                    <li onClick={() => handlePagingNext()} className={pageNo == totalPageCount.length || totalPageCount.length == 1 ? "page-item disabled" : "page-item"}>
-                                        <a className="page-link" href="#">Next</a>
-                                    </li>
-                                </ul>
-                            </nav></div>
-                        <div className="p-2 bd-highlight">
-                            {recordRange}/{(option.totalRecord === 0 ? totalRecords : option.totalRecord)}
+                            {totalPageCount.length > 1 && (
+                                <nav aria-label="Page navigation example">
+                                    <ul className="pagination  pagination-sm">
+                                        <li onClick={() => handlePagingPre()} className={pageNo == 1 ? "page-item disabled" : "page-item"}>
+                                            <a className="page-link" href="#" tabIndex="-1" aria-disabled="true">Previous</a>
+                                        </li>
+                                        {
+                                            totalPageCount.map((ele) => {
+                                                return <li key={ele} onClick={(e) => { handleClick(e, ele) }} className={pageNo == ele ? "page-item active" : "page-item"}><a className="page-link" href="#">{ele}</a></li>
+                                            })
+                                        }
+                                        <li onClick={() => handlePagingNext()} className={pageNo == totalPageCount.length || totalPageCount.length == 1 ? "page-item disabled" : "page-item"}>
+                                            <a className="page-link" href="#">Next</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            )}
                         </div>
+                        <div className="p-2 bd-highlight">
+                            {totalPageCount.length > 1 && (
+                                <strong> {recordRange}/{(option.totalRecord === 0 ? totalRecords : option.totalRecord)}</strong>
+                            )}
+                        </div>
+
+
                         <div className="p-2 bd-highlight">
                             <select className="form-control" onChange={(e) => handleChange(e)}>
                                 {
