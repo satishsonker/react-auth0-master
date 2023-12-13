@@ -6,7 +6,7 @@ import AddUpdateButton from '../Buttons/AddUpdateButton';
 import { Api } from "../../Configurations/Api";
 import Unauthorized from '../CustomView/Unauthorized';
 import Loader from '../Loader';
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 export default function EmailTemplateCreate({ userRole }) {
     const apiUrlData = require('../../Configurations/apiUrl.json');
@@ -240,7 +240,7 @@ export default function EmailTemplateCreate({ userRole }) {
                 </div>
             </div>
             {
-                isCreated && (<Redirect to="/admin/emailTemplate"/>)
+                isCreated && (<Navigate to="/admin/emailTemplate"/>)
             }
         </>
     )

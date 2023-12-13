@@ -4,7 +4,7 @@ import { Api } from "../../Configurations/Api";
 import Loader from '../Loader';
 import { common } from "../../Configurations/common";
 import { toast } from 'react-toastify';
-import { Redirect } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 export default function GroupAddDevice({ userRole }) {
     const apiUrlData = require('../../Configurations/apiUrl.json');
     const [groupName, setGroupName] = useState('Group');
@@ -151,7 +151,7 @@ export default function GroupAddDevice({ userRole }) {
                                         <div class="p-2 bd-highlight">
                                             <button type="button" onClick={e => handleSubmit()} className="btn btn-primary">Add</button>
                                             {
-                                                isGroupUpdated && <Redirect to="/groups"></Redirect>
+                                                isGroupUpdated && <Navigate to="/groups"></Navigate>
                                             }
                                         </div>
                                     </div>

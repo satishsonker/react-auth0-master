@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Link, Redirect } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { Api } from "../Configurations/Api";
 import { toast } from 'react-toastify';
 import Loader from "./Loader";
@@ -165,7 +165,7 @@ export default function SceneCreate({ userRole }) {
                                 </div>
                                 {((userRole?.canCreate && !isSceneUpdating) || (userRole?.canUpdate && isSceneUpdating)) && <button type="button" onClick={e => handleSubmit(e)} className="btn btn-primary">{!isSceneUpdating ? 'Add ' : 'Update '} Scene</button>}
                                 {isSceneCreated && (
-                                    <Redirect to="/scenes"></Redirect>
+                                    <Navigate to="/scenes"></Navigate>
                                 )}
                             </form>
                         </div>

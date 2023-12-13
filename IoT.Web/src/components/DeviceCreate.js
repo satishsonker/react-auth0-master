@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Link, Redirect } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
+import { Navigate } from "react-router-dom";
 import { Api } from "../Configurations/Api";
 import { toast } from 'react-toastify';
 import Loader from "../components/Loader";
@@ -9,7 +8,7 @@ import Unauthorized from './CustomView/Unauthorized';
 import Breadcrumb from './Breadcrumb/Breadcrumb';
 export default function DeviceCreate({ userRole }) {
     toast.configure();
-    const { user } = useAuth0();
+    const { user } = {isLoading:false,isAuthenticated:true,user:{name:'satish'}}
     const apiUrlData = require('../Configurations/apiUrl.json');
     const [loadingData, setLoadingData] = useState(true);
     const [isDeviceUpdate, setIsDeviceUpdate] = useState(false);
@@ -213,7 +212,7 @@ export default function DeviceCreate({ userRole }) {
                                     </div>
                                 </div>
                                 {isDeviceCreated && (
-                                    <Redirect to="/Device"></Redirect>
+                                    <Navigate to="/Device"></Navigate>
                                 )}
                             </form>
                         </div>

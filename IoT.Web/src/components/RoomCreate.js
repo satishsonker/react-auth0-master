@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Link, Redirect } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
+import { Link, Navigate } from "react-router-dom";
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb';
 import { Api } from "../Configurations/Api";
 import { toast } from 'react-toastify';
@@ -9,7 +8,7 @@ import { common } from '../Configurations/common';
 export default function RoomCreate({ userRole }) {
     const breadcrumbOption = [{ name: 'Home', link: "/Dashboard", isActive: true }, { name: 'Rooms', link: "/rooms", isActive: true }, { name: 'Add Rooms', link: "", isActive: false }]
 
-    const { user } = useAuth0();
+    const { user } = {isLoading:false,isAuthenticated:true,user:{name:'satish'}}
     const apiUrlData = require('../Configurations/apiUrl.json');
     const [isRoomUpdating, setIsRoomUpdating] = useState(false);
     const [isRoomCreated, setIsRoomCreated] = useState(false);
@@ -98,7 +97,7 @@ export default function RoomCreate({ userRole }) {
 
 
                                 {isRoomCreated && (
-                                    <Redirect to="/rooms"></Redirect>
+                                    <Navigate to="/rooms"></Navigate>
                                 )}
                             </form>
                         </div>

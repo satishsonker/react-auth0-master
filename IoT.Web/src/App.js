@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { useAuth0 } from '@auth0/auth0-react';
 import LandingPage from './components/LandingPage'
 import Header from './components/Header';
 import LeftMenu from './components/LeftMenu';
 import {
   BrowserRouter as Router,
-  Switch, Route
+  Routes, Route
 } from "react-router-dom";
 import Dashboard from './components/Dashboard/Dashboard';
 import Device from './components/Device';
 import Credentials from './components/Credentials';
 import Rooms from './components/Rooms';
 import RoomCreate from './components/RoomCreate';
-import { toast } from 'react-toastify';
+import { toast,ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import "../src/css/loader.css";
 import DeviceCreate from './components/DeviceCreate';
@@ -45,11 +44,10 @@ import EmailTemplate from './components/Admin/EmailTemplate';
 import EmailSetting from './components/Admin/EmailSetting';
 import DropdownMasterCreate from './components/Admin/DropdownMasterCreate';
 import DropdownMaster from './components/Admin/DropdownMaster';
-toast.configure();
 function App() {
   const apiUrlData = require('../src/Configurations/apiUrl.json');
   const [isMenuCollapsed, setIsMenuCollapsed] = useState(true);
-  const { isLoading, isAuthenticated, user } = useAuth0();
+  const { isLoading, isAuthenticated, user } = {isLoading:false,isAuthenticated:true,user:{name:'satish',sub:"aaa|sss"}};
   const [userRole, setuserRole] = useState(common.getDefault(common.dataType.object));
   const [mqttConnectionStatus, setMqttConnectionStatus] = useState(null);
   const [mqttClient, setMqttClient] = useState();
@@ -107,7 +105,7 @@ function App() {
 
   }, [isAuthenticated]);
 
-
+debugger;
   if (!isAuthenticated) {
     return <LandingPage></LandingPage>
   }
@@ -120,7 +118,7 @@ function App() {
           <Header />
           <LeftMenu setIsMenuCollapsed={setIsMenuCollapsed} userRole={userRole} />
           <div className={!isMenuCollapsed ? 'view-container' : 'view-container view-container-small'}>
-            <Switch>
+            <Routes>
               <Route exact path="/Dashboard" render={() => {
                 return (
                   <div><Dashboard setPubMsg={setPubMsg} userRole={userRole} mqttPayload={mqttPayload}></Dashboard></div>
@@ -291,10 +289,11 @@ function App() {
                   <div><GroupDetails userRole={userRole} setPubMsg={setPubMsg}></GroupDetails></div>
                 );
               }}></Route>
-            </Switch>
+            </Routes>
           </div>
         </Router>
       </div>
+      <ToastContainer autoClose={5000}></ToastContainer>
     </>
   );
 }

@@ -2,17 +2,16 @@ import React, { useState, useEffect } from 'react'
 import Loader from '../Loader';
 import '../../css/dashboard.css';
 import { toast } from 'react-toastify';
-import { Link, Redirect } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { Api } from "../../Configurations/Api";
 import { common } from "../../Configurations/common";
-import { useAuth0 } from "@auth0/auth0-react";
 import DeviceCard from './DeviceCard';
 import FavouriteDeviceList from '../FavouriteDeviceList';
 
 export default function Dashboard({ userRole, mqttPayload, setPubMsg }) {
     //const mqttSubscribeStorageKey = process.env.REACT_APP_MQTT_SUBSCRIBE_LOCAL_STORAGE_KEY;
     const [refresh, setRefresh] = useState(false);
-    const { isAuthenticated } = useAuth0();
+    const { isAuthenticated } ={isLoading:false,isAuthenticated:true,user:{name:'satish'}}
     const apiUrlData = require('../../Configurations/apiUrl.json');
     const [dashboardData, setDashboardData] = useState();
     const [messages, setMessages] = useState([]);
@@ -177,7 +176,7 @@ export default function Dashboard({ userRole, mqttPayload, setPubMsg }) {
 
     return (
         <div className="page-container">
-            {!isAuthenticated && (<Redirect to="/"></Redirect>)}
+            {!isAuthenticated && (<Navigate to="/"></Navigate>)}
             {loadingData && (<Loader></Loader>)}
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb">

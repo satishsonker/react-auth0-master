@@ -6,7 +6,7 @@ import AddUpdateButton from '../Buttons/AddUpdateButton';
 import { Api } from "../../Configurations/Api";
 import Unauthorized from '../CustomView/Unauthorized';
 import Loader from '../Loader';
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 export default function DropdownMasterCreate({ userRole }) {
   const apiUrlData = require('../../Configurations/apiUrl.json');
@@ -161,7 +161,7 @@ export default function DropdownMasterCreate({ userRole }) {
                 <div className="col-12 col-md-12 col-sm-12 col-xs-12">
                   <AddUpdateButton isUpdateAction={isDataUpdate} option={buttonOption} userRole={userRole}></AddUpdateButton>
                   {
-                    isCreated && (<Redirect to="/admin/dropdownMaster"></Redirect>)
+                    isCreated && (<Navigate to="/admin/dropdownMaster"></Navigate>)
                   }
                 </div>
               </div>

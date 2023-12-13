@@ -1,9 +1,8 @@
-import { useAuth0 } from '@auth0/auth0-react';
 import React from 'react'
-import { Redirect } from "react-router-dom";
+//import { Navigate } from "react-router-dom";
 import "../css/landing.css";
 export default function LandingPage() {
-    const { loginWithRedirect, isLoading, user, isAuthenticated } = useAuth0();
+    const { loginWithRedirect, isLoading, user, isAuthenticated } = {isLoading:false,isAuthenticated:true,user:{name:'satish',sub:"aaa|ssss"}}
     if (isAuthenticated) {
         window.iotGlobal = {};
         window.iotGlobal["userKey"] = user.sub.split("|")[1];
@@ -25,7 +24,7 @@ export default function LandingPage() {
                         {!isLoading && user && (
                             <div>
                                 {JSON.stringify(user, null, 2)}
-                                <Redirect to="/dashboard"></Redirect>
+                                {/* <Navigate to="/dashboard"></Navigate> */}
                             </div>
                         )}
                     </form>

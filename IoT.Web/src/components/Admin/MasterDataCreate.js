@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Unauthorized from '../CustomView/Unauthorized';
-import { Link, Redirect } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { Api } from "../../Configurations/Api";
 import { toast } from 'react-toastify';
 import Loader from '../Loader';
@@ -192,14 +192,14 @@ export default function MasterDataCreate({ userRole }) {
             toast.success(successMsg);
             setIsCreated(true);
             setLoadingData(false);
-            return<Redirect to={"/admin/MasterData?type=" + queryStringType}></Redirect>
+            return<Navigate to={"/admin/MasterData?type=" + queryStringType}></Navigate>
         }).catch(err=>{
             setLoadingData(false);
             toast.error(common.toastMsg.error);
           });
     }
     if(isCreated)
-    return <Redirect to={"/admin/MasterData?type=" + queryStringType}></Redirect>
+    return <Navigate to={"/admin/MasterData?type=" + queryStringType}></Navigate>
     if (loadingData)
         return <Loader></Loader>
     if (!userRole.isAdmin)

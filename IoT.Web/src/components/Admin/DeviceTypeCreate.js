@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Link, Redirect } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { common } from "../../Configurations/common";
 import { Api } from "../../Configurations/Api";
 import { toast } from 'react-toastify';
@@ -95,7 +95,7 @@ export default function DeviceTypeCreate() {
 
                                 <button type="button" onClick={e => handleSubmit(e)} className="btn btn-primary">{!isDeviceTypeUpdating ? 'Add ' : 'Update '} Device Type</button>
                                 {isDeviceTypeCreated && (
-                                    <Redirect to="/admin/DeviceType"></Redirect>
+                                    <Navigate to="/admin/DeviceType"></Navigate>
                                 )}
                             </form>
                         </div>

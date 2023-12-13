@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Link, Redirect } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { common } from "../../Configurations/common";
 import { Api } from "../../Configurations/Api";
 import { toast } from 'react-toastify';
@@ -224,7 +224,7 @@ export default function DeviceCapabilityCreate({ userRole }) {
                                 </div>
                                 <AddUpdateButton userRole={userRole} option={buttonOption} isUpdateAction={isDeviceCapabilityUpdating}></AddUpdateButton>
                                {isDeviceCapabilityCreated && (
-                                    <Redirect to="/admin/deviceCapability"></Redirect>
+                                    <Navigate to="/admin/deviceCapability"></Navigate>
                                 )}
                             </form>
                         </div>

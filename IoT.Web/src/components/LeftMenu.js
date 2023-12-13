@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import '../css/LeftMenu.css';
 import { Link } from "react-router-dom";
-import { useAuth0 } from '@auth0/auth0-react';
 import { common } from '../Configurations/common';
 export default function LeftMenu({ setIsMenuCollapsed, userRole }) {
     const [isCollapsed, setIsCollapsed] = useState(true);
-    const { logout } = useAuth0();
+    const { logout } = {logout:()=>{}}
     const [selectedMenu, setSelectedMenu] = useState(window.location.pathname);
     const handleCollapsed = () => {
         setIsCollapsed(!isCollapsed);
@@ -49,7 +48,7 @@ export default function LeftMenu({ setIsMenuCollapsed, userRole }) {
                         <Link title="Email Template" to="/admin/EmailTemplate"><li onClick={e=>changeMenuSelection("/admin/EmailTemplate")} className={selectedMenu==="/admin/EmailTemplate"?"selected item":"item"}><i className="fas fa-envelope-open-text"></i> {!isCollapsed && ('Email Template')} </li></Link>
                     </>
                 }
-                <li onClick={e=>changeMenuSelection()} title="Sign out" className={selectedMenu===""?"selected item":"item"} onClick={() => logout()}><i className="fas fa-sign-out-alt"></i> {!isCollapsed && ('Sign out')} </li>
+                <li onClick={e=>{changeMenuSelection();logout();}} title="Sign out" className={selectedMenu===""?"selected item":"item"}><i className="fas fa-sign-out-alt"></i> {!isCollapsed && ('Sign out')} </li>
             </ul>
             <div className={!isCollapsed ? 'toggle-button' : 'toggle-button toggle-button-small'} onClick={e => { handleCollapsed() }}>
                 <i className={isCollapsed === false ? 'fa fa-fw fa-angle-double-left' : 'fa fa-fw fa-angle-double-right'}></i>&nbsp;
